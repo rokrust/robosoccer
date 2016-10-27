@@ -11,6 +11,7 @@
 #include <iostream>
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
+#include <cmath>
 
 
 using namespace std;
@@ -114,35 +115,69 @@ int main(void) {
                 Position posr1_in(0.0, 0.1);
                 Position posr2_in(0.2, 0.1);
 
+                /** Define start position for robot 0 */
+                Position posstart(-0.7, 0.0);
+
+                /** Define orientations */
+                Angle to_pc(0);
+                Angle to_wall(180);
+
+                Angle cur_phi;
+
+
                 int runflag = 1;
-                int SCENARIO = 1;
+                int SCENARIO = 2;
 
-                while (runflag) {
+                if (SCENARIO == 1) {
+                    while (runflag) {
+                            cout << "Moving all six robots to the outer positions" << endl;
 
-                        cout << "Moving all six robots to the outer positions" << endl;
+                            robo0.GotoXY(posb0_out.GetX(), posb0_out.GetY(), 40, true);
+                            robo1.GotoXY(posb1_out.GetX(), posb1_out.GetY(), 40, true);
+                            robo2.GotoXY(posb2_out.GetX(), posb2_out.GetY(), 40, true);
+                            robo3.GotoXY(posb0_out.GetX(), posr0_out.GetY(), 40, true);
+                            robo4.GotoXY(posb1_out.GetX(), posr1_out.GetY(), 40, true);
+                            robo5.GotoXY(posb2_out.GetX(), posr2_out.GetY(), 40, true);
 
-                        robo0.GotoXY(posb0_out.GetX(), posb0_out.GetY(), 40, true);
-                        robo1.GotoXY(posb1_out.GetX(), posb1_out.GetY(), 40, true);
-                        robo2.GotoXY(posb2_out.GetX(), posb2_out.GetY(), 40, true);
-                        robo3.GotoXY(posb0_out.GetX(), posr0_out.GetY(), 40, true);
-                        robo4.GotoXY(posb1_out.GetX(), posr1_out.GetY(), 40, true);
-                        robo5.GotoXY(posb2_out.GetX(), posr2_out.GetY(), 40, true);
+                            usleep(6000000);
+                            cout << "Moving all six robots to the inner positions" << endl;
 
-                        usleep(6000000);
-                        cout << "Moving all six robots to the inner positions" << endl;
+                            robo0.GotoXY(posb0_out.GetX(), posb0_in.GetY(), 40, true);
+                            robo1.GotoXY(posb1_out.GetX(), posb1_in.GetY(), 40, true);
+                            robo2.GotoXY(posb2_out.GetX(), posb2_in.GetY(), 40, true);
+                            robo3.GotoXY(posb0_out.GetX(), posr0_in.GetY(), 40, true);
+                            robo4.GotoXY(posb1_out.GetX(), posr1_in.GetY(), 40, true);
+                            robo5.GotoXY(posb2_out.GetX(), posr2_in.GetY(), 40, true);
 
+                            runflag = 1;
+                            usleep(6000000);
+                    }
+                }
 
-                        robo0.GotoXY(posb0_out.GetX(), posb0_in.GetY(), 40, true);
-                        robo1.GotoXY(posb1_out.GetX(), posb1_in.GetY(), 40, true);
-                        robo2.GotoXY(posb2_out.GetX(), posb2_in.GetY(), 40, true);
-                        robo3.GotoXY(posb0_out.GetX(), posr0_in.GetY(), 40, true);
-                        robo4.GotoXY(posb1_out.GetX(), posr1_in.GetY(), 40, true);
-                        robo5.GotoXY(posb2_out.GetX(), posr2_in.GetY(), 40, true);
+                if (SCENARIO == 2) {
 
-                        runflag = 1;
-                        usleep(6000000);
+                    int v_left = 60;
+                    int v_right = 60;
+                    int run_ms = 2400;
+                    int ramp_up = 200;
 
-		}
+                    while (runflag) {
+                            robo0.GotoXY(posstart.GetX(), posstart.GetY(), 40, true);
+                            usleep(6000000);
+
+                            cur_phi = robo0.GetPhi();
+                            while (abs(cur_phi.Deg() - to_pc.Deg()) > 10) {
+                                robo0.TurnAbs(to_pc);
+                                cur_phi = robo0.GetPhi();
+                                usleep(500000);
+                            }
+
+                            robo0.MoveMs(v_left, v_right, run_ms, ramp_up);
+
+                            runflag = 0;
+                            usleep(6000000);
+                    }
+                }
 
 	} catch (DBError err) {
 		cout << "Client died on Error: " << err.what() << endl;
