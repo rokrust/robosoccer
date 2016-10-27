@@ -1,0 +1,34 @@
+# Generate sample files
+initworkspace.sh
+
+# Put all robots on the field and turn them on!
+
+# Connect to the camilla2 server
+ssh -KX camilla2
+
+# Initialize soccer robots, leave terminal open,
+# wait until the terminal says Teams started
+SOCCER_START
+
+# Start blue clients, leave terminal open
+CLIENT_START_BLUE
+
+# Start QTCreator with the correct libraries
+roso_qtcreator
+
+# Run your program or start with the samples
+
+---
+
+# Shut down soccer RTDB
+SOCCER_TERMINATE
+
+---
+
+# Optional, to get a camera screen, has to be issued in the SSH terminal
+# use CTRL+C to close the camera view
+soccerlabvision -g
+
+# If your connection dies and you get the message 'unknown command issued'
+# in the SSH terminal, you just have to restart the client. To do so,
+# press enter in the client terminal and run START_CLIENT_BLUE again

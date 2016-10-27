@@ -115,8 +115,9 @@ int main(void) {
                 Position posr1_in(0.0, 0.1);
                 Position posr2_in(0.2, 0.1);
 
-                /** Define start position for robot 0 */
+                /** Define other position for robot 0 */
                 Position posstart(-0.7, 0.0);
+                Position posgoal(0.7, 0.0);
 
                 /** Define orientations */
                 Angle to_pc(0);
@@ -126,7 +127,7 @@ int main(void) {
 
 
                 int runflag = 1;
-                int SCENARIO = 2;
+                int SCENARIO = 3;
 
                 if (SCENARIO == 1) {
                     while (runflag) {
@@ -176,6 +177,41 @@ int main(void) {
 
                             runflag = 0;
                             usleep(6000000);
+                    }
+                }
+
+                if (SCENARIO == 3) {
+
+                    int base_velo = 40;
+                    int ddeg, v_left, v_right;
+                    int goaldeg = 0;
+                    int run_ms = 200;
+                    int ramp_up = 0;
+
+                    while (runflag) {
+                        /** Go to starting position and adjust orientation */
+                        robo0.GotoXY(posstart.GetX(), posstart.GetY(), 40, true);
+                        usleep(6000000);
+
+                        cur_phi = robo0.GetPhi();
+                        while (abs(cur_phi.Deg() - to_pc.Deg()) > 10) {
+                            robo0.TurnAbs(to_pc);
+                            cur_phi = robo0.GetPhi();
+                            usleep(500000);
+                        }
+
+                        /** Drive while the distance is above a threshold */
+                        while (abs(robo0.GetX() - posgoal.GetX()) > 0.1) {
+                            cur_phi = robo0.GetPhi();
+                            ddeg = goaldeg - cur_phi.Deg();
+                            v_left = base_velo - (ddeg/2);
+                            v_right = base_velo + (ddeg/2);
+
+                            robo0.MoveMs(v_left, v_right, run_ms, ramp_up);
+
+                        }
+
+                        runflag = 0;
                     }
                 }
 
