@@ -42,6 +42,7 @@ int drive_to_pos(RoboControl &robo, Position &goal_pos, int velo, int move_time)
 
     // baseline solution: turn and move then
     robo.TurnAbs(goal_phi);
+    usleep(500000);
 
     /** Drive while the distance is above a threshold */
     while ((abs(robo.GetX() - goal_pos.GetX()) > 0.1) || (abs(robo.GetY() - goal_pos.GetY()) > 0.1)) {

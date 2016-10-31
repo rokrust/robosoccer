@@ -136,7 +136,7 @@ int main(void) {
 
 
                 int runflag = 1;
-                int SCENARIO = 1;
+                int SCENARIO = 5;
 
                 if (SCENARIO == 1) {
                     while (runflag) {
