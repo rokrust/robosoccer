@@ -7,10 +7,11 @@
 //============================================================================
 
 
-#include <time.h>
-#include <iostream>
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
+
+#include <time.h>
+#include <iostream>
 #include <cmath>
 
 
