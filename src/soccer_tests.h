@@ -21,6 +21,9 @@ public:
     void move_in_out();
 
     void const_wheel_speed();
+
+    void easy_p_ctrl();
+
 };
 
 #endif // SOCCER_TESTS_H
