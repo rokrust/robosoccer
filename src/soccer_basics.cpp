@@ -12,6 +12,7 @@
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
 #include <cmath>
+#include <drive_to_pos.h>
 
 
 using namespace std;
@@ -127,7 +128,7 @@ int main(void) {
 
 
                 int runflag = 1;
-                int SCENARIO = 3;
+                int SCENARIO = 4;
 
                 if (SCENARIO == 1) {
                     while (runflag) {
@@ -213,6 +214,18 @@ int main(void) {
 
                         runflag = 0;
                     }
+                }
+
+                if (SCENARIO == 4) {
+
+                    while (runflag) {
+                        drive_to_pos(robo0, posb0_out, 40);
+                        usleep(6000000);
+                        drive_to_pos(robo0, posb0_in, 40);
+                        usleep(6000000);
+                    }
+
+
                 }
 
 	} catch (DBError err) {

@@ -1,9 +1,9 @@
 //============================================================================
-// Name        : soccer_basics.cpp
+// Name        : drive_to_pos.h
 // Author      : Simon B. Gasse
 // Version     :
 // Copyright   : (C)
-// Description : Basic driving function
+// Description : Basic driving function header file
 //============================================================================
 
 
@@ -14,8 +14,4 @@
 #include <cmath>
 
 
-void drive_to_pos(RoboControl &robo, Position &pos, int velo) {
-    robo.GotoXY(pos.GetX(), pos.GetY(), velo, true);
-}
-
-
+void drive_to_pos(RoboControl &robo, Position &pos, int velo);
