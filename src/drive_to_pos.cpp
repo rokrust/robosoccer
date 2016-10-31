@@ -25,7 +25,7 @@ void drive_to_pos(RoboControl &robo, Position &pos, int velo) {
 
 // dist: 0.58
 // velo: 40
-
+// this is a test
 
 int drive_to_pos(RoboControl &robo, Position &goal_pos, int velo, int move_time) {
     robo.GotoXY(goal_pos.GetX(), goal_pos.GetY(), velo, true);
