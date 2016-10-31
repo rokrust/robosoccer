@@ -114,32 +114,10 @@ int main(void) {
 
 
                 int runflag = 1;
-                int SCENARIO = 5;
+                int SCENARIO = 1;
 
                 if (SCENARIO == 1) {
-                    while (runflag) {
-                            cout << "Moving all six robots to the outer positions" << endl;
-
-                            robo0.GotoXY(posb0_out.GetX(), posb0_out.GetY(), 40, true);
-                            robo1.GotoXY(posb1_out.GetX(), posb1_out.GetY(), 40, true);
-                            robo2.GotoXY(posb2_out.GetX(), posb2_out.GetY(), 40, true);
-                            robo3.GotoXY(posb0_out.GetX(), posr0_out.GetY(), 40, true);
-                            robo4.GotoXY(posb1_out.GetX(), posr1_out.GetY(), 40, true);
-                            robo5.GotoXY(posb2_out.GetX(), posr2_out.GetY(), 40, true);
-
-                            usleep(6000000);
-                            cout << "Moving all six robots to the inner positions" << endl;
-
-                            robo0.GotoXY(posb0_out.GetX(), posb0_in.GetY(), 40, true);
-                            robo1.GotoXY(posb1_out.GetX(), posb1_in.GetY(), 40, true);
-                            robo2.GotoXY(posb2_out.GetX(), posb2_in.GetY(), 40, true);
-                            robo3.GotoXY(posb0_out.GetX(), posr0_in.GetY(), 40, true);
-                            robo4.GotoXY(posb1_out.GetX(), posr1_in.GetY(), 40, true);
-                            robo5.GotoXY(posb2_out.GetX(), posr2_in.GetY(), 40, true);
-
-                            runflag = 1;
-                            usleep(6000000);
-                    }
+                    Test_Obj.move_in_out();
                 }
 
                 if (SCENARIO == 2) {
