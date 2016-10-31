@@ -1,5 +1,5 @@
-#ifndef DEFINITIONS_H
-#define DEFINITIONS_H
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
@@ -36,4 +36,4 @@ Position pos6(-0.7, 0.0);
 Angle to_pc(0);
 Angle to_wall(180);
 
-#endif // DEFINITIONS_H
+#endif // CONSTANTS_H

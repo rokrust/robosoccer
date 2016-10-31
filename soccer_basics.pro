@@ -17,7 +17,7 @@ CONFIG +=  debug
 # Input
 HEADERS += \ 
     src/drive_to_pos.h \
-    src/definitions.h
+    src/constants.h
 SOURCES += \
     src/soccer_basics.cpp \
     src/drive_to_pos.cpp
@@ -33,6 +33,8 @@ dox.depends = FORCE
 
 # somewhere else in the *.pro file
 QMAKE_EXTRA_TARGETS += dox
+
+
 
 
 

@@ -10,7 +10,7 @@
 
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
-#include "definitions.h"
+#include "constants.h"
 #include "drive_to_pos.h"
 
 #include <time.h>
