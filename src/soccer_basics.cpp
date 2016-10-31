@@ -120,6 +120,14 @@ int main(void) {
                 Position posstart(-0.7, 0.0);
                 Position posgoal(0.7, 0.0);
 
+                Position pos0(0.7, 0.0);
+                Position pos1(0.7, 0.2);
+                Position pos2(0.7, 0.7);
+                Position pos3(0.2, 0.7);
+                Position pos4(-0.2, 0.7);
+                Position pos5(-0.7, 0.7);
+                Position pos6(-0.7, 0.0);
+
                 /** Define orientations */
                 Angle to_pc(0);
                 Angle to_wall(180);
@@ -128,7 +136,7 @@ int main(void) {
 
 
                 int runflag = 1;
-                int SCENARIO = 4;
+                int SCENARIO = 1;
 
                 if (SCENARIO == 1) {
                     while (runflag) {
@@ -218,11 +226,41 @@ int main(void) {
 
                 if (SCENARIO == 4) {
 
+                    int r_value;
+
                     while (runflag) {
-                        drive_to_pos(robo0, posb0_out, 40);
-                        usleep(6000000);
-                        drive_to_pos(robo0, posb0_in, 40);
-                        usleep(6000000);
+                        r_value = drive_to_pos(robo0, posb0_out, 40, 6000000);
+                        usleep(r_value);
+                        r_value = drive_to_pos(robo0, posb0_in, 40, 6000000);
+                        usleep(r_value);
+                    }
+
+
+                }
+
+                if (SCENARIO == 5) {
+
+                    int r_value;
+
+                    while (runflag) {
+                        r_value = drive_to_pos(robo0, posstart, 40, 6000000);
+                        usleep(r_value);
+                        r_value = drive_to_pos(robo0, pos0, 40, 6000000);
+                        usleep(r_value);
+                        r_value = drive_to_pos(robo0, pos1, 40, 10000000);
+                        usleep(r_value);
+                        r_value = drive_to_pos(robo0, pos2, 40, 10000000);
+                        usleep(r_value);
+                        r_value = drive_to_pos(robo0, pos3, 40, 10000000);
+                        usleep(r_value);
+                        r_value = drive_to_pos(robo0, pos4, 40, 10000000);
+                        usleep(r_value);
+                        r_value = drive_to_pos(robo0, pos5, 40, 10000000);
+                        usleep(r_value);
+                        r_value = drive_to_pos(robo0, pos6, 40, 10000000);
+                        usleep(r_value);
+
+                        runflag = 0;
                     }
 
 

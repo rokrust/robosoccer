@@ -14,4 +14,4 @@
 #include <cmath>
 
 
-void drive_to_pos(RoboControl &robo, Position &pos, int velo);
+int drive_to_pos(RoboControl &robo, Position &pos, int velo, int move_time);

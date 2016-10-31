@@ -23,7 +23,11 @@ void drive_to_pos(RoboControl &robo, Position &pos, int velo) {
 
 */
 
-void drive_to_pos(RoboControl &robo, Position &goal_pos, int velo) {
+// dist: 0.58
+// velo: 40
+
+
+int drive_to_pos(RoboControl &robo, Position &goal_pos, int velo, int move_time) {
     robo.GotoXY(goal_pos.GetX(), goal_pos.GetY(), velo, true);
 
     // get current position, current orientation and goal orientation
@@ -52,6 +56,12 @@ void drive_to_pos(RoboControl &robo, Position &goal_pos, int velo) {
         robo.MoveMs(v_left, v_right, run_ms, ramp_up);
 
     }
+
+    // Return estimated movement time
+    if (move_time == 0) {
+        move_time = 10000000;
+    }
+    return 0;
 
 
 
