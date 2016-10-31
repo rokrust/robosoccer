@@ -8,6 +8,7 @@
 
 
 
+#include "soccer_tests.h"
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
 #include "constants.h"
@@ -66,6 +67,10 @@ int main(void) {
                 RoboControl robo3(DBC, 3);
                 RoboControl robo4(DBC, 4);
                 RoboControl robo5(DBC, 5);
+
+                /** Initialize a Test object */
+                Soccer_Tests Test_Obj(&robo0, &robo1, &robo2,
+                                      &robo3, &robo4, &robo5);
 
                 /*
 
