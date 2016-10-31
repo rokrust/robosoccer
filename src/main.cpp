@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : soccer_basics.cpp
+// Name        : main.cpp
 // Author      :
 // Version     :
 // Copyright   : Your copyright notice
