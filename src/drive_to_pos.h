@@ -13,5 +13,7 @@
 #include "robo_control.h"
 #include <cmath>
 
+//mingming likes cats
+
 
 int drive_to_pos(RoboControl &robo, Position &pos, int velo, int move_time);
