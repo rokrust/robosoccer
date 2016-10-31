@@ -17,7 +17,8 @@ CONFIG +=  debug
 # Input
 HEADERS += 
 SOURCES += \
-    src/soccer_basics.cpp
+    src/soccer_basics.cpp \
+    src/drive_to_pos.cpp
 		
 		
 ##############
