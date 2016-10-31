@@ -55,3 +55,36 @@ void Soccer_Tests::move_in_out()
             usleep(6000000);
     }
 }
+
+void Soccer_Tests::const_wheel_speed()
+{
+    Position posstart(-0.7, 0.0);
+
+    Angle cur_phi;
+    Angle to_pc(0);
+
+
+    int v_left = 60;
+    int v_right = 60;
+    int run_ms = 4000;
+    int ramp_up = 200;
+
+    int loop = 1;
+
+    while (loop) {
+        blue1->GotoXY(posstart.GetX(), posstart.GetY(), 40, true);
+        usleep(6000000);
+
+        cur_phi = blue1->GetPhi();
+        while (abs(cur_phi.Deg() - to_pc.Deg()) > 10) {
+            blue1->TurnAbs(to_pc);
+            cur_phi = blue1->GetPhi();
+            usleep(500000);
+        }
+
+        blue1->MoveMs(v_left, v_right, run_ms, ramp_up);
+
+        // loop = 0;
+        usleep(6000000);
+    }
+}

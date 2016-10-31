@@ -19,6 +19,8 @@ public:
                  RoboControl* red1_in, RoboControl* red2_in, RoboControl* red3_in);
 
     void move_in_out();
+
+    void const_wheel_speed();
 };
 
 #endif // SOCCER_TESTS_H
