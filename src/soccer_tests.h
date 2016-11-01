@@ -20,10 +20,10 @@ public:
                  Robot* red1_in, Robot* red2_in, Robot* red3_in);
 
     void move_in_out();
-
     void const_wheel_speed();
-
     void easy_p_ctrl();
+    void drive_to_pos();
+    void test_turns();
 
 };
 

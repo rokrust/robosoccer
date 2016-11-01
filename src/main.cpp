@@ -12,7 +12,6 @@
 #include "soccer_tests.h"
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
-//#include "constants.h"
 
 #include <time.h>
 #include <iostream>
@@ -77,7 +76,7 @@ int main(void) {
 
             // Angle cur_phi;
 
-            int SCENARIO = 1;
+            int SCENARIO = 5;
 
             if (SCENARIO == 1) {
                 Test_Obj.move_in_out();
@@ -89,6 +88,14 @@ int main(void) {
 
             if (SCENARIO == 3) {
                 Test_Obj.easy_p_ctrl();
+            }
+
+            if (SCENARIO == 4) {
+                Test_Obj.drive_to_pos();
+            }
+
+            if (SCENARIO == 5) {
+                Test_Obj.test_turns();
             }
 
 
