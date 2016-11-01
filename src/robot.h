@@ -21,6 +21,7 @@ public:
     Robot(RTDBConn DBC_in, int device_nr_in);
     ~Robot();
 
+    /**
 
     void drive_to_pos(Position pos_in);
 
