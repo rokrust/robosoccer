@@ -35,9 +35,9 @@ int main(void) {
 
 
 	try {
-            /** Establish connection to the RTDB. */
+            // Establish connection to the RTDB
             cout << endl << "Connecting to RTDB..." << endl;
-            /** Create the client name with the unique client number*/
+            // Create the client name with the unique client number*/
             string client_name = "pololu_client_";
             client_name.push_back((char) (client_nr + '0'));
             RTDBConn DBC(client_name.data(), 0.1, "");
@@ -61,7 +61,6 @@ int main(void) {
              *
              */
             RawBall ball(DBC);
-            /** lets print this information: */
             cout << "Ball informations:" << endl;
             cout << "\t initial position: " << ball.GetPos() << endl;
             /** Notice that the rotation here refers to the moving direction of the ball.
@@ -73,9 +72,7 @@ int main(void) {
             //-------------------------------------- End Init ---------------------------------
 
 
-
-            // Angle cur_phi;
-
+            // select scenario
             int SCENARIO = 4;
 
             if (SCENARIO == 1) {
