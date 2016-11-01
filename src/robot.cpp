@@ -1,3 +1,11 @@
+//============================================================================
+// Name        : robot.cpp
+// Author      :
+// Version     :
+// Copyright   : (C)
+// Description : Implementation of the Robot class
+//============================================================================
+
 #include "robot.h"
 
 // debug switch

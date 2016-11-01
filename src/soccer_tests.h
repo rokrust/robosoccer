@@ -1,3 +1,11 @@
+//============================================================================
+// Name        : soccer_tests.h
+// Author      :
+// Version     :
+// Copyright   : (C)
+// Description : Header of the Soccer Test class
+//============================================================================
+
 #ifndef SOCCER_TESTS_H
 #define SOCCER_TESTS_H
 

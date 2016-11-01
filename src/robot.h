@@ -1,3 +1,11 @@
+//============================================================================
+// Name        : robot.h
+// Author      :
+// Version     :
+// Copyright   : (C)
+// Description : Header of the Robot class
+//============================================================================
+
 #ifndef ROBOT_H
 #define ROBOT_H
 

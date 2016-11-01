@@ -1,3 +1,11 @@
+//============================================================================
+// Name        : soccer_test.cpp
+// Author      :
+// Version     :
+// Copyright   : (C)
+// Description : Implementation of the Soccer Test class
+//============================================================================
+
 #include "soccer_tests.h"
 
 Soccer_Tests::Soccer_Tests(Robot* blue1_in, Robot* blue2_in, Robot* blue3_in,
