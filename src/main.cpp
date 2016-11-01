@@ -70,7 +70,7 @@ int main(void) {
             cout << "\t initial direction: " << ball.GetPhi() << endl;
             cout << "\t initial velocity: " << ball.GetVelocity() << endl;
 
-            //-------------------------------------- Ende Init ---------------------------------
+            //-------------------------------------- End Init ---------------------------------
 
 
 

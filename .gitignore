@@ -3,3 +3,4 @@ Makefile
 bin/
 soccer_basics.pro.user
 *.pro.user
+*.autosave

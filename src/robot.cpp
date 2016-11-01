@@ -33,7 +33,7 @@ Robot::Robot(RTDBConn DBC_in, int device_nr_in) : RoboControl(DBC_in, device_nr_
 
 Robot::~Robot()
 {
-
+    delete this;
 }
 
 void Robot::drive_to_pos(Position pos_in)
