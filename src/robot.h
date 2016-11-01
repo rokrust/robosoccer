@@ -15,6 +15,9 @@
 class Robot : public RoboControl
 {
 private:
+    /**
+     * @brief Device number of the robot
+     */
     int device_nr;
 
 public:
@@ -22,13 +25,24 @@ public:
     ~Robot();
 
     /**
-
+     * @brief Custom driving function
+     * @param pos_in Position to drive to
+     */
     void drive_to_pos(Position pos_in);
 
-
+    /**
+     * @brief Calculate Euclidean distance between two positions
+     * @param pos_a First position
+     * @param pos_b Second position
+     * @return Distance between the two positions in meters
+     */
     double calc_dist(Position pos_a, Position pos_b);
 
-
+    /**
+     * @brief Turn on the spot
+     * @param phi_in Angle to turn to
+     * @return Estimated time required to turn in micro seconds
+     */
     int spot_turn(Angle phi_in);
 };
 

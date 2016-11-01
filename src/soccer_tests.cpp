@@ -21,7 +21,7 @@ Soccer_Tests::Soccer_Tests(Robot* blue1_in, Robot* blue2_in, Robot* blue3_in,
 
 void Soccer_Tests::move_in_out()
 {
-    /** Define outer positions for all six robots */
+    // Define outer positions for all six robots
     Position posb0_out(-0.5, -0.6);
     Position posb1_out(0.0, -0.6);
     Position posb2_out(0.5, -0.6);
@@ -29,7 +29,7 @@ void Soccer_Tests::move_in_out()
     Position posr1_out(0.0, 0.6);
     Position posr2_out(0.5, 0.6);
 
-    /** Define inner positions for all six robots */
+    // Define inner positions for all six robots
     Position posb0_in(-0.2, -0.1);
     Position posb1_in(0.0, -0.1);
     Position posb2_in(0.2, -0.1);
