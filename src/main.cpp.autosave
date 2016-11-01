@@ -12,7 +12,6 @@
 #include "soccer_tests.h"
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
-//#include "constants.h"
 
 #include <time.h>
 #include <iostream>

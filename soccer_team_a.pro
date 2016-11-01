@@ -16,7 +16,6 @@ CONFIG +=  debug
 
 # Input
 HEADERS += \ 
-    src/constants.h \
     src/soccer_tests.h \
     src/robot.h
 SOURCES += \
@@ -38,6 +37,7 @@ QMAKE_EXTRA_TARGETS += dox
 
 OTHER_FILES += \
     src/legacy_code.txt
+
 
 
 
