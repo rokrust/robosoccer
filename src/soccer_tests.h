@@ -1,28 +1,29 @@
 #ifndef SOCCER_TESTS_H
 #define SOCCER_TESTS_H
 
-#include "kogmo_rtdb.hxx"
-#include "robo_control.h"
+#include "robot.h"
+//#include "kogmo_rtdb.hxx"
+//#include "robo_control.h"
 
 class Soccer_Tests
 {
 private:
-    RoboControl* blue1;
-    RoboControl* blue2;
-    RoboControl* blue3;
-    RoboControl* red1;
-    RoboControl* red2;
-    RoboControl* red3;
+    Robot* blue1;
+    Robot* blue2;
+    Robot* blue3;
+    Robot* red1;
+    Robot* red2;
+    Robot* red3;
 
 public:
-    Soccer_Tests(RoboControl* blue1_in, RoboControl* blue2_in, RoboControl* blue3_in,
-                 RoboControl* red1_in, RoboControl* red2_in, RoboControl* red3_in);
+    Soccer_Tests(Robot* blue1_in, Robot* blue2_in, Robot* blue3_in,
+                 Robot* red1_in, Robot* red2_in, Robot* red3_in);
 
     void move_in_out();
-
     void const_wheel_speed();
-
     void easy_p_ctrl();
+    void drive_to_pos();
+    void test_turns();
 
 };
 
