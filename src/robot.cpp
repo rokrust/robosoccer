@@ -124,7 +124,6 @@ int Robot::spot_turn(Angle phi_in)
     }
 
 
-
     if (DEBUG) {
         usleep(wait_time);
         cur_phi = this->GetPhi();
