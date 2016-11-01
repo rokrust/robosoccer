@@ -18,11 +18,13 @@ CONFIG +=  debug
 HEADERS += \ 
     src/drive_to_pos.h \
     src/constants.h \
-    src/soccer_tests.h
+    src/soccer_tests.h \
+    src/robot.h
 SOURCES += \
     src/drive_to_pos.cpp \
     src/soccer_tests.cpp \
-    src/main.cpp
+    src/main.cpp \
+    src/robot.cpp
 		
 		
 ##############
@@ -35,6 +37,12 @@ dox.depends = FORCE
 
 # somewhere else in the *.pro file
 QMAKE_EXTRA_TARGETS += dox
+
+OTHER_FILES += \
+    src/legacy_code.txt
+
+
+
 
 
 

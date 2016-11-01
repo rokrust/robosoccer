@@ -1,7 +1,7 @@
 #include "soccer_tests.h"
 
-Soccer_Tests::Soccer_Tests(RoboControl* blue1_in, RoboControl* blue2_in, RoboControl* blue3_in,
-                           RoboControl* red1_in, RoboControl* red2_in, RoboControl* red3_in)
+Soccer_Tests::Soccer_Tests(Robot* blue1_in, Robot* blue2_in, Robot* blue3_in,
+                           Robot* red1_in, Robot* red2_in, Robot* red3_in)
 {
   blue1 = blue1_in;
   blue2 = blue2_in;
