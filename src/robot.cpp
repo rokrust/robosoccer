@@ -1,9 +1,21 @@
 #include "robot.h"
+
+// debug switch
 #define DEBUG 1
+
+// turn constants - change with caution!
 #define ANGLE_TURN_THRESHOLD 35
 #define BASE_TURN_SPEED 60
 #define TURN_RAMP_UP 50
 #define DDEG_MULTIPLYER 182
+
+// drive constants
+#define MIN_SPEED 20
+#define MAX_DSPEED_REL 0.15
+#define V_GROUND_FACTOR 100
+#define RUN_ONCE 80
+#define DRIVE_RAMP_UP 50
+#define DIST_THRESHOLD 0.10
 
 
 Robot::Robot(RTDBConn DBC_in, int device_nr_in) : RoboControl(DBC_in, device_nr_in)
@@ -18,6 +30,8 @@ Robot::~Robot()
 
 void Robot::drive_to_pos(Position pos_in)
 {
+    int v_left, v_right, v_ground, dspeed;
+
     Position goal_pos = pos_in;
     Position cur_pos = this->GetPos();
     double dist = this->calc_dist(cur_pos, pos_in);
@@ -39,6 +53,33 @@ void Robot::drive_to_pos(Position pos_in)
     if (abs(ddeg) > ANGLE_TURN_THRESHOLD) {
         int wait_time = this->spot_turn(goal_phi);
         usleep(wait_time);
+    }
+
+    while (dist > DIST_THRESHOLD) {
+        // drive the robot
+        cur_phi = this->GetPhi();
+        goal_phi = cur_pos.AngleOfLineToPos(goal_pos);
+        ddeg = goal_phi.Deg() - cur_phi.Deg();
+        v_ground = std::max(int(dist * V_GROUND_FACTOR), MIN_SPEED);
+
+        if (DEBUG) {
+            cout << "Ground speed is: " << v_ground << endl;
+        }
+
+        dspeed = int((ddeg/ANGLE_TURN_THRESHOLD)*MAX_DSPEED_REL*v_ground);
+        v_left = v_ground - dspeed;
+        v_right = v_ground + dspeed;
+
+        if (DEBUG) {
+            cout << "Left speed: " << v_left << "   Right speed: " << v_right << endl;
+        }
+
+        this->MoveMs(v_left, v_right, RUN_ONCE, DRIVE_RAMP_UP);
+        usleep((RUN_ONCE + 30)*1000);
+
+        // update distance
+        cur_pos = this->GetPos();
+        dist = this->calc_dist(cur_pos, pos_in);
     }
 }
 
@@ -94,8 +135,4 @@ int Robot::spot_turn(Angle phi_in)
     }
 
     return wait_time;
-
-
-
-
 }
