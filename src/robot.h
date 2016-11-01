@@ -21,8 +21,13 @@ public:
     Robot(RTDBConn DBC_in, int device_nr_in);
     ~Robot();
 
+
     void drive_to_pos(Position pos_in);
+
+
     double calc_dist(Position pos_a, Position pos_b);
+
+
     int spot_turn(Angle phi_in);
 };
 
