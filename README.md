@@ -1,4 +1,4 @@
-## Setting Up Git (first time)
+## Setting Up Git (only first time)
 ```git clone https://gitlab.com/Gasse/robosoccer.git>```
 
 # Regular Git Usage
@@ -45,3 +45,15 @@ If you want to join the changes of two branches, you have to use the command mer
 ## Merge all changes from branch hotfix back into master. Hotfix will be unchanged
 ```git checkout master
 git merge hotfix```
+
+
+# SSH Key Authentication
+Basically ask me (Simon), because it is some commands to get it running. But it is worth the hassel. You will never have to type your password again.
+```
+ssh-keygen -t rsa -C "you@gmail.com"
+cat ~/.ssh/id_rsa.pub
+
+git remote set-url origin git@gitlab.com:Gasse/robosoccer.git
+git remote set-url --push origin git@gitlab.com:Gasse/robosoccer.git
+
+```
