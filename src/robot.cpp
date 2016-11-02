@@ -18,12 +18,14 @@
 #define DDEG_MULTIPLYER 2.29
 
 // drive constants
-#define MIN_SPEED 20
+#define V_GROUND_MAX 200
+#define V_GROUND_MIN 10
 #define MAX_DSPEED_REL 0.25
-#define V_GROUND_FACTOR 100
-#define RUN_ONCE 100
-#define DRIVE_RAMP_UP 0
-#define DIST_THRESHOLD 0.10
+#define DRIVE_DURATION 100
+#define WHEEL_SPEED_RAMPUP 20
+#define DRIVE_RAMP_UP_START 100
+#define DIST_THRESHOLD_LINEAR 0.40
+#define DIST_THRESHOLD_STOP 0.10
 
 
 Robot::Robot(RTDBConn DBC_in, int device_nr_in) : RoboControl(DBC_in, device_nr_in)
@@ -65,7 +67,7 @@ void Robot::drive_to_pos(Position pos_in)
     }
 
     // drive the robot while the distance is above the threshold
-    while (dist > DIST_THRESHOLD) {
+    while (dist > DIST_THRESHOLD_STOP) {
         // update the difference in orientation
         cur_phi = this->GetPhi();
         goal_phi = cur_pos.AngleOfLineToPos(goal_pos);
@@ -73,22 +75,46 @@ void Robot::drive_to_pos(Position pos_in)
 
         // calculate the ground speed depending on the distance
         // it is always at least MIN_SPEED
-        v_ground = std::max(int(dist * V_GROUND_FACTOR), MIN_SPEED);
+        if (dist > DIST_THRESHOLD_LINEAR) {
+            v_ground = V_GROUND_MAX;
+        } else {
+            v_ground = dist*((V_GROUND_MAX - V_GROUND_MIN) / DIST_THRESHOLD_LINEAR) + V_GROUND_MIN;
+        }
+
         if (DEBUG) {
             cout << "Ground speed is: " << v_ground << endl;
         }
 
         // calculate the speed difference that will be applied on the wheels,
         // depending on the ground speed and the difference in orientation
-        dspeed = int((ddeg/ANGLE_TURN_THRESHOLD)*MAX_DSPEED_REL*v_ground);
-        v_left = v_ground - dspeed;
-        v_right = v_ground + dspeed;
+        dspeed = int((abs(ddeg) / ANGLE_TURN_THRESHOLD) * MAX_DSPEED_REL * v_ground);
+        if (ddeg > 0) {
+            // robot orientation too far left of goal in driving direction
+            v_left = v_ground + dspeed;
+            v_right = v_ground;
+        } else {
+            // robot orientation too far right of goal in driving direction
+            v_left = v_ground;
+            v_right = v_ground + dspeed;
+        }
+
         if (DEBUG) {
             cout << "Left speed: " << v_left << "   Right speed: " << v_right << endl;
         }
 
+        int cur_left = this->GetSpeedLeft();
+        int cur_right = this->GetSpeedRight();
+        int ramp_up;
+
+
+        if ((cur_left > WHEEL_SPEED_RAMPUP) || (cur_right > WHEEL_SPEED_RAMPUP)) {
+            ramp_up = 0;
+        } else {
+            ramp_up = DRIVE_RAMP_UP;
+        }
+
         // set the wheel speeds for the run time
-        this->MoveMs(v_left, v_right, RUN_ONCE, DRIVE_RAMP_UP);
+        this->MoveMs(v_left, v_right, DRIVE_DURATION, ramp_up);
         usleep((RUN_ONCE + 30)*1000);
 
         // update the distance
