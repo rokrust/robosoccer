@@ -150,8 +150,13 @@ void Soccer_Tests::drive_to_pos()
 {
     //Position posstart(-0.7, 0.0);
     Position posgoal(0.7, 0.0);
-
-    blue1->drive_to_pos(posgoal);
+    Position posgoal2(-0.7, 0.0);
+    while(true) {
+        blue1->drive_to_pos(posgoal);
+        cin.get();
+        blue1->drive_to_pos(posgoal2);
+        cin.get();
+    }
 }
 
 void Soccer_Tests::test_turns()
@@ -161,13 +166,17 @@ void Soccer_Tests::test_turns()
 
     int wait_time;
 
-    wait_time = blue1->spot_turn(to_pc);
-    usleep(wait_time);
+    while(true) {
 
-    usleep(3000000);
+        wait_time = blue1->spot_turn(to_pc);
+        usleep(wait_time);
+        cin.get();
 
-    wait_time = blue1->spot_turn(to_wall);
-    usleep(wait_time);
+        wait_time = blue1->spot_turn(to_wall);
+        usleep(wait_time);
+        cin.get();
+
+    }
 }
 
 void Soccer_Tests::turn_experiments()
@@ -180,7 +189,7 @@ void Soccer_Tests::turn_experiments()
         for (i = 1; i <= 10; i++) {
             cout << "Turn time " << 100*i << ", speed 60" << endl;
             cin.get();
-            r_value = blue2->spot_turn_time_speed(100*i, 60, true);
+            r_value = blue1->spot_turn_time_speed(100*i, 60, true);
         }
     }
     cout << r_value << endl;

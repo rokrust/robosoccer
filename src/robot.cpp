@@ -13,16 +13,16 @@
 
 // turn constants - change with caution!
 #define ANGLE_TURN_THRESHOLD 35
-#define BASE_TURN_SPEED 60
+#define BASE_TURN_SPEED 80
 #define TURN_RAMP_UP 0
-#define DDEG_MULTIPLYER 182
+#define DDEG_MULTIPLYER 2.29
 
 // drive constants
 #define MIN_SPEED 20
-#define MAX_DSPEED_REL 0.15
+#define MAX_DSPEED_REL 0.25
 #define V_GROUND_FACTOR 100
-#define RUN_ONCE 80
-#define DRIVE_RAMP_UP 50
+#define RUN_ONCE 100
+#define DRIVE_RAMP_UP 0
 #define DIST_THRESHOLD 0.10
 
 
@@ -120,15 +120,17 @@ int Robot::spot_turn(Angle phi_in)
     }
 
     if (ddeg > 0) {
+        // clockwise
         v_left = -BASE_TURN_SPEED;
         v_right = BASE_TURN_SPEED;
     } else {
+        // anti-clockwise
         v_left = BASE_TURN_SPEED;
         v_right = -BASE_TURN_SPEED;
     }
 
     // calculate the turn time depending on the degree to turn and the turning speed
-    int turn_time = (abs(ddeg) * DDEG_MULTIPLYER) / BASE_TURN_SPEED;
+    int turn_time = int(DDEG_MULTIPLYER * abs(ddeg));
     if (DEBUG) {
         cout << "Turn time: " << turn_time << endl;
     }
@@ -168,9 +170,11 @@ int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negati
     cout << "Current angle before turn: " << cur_phi.Deg() << endl;
 
     if (left_negativ) {
+        // miraculously clockwise
         v_left = -wheel_speed;
         v_right = wheel_speed;
     } else {
+        // miraculously anti-clockwise
         v_left = wheel_speed;
         v_right = -wheel_speed;
     }
