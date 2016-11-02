@@ -161,18 +161,18 @@ void Soccer_Tests::drive_to_pos()
 
 void Soccer_Tests::test_turns()
 {
-    Angle to_pc(0);
-    Angle to_wall(180);
+    Angle to_pc(90);
+    Angle to_wall(-90);
 
     int wait_time;
 
     while(true) {
 
-        wait_time = blue1->spot_turn(to_pc);
+        wait_time = blue3->spot_turn(to_pc);
         usleep(wait_time);
         cin.get();
 
-        wait_time = blue1->spot_turn(to_wall);
+        wait_time = blue3->spot_turn(to_wall);
         usleep(wait_time);
         cin.get();
 
