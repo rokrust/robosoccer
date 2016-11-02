@@ -14,7 +14,7 @@
 // turn constants - change with caution!
 #define ANGLE_TURN_THRESHOLD 35
 #define BASE_TURN_SPEED 60
-#define TURN_RAMP_UP 50
+#define TURN_RAMP_UP 0
 #define DDEG_MULTIPLYER 182
 
 // drive constants
@@ -156,4 +156,40 @@ int Robot::spot_turn(Angle phi_in)
 
     // return the time that the turn will take for higher level functions to wait
     return wait_time;
+}
+
+int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negativ)
+{
+    // define left and right wheel speed variables
+    int v_left, v_right;
+
+    // calculate the difference in the current and the desired orientation
+    Angle cur_phi = this->GetPhi();
+    cout << "Current angle before turn: " << cur_phi.Deg() << endl;
+
+    if (left_negativ) {
+        v_left = -wheel_speed;
+        v_right = wheel_speed;
+    } else {
+        v_left = wheel_speed;
+        v_right = -wheel_speed;
+    }
+
+    // set the wheel speed for the turn time
+    this->MoveMs(v_left, v_right, turn_time, TURN_RAMP_UP);
+
+    usleep(2*pow(10, 6));
+
+    Angle new_phi = this->GetPhi();
+    cout << "Current angle after turn: " << new_phi.Deg() << endl;
+
+    int diff = new_phi.Deg() - cur_phi.Deg();
+    if (diff > 360) {
+        diff = diff - 360;
+    } else if (diff < 0) {
+        diff = diff + 360;
+    }
+    cout << "Angle difference-----> " << diff << endl;
+
+    return 0;
 }

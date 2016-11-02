@@ -44,6 +44,8 @@ public:
      * @return Estimated time required to turn in micro seconds
      */
     int spot_turn(Angle phi_in);
+
+    int spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negativ);
 };
 
 #endif // ROBOT_H

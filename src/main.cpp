@@ -73,7 +73,7 @@ int main(void) {
 
 
             // select scenario
-            int SCENARIO = 4;
+            int SCENARIO = 6;
 
             if (SCENARIO == 1) {
                 Test_Obj.move_in_out();
@@ -93,6 +93,10 @@ int main(void) {
 
             if (SCENARIO == 5) {
                 Test_Obj.test_turns();
+            }
+
+            if (SCENARIO == 6) {
+                Test_Obj.turn_experiments();
             }
 
 

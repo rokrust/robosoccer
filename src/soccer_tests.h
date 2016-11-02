@@ -75,6 +75,8 @@ public:
      */
     void test_turns();
 
+    void turn_experiments();
+
 };
 
 #endif // SOCCER_TESTS_H

@@ -169,3 +169,19 @@ void Soccer_Tests::test_turns()
     wait_time = blue1->spot_turn(to_wall);
     usleep(wait_time);
 }
+
+void Soccer_Tests::turn_experiments()
+{
+    int r_value;
+
+
+    int i, j;
+    for (j = 0; j < 5; j++) {
+        for (i = 1; i <= 10; i++) {
+            cout << "Turn time " << 100*i << ", speed 60" << endl;
+            cin.get();
+            r_value = blue2->spot_turn_time_speed(100*i, 60, true);
+        }
+    }
+    cout << r_value << endl;
+}
