@@ -31,7 +31,7 @@ int main(void) {
 	 *	connections to the RTDB.
 	 *
 	 */
-        const int client_nr = 2;
+        const int client_nr = 3;
 
 
 	try {
@@ -50,10 +50,6 @@ int main(void) {
             Robot red2(DBC, 4);
             Robot red3(DBC, 5);
 
-            // Initialize a Test object
-            Soccer_Tests Test_Obj(&blue1, &blue2, &blue3,
-                                  &red1, &red2, &red3);
-
             /** Create a ball object
              *
              *  This ball abject gives you access to all information about the ball
@@ -69,11 +65,18 @@ int main(void) {
             cout << "\t initial direction: " << ball.GetPhi() << endl;
             cout << "\t initial velocity: " << ball.GetVelocity() << endl;
 
+
+            // Initialize a Test object
+            Soccer_Tests Test_Obj(&blue1, &blue2, &blue3,
+                                  &red1, &red2, &red3,
+                                  &ball);
+
+
             //-------------------------------------- End Init ---------------------------------
 
 
             // select scenario
-            int SCENARIO = 4;
+            int SCENARIO = 6;
 
             if (SCENARIO == 1) {
                 Test_Obj.move_in_out();
@@ -93,6 +96,11 @@ int main(void) {
 
             if (SCENARIO == 5) {
                 Test_Obj.test_turns();
+            }
+
+            // Goalie testing
+            if (SCENARIO == 6) {
+                Test_Obj.test_goalie();
             }
 
 

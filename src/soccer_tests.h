@@ -46,9 +46,15 @@ private:
      */
     Robot* red3;
 
+    /**
+     * @brief The Ball
+     */
+    RawBall* datBall;
+
 public:
     Soccer_Tests(Robot* blue1_in, Robot* blue2_in, Robot* blue3_in,
-                 Robot* red1_in, Robot* red2_in, Robot* red3_in);
+                 Robot* red1_in, Robot* red2_in, Robot* red3_in,
+                 RawBall* datBall_in);
 
     /**
      * @brief Move all six robots in a loop to inner and outer positions in a rectangle
@@ -75,6 +81,10 @@ public:
      */
     void test_turns();
 
+    /**
+     * @brief Do some stuff with the goalie
+     */
+    int test_goalie();
 };
 
 #endif // SOCCER_TESTS_H

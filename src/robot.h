@@ -39,6 +39,14 @@ public:
     double calc_dist(Position pos_a, Position pos_b);
 
     /**
+     * @brief Calculate the difference between two position (e.g. the direction of a movement)
+     * @param pos_a First position
+     * @param pos_b Second position
+     * @return Difference between the two positions in meters
+     */
+    Position calc_pos_diff(Position pos_a, Position pos_b);
+
+    /**
      * @brief Turn on the spot
      * @param phi_in Angle to turn to
      * @return Estimated time required to turn in micro seconds

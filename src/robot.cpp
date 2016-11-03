@@ -106,6 +106,15 @@ double Robot::calc_dist(Position pos_a, Position pos_b)
     return dist;
 }
 
+Position Robot::calc_pos_diff(Position pos_a, Position pos_b)
+{
+    // calculate the difference between two position (e.g. the direction of a movement)
+    Position pos_diff;
+    pos_diff.SetX(pos_a.GetX() - pos_b.GetX());
+    pos_diff.SetY(pos_a.GetY() - pos_b.GetY());
+    return pos_diff;
+}
+
 int Robot::spot_turn(Angle phi_in)
 {
     // define left and right wheel speed variables
