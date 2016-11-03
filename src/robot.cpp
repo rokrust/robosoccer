@@ -175,7 +175,7 @@ int Robot::spot_turn(Angle phi_in)
 
     // calculate the time that the turn will take in micro seconds
     // there is 30ms delay due to the bluetooth system
-    int wait_time = (turn_time + 70) * 1000;
+    int wait_time = (turn_time + 30) * 1000;
     if (DEBUG) {
         cout << "Wait time in ms: " << wait_time << endl;
     }
