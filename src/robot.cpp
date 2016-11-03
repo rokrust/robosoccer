@@ -18,13 +18,14 @@
 #define DDEG_MULTIPLYER 2.29
 
 // drive constants
-#define V_GROUND_MAX 200
+#define DSPEED_GAIN 0.1
+#define V_GROUND_MAX 100
 #define V_GROUND_MIN 10
-#define MAX_DSPEED_REL 0.25
+#define MAX_DSPEED_REL 0.1
 #define DRIVE_DURATION 100
 #define WHEEL_SPEED_RAMPUP 20
 #define DRIVE_RAMP_UP_START 100
-#define DIST_THRESHOLD_LINEAR 0.40
+#define DIST_THRESHOLD_LINEAR 0.80
 #define DIST_THRESHOLD_STOP 0.10
 
 
@@ -68,6 +69,12 @@ void Robot::drive_to_pos(Position pos_in)
 
     // drive the robot while the distance is above the threshold
     while (dist > DIST_THRESHOLD_STOP) {
+        // if the orientation difference is above a threshold, turn on the spot before driving
+        if (abs(ddeg) > ANGLE_TURN_THRESHOLD) {
+            int wait_time = this->spot_turn(goal_phi);
+            usleep(wait_time);
+        }
+
         // update the difference in orientation
         cur_phi = this->GetPhi();
         goal_phi = cur_pos.AngleOfLineToPos(goal_pos);
@@ -83,19 +90,21 @@ void Robot::drive_to_pos(Position pos_in)
 
         if (DEBUG) {
             cout << "Ground speed is: " << v_ground << endl;
+            cout << "ddeg is: " << ddeg << endl;
         }
 
         // calculate the speed difference that will be applied on the wheels,
         // depending on the ground speed and the difference in orientation
-        dspeed = int((abs(ddeg) / ANGLE_TURN_THRESHOLD) * MAX_DSPEED_REL * v_ground);
+        //ddeg = std::min(ANGLE_TURN_THRESHOLD, abs(ddeg));
+        dspeed = int((float(abs(ddeg)) * float(DSPEED_GAIN)) * float(MAX_DSPEED_REL) * float(v_ground));
         if (ddeg > 0) {
             // robot orientation too far left of goal in driving direction
-            v_left = v_ground + dspeed;
-            v_right = v_ground;
+            v_left = v_ground - dspeed;
+            v_right = v_ground + dspeed;
         } else {
             // robot orientation too far right of goal in driving direction
-            v_left = v_ground;
-            v_right = v_ground + dspeed;
+            v_left = v_ground + dspeed;
+            v_right = v_ground - dspeed;
         }
 
         if (DEBUG) {
@@ -110,12 +119,12 @@ void Robot::drive_to_pos(Position pos_in)
         if ((cur_left > WHEEL_SPEED_RAMPUP) || (cur_right > WHEEL_SPEED_RAMPUP)) {
             ramp_up = 0;
         } else {
-            ramp_up = DRIVE_RAMP_UP;
+            ramp_up = DRIVE_RAMP_UP_START;
         }
 
         // set the wheel speeds for the run time
         this->MoveMs(v_left, v_right, DRIVE_DURATION, ramp_up);
-        usleep((RUN_ONCE + 30)*1000);
+        usleep((DRIVE_DURATION + 30)*1000);
 
         // update the distance
         cur_pos = this->GetPos();
@@ -166,7 +175,7 @@ int Robot::spot_turn(Angle phi_in)
 
     // calculate the time that the turn will take in micro seconds
     // there is 30ms delay due to the bluetooth system
-    int wait_time = (turn_time + 30) * 1000;
+    int wait_time = (turn_time + 70) * 1000;
     if (DEBUG) {
         cout << "Wait time in ms: " << wait_time << endl;
     }
