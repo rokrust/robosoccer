@@ -54,6 +54,13 @@ void Game::set_phase(ePlayMode new_phase)
             }
         }
 
+        if ((previous_phase == 5) && (current_phase == 0)) {
+            // PLAY_ON -> REFEREE_INIT
+            if (DEBUG) {
+                cout << "Changed from PLAY_ON to REFEREE_INIT" << endl;
+            }
+        }
+
         if ((previous_phase == 5) && (current_phase == 3)) {
             // PLAY_ON -> BEFORE_PENALTY
             if (DEBUG) {
