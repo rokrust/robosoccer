@@ -2,6 +2,7 @@
 
 #define DEBUG 1
 #define WAIT_TIME_POSITION_TAKING 10000000
+#define WAIT_TIME_TURNING 3000000
 
 Game::Game(Referee* ref_in, bool is_team_blue_in,
            Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
@@ -183,35 +184,39 @@ int Game::take_kick_off_position(bool left_side, bool kicking_team)
     Position pos_goalie_right(1.3, 0.0);
 
     // define striker positions if not kicking off
-    Position pos_defender1_left(-0.6, 0.4);
-    Position pos_defender2_left(-0.6, -0.4);
-    Position pos_defender1_right(0.6, 0.4);
-    Position pos_defender2_right(0.6, -0.4);
+    Position pos_defender1_left(-0.3, 0.4);
+    Position pos_defender2_left(-0.3, -0.4);
+    Position pos_defender1_right(0.3, 0.4);
+    Position pos_defender2_right(0.3, -0.4);
 
     // define striker positions if kicking off
-    Position pos_striker_left(-0.2, 0.0);
-    Position pos_follower_left(-0.2, 0.4);
-    Position pos_striker_right(-0.2, 0.0);
-    Position pos_follower_right(-0.2, 0.4);
+    Position pos_striker1_left(-0.15, -0.15);
+    Position pos_striker2_left(-0.15, 0.15);
+    Position pos_striker1_right(0.15, 0.15);
+    Position pos_striker2_right(0.15, -0.15);
 
     // define orientations
+    Angle* orientation;
     Angle left_forward(0);
     Angle right_forward(180);
+    Angle goalie_angle(90);
 
     if (left_side) {
+        orientation = &left_forward;
         goalie->GotoPos(pos_goalie_left);
         if (kicking_team) {
-            striker1->GotoPos(pos_striker_left);
-            striker2->GotoPos(pos_follower_left);
+            striker1->GotoPos(pos_striker1_left);
+            striker2->GotoPos(pos_striker2_left);
         } else {
             striker1->GotoPos(pos_defender1_left);
             striker2->GotoPos(pos_defender2_left);
         }
     } else {
+        orientation = &right_forward;
         goalie->GotoPos(pos_goalie_right);
         if (kicking_team) {
-            striker1->GotoPos(pos_striker_right);
-            striker2->GotoPos(pos_follower_right);
+            striker1->GotoPos(pos_striker1_right);
+            striker2->GotoPos(pos_striker2_right);
         } else {
             striker1->GotoPos(pos_defender1_right);
             striker2->GotoPos(pos_defender2_right);
@@ -224,6 +229,11 @@ int Game::take_kick_off_position(bool left_side, bool kicking_team)
 
 
     // turn robots into their needed orientation
+    goalie->spot_turn(goalie_angle);
+    striker1->spot_turn(*orientation);
+    striker2->spot_turn(*orientation);
+
+    usleep(WAIT_TIME_TURNING);
 
     return 0;
 }

@@ -99,9 +99,9 @@ int main(void) {
 
 
             // Create Game object
-            /*Game game_handler(&ref_handler, is_team_blue,
+            Game game_handler(&ref_handler, is_team_blue,
                               &myGoalie, &myStriker1, &myStriker2,
-                              &theOpponent1, &theOpponent2, &theOpponent3);*/
+                              &theOpponent1, &theOpponent2, &theOpponent3);
 
 
             /** Create a ball object
@@ -129,7 +129,7 @@ int main(void) {
             //-------------------------------------- End Init ---------------------------------
 
             // select scenario
-            int SCENARIO = 1;
+            int SCENARIO = 10;
 
             if (SCENARIO == 1) {
                 Test_Obj.move_in_out();
@@ -166,6 +166,12 @@ int main(void) {
                     game_handler.step();
                 }
             } */
+
+            if (SCENARIO == 10) {
+                bool is_left_side = false;
+                bool kicking_team = true;
+                game_handler.take_kick_off_position(is_left_side, kicking_team);
+            }
 
 	} catch (DBError err) {
 		cout << "Client died on Error: " << err.what() << endl;
