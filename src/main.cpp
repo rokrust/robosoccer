@@ -66,7 +66,7 @@ int main(void) {
 
             // Get Robot Colour
             bool is_team_blue = true;
-            cout << "Which Team? (0: red - 1: blue)";
+            cout << "Which Team? (0: red - 1: blue) ";
             cin >> is_team_blue;
 
             // Get Side
@@ -99,9 +99,9 @@ int main(void) {
 
 
             // Create Game object
-            Game game_handler(&ref_handler, is_team_blue,
+            /*Game game_handler(&ref_handler, is_team_blue,
                               &myGoalie, &myStriker1, &myStriker2,
-                              &theOpponent1, &theOpponent2, &theOpponent3);
+                              &theOpponent1, &theOpponent2, &theOpponent3);*/
 
 
             /** Create a ball object
@@ -160,12 +160,12 @@ int main(void) {
                 Test_Obj.turn_experiments();
             }
 
-            if (SCENARIO == 8) {
+            /* if (SCENARIO == 8) {
                 bool keep_running = 1;
                 while (keep_running) {
                     game_handler.step();
                 }
-            }
+            } */
 
 	} catch (DBError err) {
 		cout << "Client died on Error: " << err.what() << endl;

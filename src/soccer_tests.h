@@ -12,7 +12,7 @@
 #include "goalie.h"
 #include "striker.h"
 #include "opponent.h"
-//#include "robot.h"
+#include "robot.h"
 //#include "kogmo_rtdb.hxx"
 //#include "robo_control.h"
 
