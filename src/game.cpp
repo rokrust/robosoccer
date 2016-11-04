@@ -3,6 +3,7 @@
 #define DEBUG 1
 #define WAIT_TIME_POSITION_TAKING 10000000
 #define WAIT_TIME_TURNING 3000000
+#define WAIT_FOR_PENALTY_POS 12000000
 
 Game::Game(Referee* ref_in, bool is_team_blue_in,
            Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
@@ -114,7 +115,7 @@ int Game::take_kick_off_position()
 
 void Game::perform_kick_off()
 {
-    striker1->MoveDist(0.4, 160, true);
+    striker1->GotoXY(striker1->datBall->GetX(), striker2->datBall->GetY(), 160, true);
 }
 
 int Game::take_penalty_position()
@@ -190,7 +191,7 @@ int Game::take_penalty_position()
     striker1->GotoPos(posStriker1);
     striker2->GotoPos(posStriker2);
 
-    usleep(7000 * 1000);
+    usleep(WAIT_FOR_PENALTY_POS);
 
     goalie->spot_turn(angle4allRobots);
     striker1->spot_turn(angle4allRobots);
@@ -265,7 +266,10 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
             if (verbose) {
                 cout << "Changed from BEFORE_KICK_OFF to KICK_OFF" << endl;
             }
-            perform_kick_off();
+            update_kick_off();
+            if (has_kick_off) {
+                perform_kick_off();
+            }
         }
 
         // KICK_OFF -> PLAY_ON
@@ -282,6 +286,7 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
             }
             update_side();
             take_kick_off_position();
+            referee_handler->SetReady(!is_team_blue);
         }
 
         // PLAY_ON -> REFEREE_INIT

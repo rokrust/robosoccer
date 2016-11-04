@@ -191,6 +191,7 @@ int Robot::spot_turn(Angle phi_in)
     }
 
 
+    /*
     if (DEBUG) {
         // wait for the turn to finish and check the orientation after the turn to tweak the parameters
         usleep(wait_time);
@@ -200,6 +201,7 @@ int Robot::spot_turn(Angle phi_in)
         cout << "After turn angle difference: " << ddeg << endl;
         return 0;
     }
+    */
 
     // return the time that the turn will take for higher level functions to wait
     return wait_time;
