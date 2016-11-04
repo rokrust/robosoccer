@@ -4,3 +4,12 @@ Striker::Striker(RTDBConn DBC_in, int device_nr_in, RawBall *datBall_in) : Robot
 {
 
 }
+
+Striker::shoot_penalty()
+{
+    Position pos_ball(datBall->GetPos());
+
+    GotoPos(pos_ball);
+
+    return 0;
+}
