@@ -10,7 +10,8 @@
 class Game
 {
 private:
-    ePlayMode phase;
+    ePlayMode previous_phase;
+    ePlayMode current_phase;
     Referee* referee_handler;
 
     /**
@@ -52,7 +53,7 @@ public:
 
 
     void set_phase(ePlayMode new_phase);
-    ePlayMode get_phase();
+    ePlayMode get_phase(bool display=false);
 };
 
 #endif // GAME_H
