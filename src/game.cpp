@@ -228,6 +228,85 @@ int Game::take_kick_off_position(bool left_side, bool kicking_team)
     return 0;
 }
 
+int Game::take_penalty_position(bool left_side, bool kicking_team)
+{
+    cout << "Penalty Position: left side: " << left_side;
+    cout << " as kicking team " << kicking_team << endl;
+
+    Position posGoalie;
+    Position posStriker1;
+    Position posStriker2;
+    Angle angle4allRobots(180);
+
+    if (left_side && kicking_team) {
+        cout << "In take_penalty_position - Case 1" << endl;
+        posStriker1.SetX(0.0); // Striking from Middle Point
+        posStriker1.SetY(0.0);
+
+        posGoalie.SetX(1.0); // Somewhere on the right side
+        posGoalie.SetY(-0.3);
+
+        posStriker2.SetX(1.0); // Somewhere on the right side
+        posStriker2.SetY(0.3);
+
+        angle4allRobots.Set(3.1415); // all orientate to left side
+    }
+    else if (left_side && !kicking_team) {
+        cout << "In take_penalty_position - Case 2" << endl;
+
+        posGoalie.SetX(-1.3); // Defend
+        posGoalie.SetY(0.0);
+
+        posStriker1.SetX(1.0); // Somewhere on the right side
+        posStriker1.SetY(-0.3);
+
+        posStriker2.SetX(1.0); // Somewhere on the right side
+        posStriker2.SetY(0.3);
+
+        angle4allRobots.Set(0); // all orientate to left side
+    }
+    else if (!left_side && kicking_team) {
+        cout << "In take_penalty_position - Case 3" << endl;
+
+        posStriker1.SetX(0.0); // Striking from Middle Point
+        posStriker1.SetY(0.0);
+
+        posGoalie.SetX(-1.0); // Somewhere on the right side
+        posGoalie.SetY(-0.3);
+
+        posStriker2.SetX(-1.0); // Somewhere on the right side
+        posStriker2.SetY(0.3);
+
+        angle4allRobots.Set(0); // all orientate to left side
+    }
+    else if (!left_side && !kicking_team) {
+        cout << "In take_penalty_position - Case 4" << endl;
+
+        posGoalie.SetX(1.3); // Defend
+        posGoalie.SetY(0.0);
+
+        posStriker1.SetX(-1.0); // Somewhere on the right side
+        posStriker1.SetY(-0.3);
+
+        posStriker2.SetX(-1.0); // Somewhere on the right side
+        posStriker2.SetY(0.3);
+
+        angle4allRobots.Set(3.1415); // all orientate to left side
+    }
+
+    goalie->GotoXY(posGoalie.GetX(), posGoalie.GetY(), 160, true);
+    striker1->GotoXY(posStriker1.GetX(), posStriker1.GetY(), 160, true);
+    striker2->GotoXY(posStriker2.GetX(), posStriker2.GetY(), 160, true);
+
+    usleep(7000 * 1000);
+
+    goalie->spot_turn(angle4allRobots);
+    striker1->spot_turn(angle4allRobots);
+    striker2->spot_turn(angle4allRobots);
+
+    return 0;
+}
+
 void Game::set_is_left_side(bool is_left_side_in)
 {
     is_left_side = is_left_side_in;
