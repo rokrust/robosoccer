@@ -9,7 +9,7 @@ private:
 
 
 public:
-    Striker(RTDBConn DBC_in, int device_nr_in);
+    Striker(RTDBConn DBC_in, int device_nr_in, RawBall *datBall_in);
 };
 
 #endif // STRIKER_H

@@ -33,7 +33,7 @@ int main(void) {
 	 *	connections to the RTDB.
 	 *
 	 */
-        const int client_nr = 2;
+        const int client_nr = 222;
 
 
 	try {
@@ -74,36 +74,6 @@ int main(void) {
 
             // cout << "My Team is blue: " << is_team_blue << " - Playing on the side Opp. PCs: " << is_left_side << endl;
 
-            int myGoalieDvNr;
-            int myStriker1DvNr;
-            int theOpponent1DvNr;
-            if (is_team_blue) {
-                myGoalieDvNr = 0;
-                myStriker1DvNr = 1;
-                theOpponent1DvNr = 3;
-            }
-            else {
-                myGoalieDvNr = 3;
-                myStriker1DvNr = 4;
-                theOpponent1DvNr = 0;
-            }
-
-
-            // Create Robot objects
-            Goalie myGoalie(DBC, myGoalieDvNr);
-            Striker myStriker1(DBC, myStriker1DvNr);
-            Striker myStriker2(DBC, myStriker1DvNr+1);
-            Opponent theOpponent1(DBC, theOpponent1DvNr);
-            Opponent theOpponent2(DBC, theOpponent1DvNr+1);
-            Opponent theOpponent3(DBC, theOpponent1DvNr+2);
-
-
-            // Create Game object
-            Game game_handler(&ref_handler, is_team_blue,
-                              &myGoalie, &myStriker1, &myStriker2,
-                              &theOpponent1, &theOpponent2, &theOpponent3);
-
-
             /** Create a ball object
              *
              *  This ball abject gives you access to all information about the ball
@@ -120,6 +90,38 @@ int main(void) {
             cout << "\t initial velocity: " << ball.GetVelocity() << endl;
 
 
+            int myGoalieDvNr;
+            int myStriker1DvNr;
+            int theOpponent1DvNr;
+            if (is_team_blue) {
+                myGoalieDvNr = 0;
+                myStriker1DvNr = 1;
+                theOpponent1DvNr = 3;
+            }
+            else {
+                myGoalieDvNr = 3;
+                myStriker1DvNr = 4;
+                theOpponent1DvNr = 0;
+            }
+
+
+            // Create Robot objects
+            Goalie myGoalie(DBC, myGoalieDvNr, &ball);
+            Striker myStriker1(DBC, myStriker1DvNr, &ball);
+            Striker myStriker2(DBC, myStriker1DvNr+1, &ball);
+            Opponent theOpponent1(DBC, theOpponent1DvNr, &ball);
+            Opponent theOpponent2(DBC, theOpponent1DvNr+1, &ball);
+            Opponent theOpponent3(DBC, theOpponent1DvNr+2, &ball);
+
+
+            // Create Game object
+            Game game_handler(&ref_handler, is_team_blue,
+                              &myGoalie, &myStriker1, &myStriker2,
+                              &theOpponent1, &theOpponent2, &theOpponent3);
+
+            game_handler.set_is_left_side(true);
+
+
             // Initialize a Test object
             Soccer_Tests Test_Obj(&myGoalie, &myStriker1, &myStriker2,
                                   &theOpponent1, &theOpponent2, &theOpponent3,
@@ -130,6 +132,7 @@ int main(void) {
 
             // select scenario
             int SCENARIO = 8;
+
 
             if (SCENARIO == 1) {
                 Test_Obj.move_in_out();
@@ -169,6 +172,12 @@ int main(void) {
 
             if (SCENARIO == 10) {
                 game_handler.take_kick_off_position();
+            }
+
+            if (SCENARIO == 21) {
+                game_handler.take_penalty_position(false);
+                usleep(1000 * 1000);
+                // game_handler.bring_goalie_in_penalty_save_position();
             }
 
 	} catch (DBError err) {

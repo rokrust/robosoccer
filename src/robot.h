@@ -21,7 +21,9 @@ private:
     int device_nr;
 
 public:
-    Robot(RTDBConn DBC_in, int device_nr_in);
+    RawBall* datBall;
+
+    Robot(RTDBConn DBC_in, int device_nr_in, RawBall* datBall_in);
     ~Robot();
 
     /**
