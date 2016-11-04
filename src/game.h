@@ -35,29 +35,20 @@ public:
 
     void step(bool verbose=false);
 
-
     int take_kick_off_position();
-
     void perform_kick_off();
 
-    int take_penalty_position(bool kicking_team);
-
-    void set_team(bool is_blue);
-
-    void set_phase(ePlayMode new_phase, bool verbose);
-
-    ePlayMode get_phase(bool display=false);
-
-    void set_is_left_side(bool is_left_side_in);
-
-    bool get_is_team_blue();
-
-    bool get_is_left_side();
+    int take_penalty_position();
 
     void update_side();
-
     void update_kick_off();
 
+    void set_is_left_side(bool is_left_side_in);
+    void set_phase(ePlayMode new_phase, bool verbose);
+
+    bool get_is_team_blue();
+    bool get_is_left_side();
+    ePlayMode get_phase(bool display=false);
 };
 
 #endif // GAME_H
