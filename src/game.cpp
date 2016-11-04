@@ -47,6 +47,7 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
             if (verbose) {
                 cout << "Changed from BEFORE_KICK_OFF to KICK_OFF" << endl;
             }
+            perform_kick_off();
         }
 
         if ((previous_phase == 2) && (current_phase == 5)) {
@@ -61,6 +62,8 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
             if (verbose) {
                 cout << "Changed from PLAY_ON to KICK_OFF" << endl;
             }
+            update_side();
+            take_kick_off_position();
         }
 
         if ((previous_phase == 5) && (current_phase == 0)) {
@@ -170,7 +173,7 @@ ePlayMode Game::get_phase(bool display)
     return current_phase;
 }
 
-void Game::step(bool verbose=false)
+void Game::step(bool verbose)
 {
     ePlayMode phase = referee_handler->GetPlayMode();
     set_phase(phase);
@@ -261,6 +264,11 @@ int Game::take_kick_off_position()
     usleep(WAIT_TIME_TURNING);
 
     return 0;
+}
+
+void Game::perform_kick_off()
+{
+    striker1->MoveDist(0.4, 160, true);
 }
 
 void Game::set_is_left_side(bool is_left_side_in)

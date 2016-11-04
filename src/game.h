@@ -38,6 +38,8 @@ public:
 
     int take_kick_off_position();
 
+    void perform_kick_off();
+
     void set_team(bool is_blue);
 
     void set_phase(ePlayMode new_phase, bool verbose);
