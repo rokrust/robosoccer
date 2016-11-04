@@ -13,6 +13,7 @@
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
 #include "referee.h"
+#include "timer.h"
 
 #include <time.h>
 #include <iostream>
@@ -36,6 +37,18 @@ int main(void) {
 
 
 	try {
+            int i = 1;
+            Timer utimer(100);
+            utimer.enable();
+
+            while(1){
+                if(utimer.timeout()){
+                    cout << "Timeout: " << i++ << " detected" << std::endl;
+                    utimer.enable();
+                }
+
+            }
+            cout << i;
             // Establish connection to the RTDB
             cout << endl << "Connecting to RTDB..." << endl;
             // Create the client name with the unique client number*/
