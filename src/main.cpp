@@ -92,7 +92,7 @@ int main(void) {
             //-------------------------------------- End Init ---------------------------------
 
             // select scenario
-            int SCENARIO = 6;
+            int SCENARIO = 8;
 
             if (SCENARIO == 1) {
                 Test_Obj.move_in_out();
