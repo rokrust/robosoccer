@@ -22,7 +22,7 @@ Game::Game(Referee* ref_in, bool is_team_blue_in,
 void Game::step(bool verbose)
 {
     ePlayMode phase = referee_handler->GetPlayMode();
-    set_phase(phase);
+    set_phase(phase, verbose);
 
     if (verbose) {
         bool display = true;
