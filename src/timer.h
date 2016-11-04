@@ -10,12 +10,12 @@
 
 class Timer{
 private:
-    timespec start_time, current_time;
+    timespec start_time, current_time, temp;
     int utimestamp;
 
 public:
     Timer(){;}
-    Timer(int time): utimestamp(time*1000){;} //convert uSec to nSec
+    Timer(int time):utimestamp(time*1000){}
 
     void enable(){clock_gettime( CLOCK_MONOTONIC, &start_time); }
 
