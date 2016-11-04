@@ -13,17 +13,20 @@
 
 // turn constants - change with caution!
 #define ANGLE_TURN_THRESHOLD 35
-#define BASE_TURN_SPEED 60
-#define TURN_RAMP_UP 50
-#define DDEG_MULTIPLYER 182
+#define BASE_TURN_SPEED 80
+#define TURN_RAMP_UP 0
+#define DDEG_MULTIPLYER 2.29
 
 // drive constants
-#define MIN_SPEED 20
-#define MAX_DSPEED_REL 0.15
-#define V_GROUND_FACTOR 100
-#define RUN_ONCE 80
-#define DRIVE_RAMP_UP 50
-#define DIST_THRESHOLD 0.10
+#define DSPEED_GAIN 0.1
+#define V_GROUND_MAX 100
+#define V_GROUND_MIN 10
+#define MAX_DSPEED_REL 0.1
+#define DRIVE_DURATION 100
+#define WHEEL_SPEED_RAMPUP 20
+#define DRIVE_RAMP_UP_START 100
+#define DIST_THRESHOLD_LINEAR 0.80
+#define DIST_THRESHOLD_STOP 0.10
 
 
 Robot::Robot(RTDBConn DBC_in, int device_nr_in) : RoboControl(DBC_in, device_nr_in)
@@ -65,7 +68,13 @@ void Robot::drive_to_pos(Position pos_in)
     }
 
     // drive the robot while the distance is above the threshold
-    while (dist > DIST_THRESHOLD) {
+    while (dist > DIST_THRESHOLD_STOP) {
+        // if the orientation difference is above a threshold, turn on the spot before driving
+        if (abs(ddeg) > ANGLE_TURN_THRESHOLD) {
+            int wait_time = this->spot_turn(goal_phi);
+            usleep(wait_time);
+        }
+
         // update the difference in orientation
         cur_phi = this->GetPhi();
         goal_phi = cur_pos.AngleOfLineToPos(goal_pos);
@@ -73,23 +82,49 @@ void Robot::drive_to_pos(Position pos_in)
 
         // calculate the ground speed depending on the distance
         // it is always at least MIN_SPEED
-        v_ground = std::max(int(dist * V_GROUND_FACTOR), MIN_SPEED);
+        if (dist > DIST_THRESHOLD_LINEAR) {
+            v_ground = V_GROUND_MAX;
+        } else {
+            v_ground = dist*((V_GROUND_MAX - V_GROUND_MIN) / DIST_THRESHOLD_LINEAR) + V_GROUND_MIN;
+        }
+
         if (DEBUG) {
             cout << "Ground speed is: " << v_ground << endl;
+            cout << "ddeg is: " << ddeg << endl;
         }
 
         // calculate the speed difference that will be applied on the wheels,
         // depending on the ground speed and the difference in orientation
-        dspeed = int((ddeg/ANGLE_TURN_THRESHOLD)*MAX_DSPEED_REL*v_ground);
-        v_left = v_ground - dspeed;
-        v_right = v_ground + dspeed;
+        //ddeg = std::min(ANGLE_TURN_THRESHOLD, abs(ddeg));
+        dspeed = int((float(abs(ddeg)) * float(DSPEED_GAIN)) * float(MAX_DSPEED_REL) * float(v_ground));
+        if (ddeg > 0) {
+            // robot orientation too far left of goal in driving direction
+            v_left = v_ground - dspeed;
+            v_right = v_ground + dspeed;
+        } else {
+            // robot orientation too far right of goal in driving direction
+            v_left = v_ground + dspeed;
+            v_right = v_ground - dspeed;
+        }
+
         if (DEBUG) {
             cout << "Left speed: " << v_left << "   Right speed: " << v_right << endl;
         }
 
+        int cur_left = this->GetSpeedLeft();
+        int cur_right = this->GetSpeedRight();
+        int ramp_up;
+
+
+        if ((cur_left > WHEEL_SPEED_RAMPUP) || (cur_right > WHEEL_SPEED_RAMPUP)) {
+            ramp_up = 0;
+        } else {
+            ramp_up = DRIVE_RAMP_UP_START;
+        }
+
         // set the wheel speeds for the run time
-        this->MoveMs(v_left, v_right, RUN_ONCE, DRIVE_RAMP_UP);
-        usleep((RUN_ONCE + 30)*1000);
+        this->MoveMs(v_left, v_right, DRIVE_DURATION, ramp_up);
+        usleep((DRIVE_DURATION + 30)*1000);
 
         // update the distance
         cur_pos = this->GetPos();
@@ -120,15 +155,17 @@ int Robot::spot_turn(Angle phi_in)
     }
 
     if (ddeg > 0) {
+        // clockwise
         v_left = -BASE_TURN_SPEED;
         v_right = BASE_TURN_SPEED;
     } else {
+        // anti-clockwise
         v_left = BASE_TURN_SPEED;
         v_right = -BASE_TURN_SPEED;
     }
 
     // calculate the turn time depending on the degree to turn and the turning speed
-    int turn_time = (abs(ddeg) * DDEG_MULTIPLYER) / BASE_TURN_SPEED;
+    int turn_time = int(DDEG_MULTIPLYER * abs(ddeg));
     if (DEBUG) {
         cout << "Turn time: " << turn_time << endl;
     }
@@ -156,4 +193,42 @@ int Robot::spot_turn(Angle phi_in)
 
     // return the time that the turn will take for higher level functions to wait
     return wait_time;
+}
+
+int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negativ)
+{
+    // define left and right wheel speed variables
+    int v_left, v_right;
+
+    // calculate the difference in the current and the desired orientation
+    Angle cur_phi = this->GetPhi();
+    cout << "Current angle before turn: " << cur_phi.Deg() << endl;
+
+    if (left_negativ) {
+        // miraculously clockwise
+        v_left = -wheel_speed;
+        v_right = wheel_speed;
+    } else {
+        // miraculously anti-clockwise
+        v_left = wheel_speed;
+        v_right = -wheel_speed;
+    }
+
+    // set the wheel speed for the turn time
+    this->MoveMs(v_left, v_right, turn_time, TURN_RAMP_UP);
+
+    usleep(2*pow(10, 6));
+
+    Angle new_phi = this->GetPhi();
+    cout << "Current angle after turn: " << new_phi.Deg() << endl;
+
+    int diff = new_phi.Deg() - cur_phi.Deg();
+    if (diff > 360) {
+        diff = diff - 360;
+    } else if (diff < 0) {
+        diff = diff + 360;
+    }
+    cout << "Angle difference-----> " << diff << endl;
+
+    return 0;
 }

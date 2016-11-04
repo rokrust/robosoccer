@@ -19,11 +19,14 @@ HEADERS += \
     src/soccer_tests.h \
     src/robot.h \
     src/timer.h
+    src/game.h
+>>>>>>> origin/simon
 SOURCES += \
     src/soccer_tests.cpp \
     src/main.cpp \
     src/robot.cpp \
     src/timer.cpp
+    src/game.cpp
 		
 		
 ##############
@@ -59,3 +62,9 @@ OTHER_FILES += \
 
 
 
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> origin/simon
