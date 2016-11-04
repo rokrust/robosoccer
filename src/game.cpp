@@ -257,6 +257,7 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
             }
             update_side();
             take_kick_off_position();
+            referee_handler->SetReady(!is_team_blue);
         }
 
         // BEFORE_KICK_OFF -> KICK_OFF
