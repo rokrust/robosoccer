@@ -12,6 +12,8 @@ private:
 public:
     Goalie(RTDBConn DBC_in, int device_nr_in);
 
+    // go_to_penalty_save_position();
+
 };
 
 #endif // GOALIE_H

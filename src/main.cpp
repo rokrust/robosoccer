@@ -102,6 +102,7 @@ int main(void) {
             Game game_handler(&ref_handler, is_team_blue,
                               &myGoalie, &myStriker1, &myStriker2,
                               &theOpponent1, &theOpponent2, &theOpponent3);
+            game_handler.set_is_left_side(true);
 
 
             /** Create a ball object
@@ -168,7 +169,7 @@ int main(void) {
             } */
 
             if (SCENARIO == 21) {
-                game_handler.take_penalty_position(false, false);
+                game_handler.take_penalty_position(false);
             }
 
 	} catch (DBError err) {

@@ -37,7 +37,7 @@ public:
 
     int take_kick_off_position(bool left_side, bool kicking_team);
 
-    int take_penalty_position(bool left_side, bool kicking_team);
+    int take_penalty_position(bool kicking_team);
 
     void set_team(bool is_blue);
 

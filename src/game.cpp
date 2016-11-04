@@ -228,9 +228,9 @@ int Game::take_kick_off_position(bool left_side, bool kicking_team)
     return 0;
 }
 
-int Game::take_penalty_position(bool left_side, bool kicking_team)
+int Game::take_penalty_position(bool kicking_team)
 {
-    cout << "Penalty Position: left side: " << left_side;
+    cout << "Penalty Position: is_left side: " << is_left_side;
     cout << " as kicking team " << kicking_team << endl;
 
     Position posGoalie;
@@ -238,7 +238,7 @@ int Game::take_penalty_position(bool left_side, bool kicking_team)
     Position posStriker2;
     Angle angle4allRobots(180);
 
-    if (left_side && kicking_team) {
+    if (is_left_side && kicking_team) {
         cout << "In take_penalty_position - Case 1" << endl;
         posStriker1.SetX(0.0); // Striking from Middle Point
         posStriker1.SetY(0.0);
@@ -251,7 +251,7 @@ int Game::take_penalty_position(bool left_side, bool kicking_team)
 
         angle4allRobots.Set(3.1415); // all orientate to left side
     }
-    else if (left_side && !kicking_team) {
+    else if (is_left_side && !kicking_team) {
         cout << "In take_penalty_position - Case 2" << endl;
 
         posGoalie.SetX(-1.3); // Defend
@@ -265,7 +265,7 @@ int Game::take_penalty_position(bool left_side, bool kicking_team)
 
         angle4allRobots.Set(0); // all orientate to left side
     }
-    else if (!left_side && kicking_team) {
+    else if (!is_left_side && kicking_team) {
         cout << "In take_penalty_position - Case 3" << endl;
 
         posStriker1.SetX(0.0); // Striking from Middle Point
@@ -279,7 +279,7 @@ int Game::take_penalty_position(bool left_side, bool kicking_team)
 
         angle4allRobots.Set(0); // all orientate to left side
     }
-    else if (!left_side && !kicking_team) {
+    else if (!is_left_side && !kicking_team) {
         cout << "In take_penalty_position - Case 4" << endl;
 
         posGoalie.SetX(1.3); // Defend
