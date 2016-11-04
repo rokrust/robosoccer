@@ -294,9 +294,9 @@ int Game::take_penalty_position(bool left_side, bool kicking_team)
         angle4allRobots.Set(3.1415); // all orientate to left side
     }
 
-    goalie->GotoXY(posGoalie.GetX(), posGoalie.GetY(), 160, true);
-    striker1->GotoXY(posStriker1.GetX(), posStriker1.GetY(), 160, true);
-    striker2->GotoXY(posStriker2.GetX(), posStriker2.GetY(), 160, true);
+    goalie->GotoPos(posGoalie);
+    striker1->GotoPos(posStriker1);
+    striker2->GotoPos(posStriker2);
 
     usleep(7000 * 1000);
 
