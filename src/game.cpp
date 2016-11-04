@@ -299,6 +299,9 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
             if (verbose) {
                 cout << "Changed from PLAY_ON to BEFORE_PENALTY" << endl;
             }
+            update_side();
+            update_kick_off();
+            take_penalty_position();
         }
 
         if ((previous_phase == 3) && (current_phase == 4)) {
@@ -313,6 +316,9 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
             if (verbose) {
                 cout << "Changed from PENALTY to BEFORE_PENALTY" << endl;
             }
+            update_side();
+            update_kick_off();
+            take_penalty_position();
         }
 
         if ((previous_phase == 4) && (current_phase == 0)) {
