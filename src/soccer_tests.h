@@ -85,6 +85,9 @@ public:
      * @brief Do some stuff with the goalie
      */
     int test_goalie();
+
+    void turn_experiments();
+
 };
 
 #endif // SOCCER_TESTS_H

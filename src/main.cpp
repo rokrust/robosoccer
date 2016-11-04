@@ -7,11 +7,12 @@
 //============================================================================
 
 
-
+#include "game.h"
 #include "robot.h"
 #include "soccer_tests.h"
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
+#include "referee.h"
 
 #include <time.h>
 #include <iostream>
@@ -31,7 +32,7 @@ int main(void) {
 	 *	connections to the RTDB.
 	 *
 	 */
-        const int client_nr = 3;
+        const int client_nr = 2;
 
 
 	try {
@@ -49,6 +50,22 @@ int main(void) {
             Robot red1(DBC, 3);
             Robot red2(DBC, 4);
             Robot red3(DBC, 5);
+
+            // Create Referee Object
+            Referee ref_handler(DBC);
+            ref_handler.Init();
+
+            // Create Game object
+            Game game_handler(&ref_handler,
+                              &blue1, &blue2, &blue3,
+                              &red1, &red2, &red3);
+
+
+            /*
+            // Initialize a Test object
+            Soccer_Tests Test_Obj(&blue1, &blue2, &blue3,
+                                  &red1, &red2, &red3);
+            */
 
             /** Create a ball object
              *
@@ -73,7 +90,6 @@ int main(void) {
 
 
             //-------------------------------------- End Init ---------------------------------
-
 
             // select scenario
             int SCENARIO = 6;
@@ -103,6 +119,16 @@ int main(void) {
                 Test_Obj.test_goalie();
             }
 
+            if (SCENARIO == 7) {
+                Test_Obj.turn_experiments();
+            }
+
+            if (SCENARIO == 8) {
+                bool keep_running = 1;
+                while (keep_running) {
+                    game_handler.step();
+                }
+            }
 
 	} catch (DBError err) {
 		cout << "Client died on Error: " << err.what() << endl;
