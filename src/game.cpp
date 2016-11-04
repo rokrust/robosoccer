@@ -170,12 +170,12 @@ ePlayMode Game::get_phase(bool display)
     return current_phase;
 }
 
-void Game::step()
+void Game::step(bool verbose=false)
 {
     ePlayMode phase = referee_handler->GetPlayMode();
     set_phase(phase);
 
-    if (DEBUG) {
+    if (verbose) {
         bool display = true;
         get_phase(display);
         cin.get();

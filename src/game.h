@@ -33,7 +33,7 @@ public:
          Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
          Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in);
 
-    void step();
+    void step(bool verbose=false);
 
 
     int take_kick_off_position();
