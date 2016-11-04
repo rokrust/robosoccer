@@ -19,6 +19,7 @@ private:
 
     bool is_team_blue;
     bool is_left_side;
+    bool has_kick_off;
 
 public:
     Goalie* goalie;
@@ -35,11 +36,11 @@ public:
     void step();
 
 
-    int take_kick_off_position(bool left_side, bool kicking_team);
+    int take_kick_off_position();
 
     void set_team(bool is_blue);
 
-    void set_phase(ePlayMode new_phase);
+    void set_phase(ePlayMode new_phase, bool verbose);
     ePlayMode get_phase(bool display=false);
 
     void set_is_left_side(bool is_left_side_in);
@@ -47,6 +48,10 @@ public:
     bool check_is_team_blue();
 
     bool check_is_left_side();
+
+    void update_side();
+
+    void update_kick_off();
 };
 
 #endif // GAME_H

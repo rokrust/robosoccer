@@ -129,7 +129,7 @@ int main(void) {
             //-------------------------------------- End Init ---------------------------------
 
             // select scenario
-            int SCENARIO = 10;
+            int SCENARIO = 8;
 
             if (SCENARIO == 1) {
                 Test_Obj.move_in_out();
@@ -160,17 +160,15 @@ int main(void) {
                 Test_Obj.turn_experiments();
             }
 
-            /* if (SCENARIO == 8) {
+            if (SCENARIO == 8) {
                 bool keep_running = 1;
                 while (keep_running) {
                     game_handler.step();
                 }
-            } */
+            }
 
             if (SCENARIO == 10) {
-                bool is_left_side = false;
-                bool kicking_team = true;
-                game_handler.take_kick_off_position(is_left_side, kicking_team);
+                game_handler.take_kick_off_position();
             }
 
 	} catch (DBError err) {
