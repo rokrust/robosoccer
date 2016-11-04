@@ -52,6 +52,15 @@ private:
     RawBall* datBall;
 
 public:
+    /**
+     * @brief Soccer_Tests
+     * @param blue1_in
+     * @param blue2_in
+     * @param blue3_in
+     * @param red1_in
+     * @param red2_in
+     * @param red3_in
+     */
     Soccer_Tests(Robot* blue1_in, Robot* blue2_in, Robot* blue3_in,
                  Robot* red1_in, Robot* red2_in, Robot* red3_in,
                  RawBall* datBall_in);
