@@ -6,6 +6,7 @@
 #include "robo_control.h"
 #include "robot.h"
 #include "referee.h"
+#include "cam.h"
 
 class Game
 {
@@ -16,6 +17,11 @@ private:
 
     bool is_team_blue;
 
+    //Displays positions, angles and members
+    struct red_team_info : TeamInfo{};
+    struct blue_team_info : TeamInfo{};
+
+public:
     Robot* goalie;
     Robot* striker1;
     Robot* striker2;
@@ -50,10 +56,11 @@ private:
      */
     Robot* red3;
 
-public:
+
     Game(Referee* ref_in,
          Robot* blue1_in, Robot* blue2_in, Robot* blue3_in,
          Robot* red1_in, Robot* red2_in, Robot* red3_in);
+
     void step();
 
 
@@ -62,6 +69,7 @@ public:
     void set_team(bool is_blue);
 
     void set_phase(ePlayMode new_phase);
+
     ePlayMode get_phase(bool display=false);
 };
 

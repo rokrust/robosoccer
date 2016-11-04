@@ -37,18 +37,7 @@ int main(void) {
 
 
 	try {
-            int i = 1;
-            Timer utimer(100);
-            utimer.enable();
 
-            while(1){
-                if(utimer.timeout()){
-                    cout << "Timeout: " << i++ << " detected" << std::endl;
-                    utimer.enable();
-                }
-
-            }
-            cout << i;
             // Establish connection to the RTDB
             cout << endl << "Connecting to RTDB..." << endl;
             // Create the client name with the unique client number*/
@@ -104,7 +93,8 @@ int main(void) {
 
             //-------------------------------------- End Init ---------------------------------
 
-            // select scenario
+            //-------------------------------------- Test Scenarios ---------------------------------
+            //select test scenario
             int SCENARIO = 8;
 
             if (SCENARIO == 1) {
@@ -140,6 +130,21 @@ int main(void) {
                 bool keep_running = 1;
                 while (keep_running) {
                     game_handler.step();
+                }
+            }
+
+            //Timer test
+            if (SCENARIO == 9){
+                int i = 1;
+                Timer utimer(100);
+                utimer.enable();
+
+                while(1){
+                    if(utimer.timeout()){
+                        cout << "Timeout: " << i++ << " detected" << std::endl;
+                        utimer.enable();
+                    }
+
                 }
             }
 
