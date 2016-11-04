@@ -16,6 +16,7 @@ private:
     ePlayMode previous_phase;
     ePlayMode current_phase;
     Referee* referee_handler;
+    RawBall* datBall;
 
     bool is_team_blue;
     bool is_left_side;
@@ -29,7 +30,7 @@ public:
     Opponent* opponent2;
     Opponent* opponent3;
 
-    Game(Referee* ref_in, bool is_team_blue_in,
+    Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
          Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
          Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in);
 
