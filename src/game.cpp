@@ -304,11 +304,6 @@ int Game::take_penalty_position(bool kicking_team)
     striker1->spot_turn(angle4allRobots);
     striker2->spot_turn(angle4allRobots);
 
-    return 0;
-}
-
-int Game::bring_goalie_in_penalty_save_position()
-{
     goalie->go_to_penalty_save_position(is_left_side);
 
     return 0;
