@@ -1,6 +1,7 @@
 #include "game.h"
 
 #define DEBUG 1
+#define WAIT_TIME_POSITION_TAKING 10000000
 
 Game::Game(Referee* ref_in,
            Robot* blue1_in, Robot* blue2_in, Robot* blue3_in,
@@ -171,4 +172,71 @@ void Game::step()
         get_phase(display);
         cin.get();
     }
+}
+
+void Game::set_team(bool is_blue)
+{
+    if (is_blue) {
+        is_team_blue = true;
+        goalie = blue1;
+        striker1 = blue2;
+        striker2 = blue3;
+    } else {
+        is_team_blue = false;
+        goalie = red1;
+        striker1 = red2;
+        striker2 = red3;
+    }
+}
+
+int Game::take_kick_off_position(bool left_side, bool kicking_team)
+{
+    // define kick-off positions
+    Position pos_goalie_left(-1.3, 0.0);
+    Position pos_goalie_right(1.3, 0.0);
+
+    // define striker positions if not kicking off
+    Position pos_defender1_left(-0.6, 0.4);
+    Position pos_defender2_left(-0.6, -0.4);
+    Position pos_defender1_right(0.6, 0.4);
+    Position pos_defender2_right(0.6, -0.4);
+
+    // define striker positions if kicking off
+    Position pos_striker_left(-0.2, 0.0);
+    Position pos_follower_left(-0.2, 0.4);
+    Position pos_striker_right(-0.2, 0.0);
+    Position pos_follower_right(-0.2, 0.4);
+
+    // define orientations
+    Angle left_forward(0);
+    Angle right_forward(180);
+
+    if (left_side) {
+        goalie->GotoPos(pos_goalie_left);
+        if (kicking_team) {
+            striker1->GotoPos(pos_striker_left);
+            striker2->GotoPos(pos_follower_left);
+        } else {
+            striker1->GotoPos(pos_defender1_left);
+            striker2->GotoPos(pos_defender2_left);
+        }
+    } else {
+        goalie->GotoPos(pos_goalie_right);
+        if (kicking_team) {
+            striker1->GotoPos(pos_striker_right);
+            striker2->GotoPos(pos_follower_right);
+        } else {
+            striker1->GotoPos(pos_defender1_right);
+            striker2->GotoPos(pos_defender2_right);
+        }
+    }
+
+    usleep(WAIT_TIME_POSITION_TAKING);
+
+    // TODO Check if robots arrived savely
+
+
+    // turn robots into their needed orientation
+
+    return 0;
 }

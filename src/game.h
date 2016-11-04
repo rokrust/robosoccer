@@ -14,6 +14,12 @@ private:
     ePlayMode current_phase;
     Referee* referee_handler;
 
+    bool is_team_blue;
+
+    Robot* goalie;
+    Robot* striker1;
+    Robot* striker2;
+
     /**
      * @brief Pointer to the first blue robot
      */
@@ -51,6 +57,9 @@ public:
     void step();
 
 
+    int take_kick_off_position(bool left_side, bool kicking_team);
+
+    void set_team(bool is_blue);
 
     void set_phase(ePlayMode new_phase);
     ePlayMode get_phase(bool display=false);
