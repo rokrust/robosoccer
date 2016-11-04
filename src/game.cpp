@@ -4,16 +4,17 @@
 #define WAIT_TIME_POSITION_TAKING 10000000
 
 Game::Game(Referee* ref_in,
-           Robot* blue1_in, Robot* blue2_in, Robot* blue3_in,
-           Robot* red1_in, Robot* red2_in, Robot* red3_in)
+           Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
+           Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in)
 {
     referee_handler = ref_in;
-    blue1 = blue1_in;
-    blue2 = blue2_in;
-    blue3 = blue3_in;
-    red1 = red1_in;
-    red2 = red2_in;
-    red3 = red3_in;
+
+    goalie = goalie_in;
+    striker1 = striker1_in;
+    striker2 = striker2_in;
+    opponent1 = opponent1_in;
+    opponent2 = opponent2_in;
+    opponent3 = opponent3_in;
 }
 
 void Game::set_phase(ePlayMode new_phase)
@@ -171,21 +172,6 @@ void Game::step()
         bool display = true;
         get_phase(display);
         cin.get();
-    }
-}
-
-void Game::set_team(bool is_blue)
-{
-    if (is_blue) {
-        is_team_blue = true;
-        goalie = blue1;
-        striker1 = blue2;
-        striker2 = blue3;
-    } else {
-        is_team_blue = false;
-        goalie = red1;
-        striker1 = red2;
-        striker2 = red3;
     }
 }
 

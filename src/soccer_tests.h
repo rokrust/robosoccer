@@ -9,7 +9,10 @@
 #ifndef SOCCER_TESTS_H
 #define SOCCER_TESTS_H
 
-#include "robot.h"
+#include "goalie.h"
+#include "striker.h"
+#include "opponent.h"
+//#include "robot.h"
 //#include "kogmo_rtdb.hxx"
 //#include "robo_control.h"
 
@@ -19,32 +22,32 @@ private:
     /**
      * @brief Pointer to the first blue robot
      */
-    Robot* blue1;
+    Goalie* goalie;
 
     /**
      * @brief Pointer to the second blue robot
      */
-    Robot* blue2;
+    Striker* striker1;
 
     /**
      * @brief Pointer to the third blue robot
      */
-    Robot* blue3;
+    Striker* striker2;
 
     /**
      * @brief Pointer to the first red robot
      */
-    Robot* red1;
+    Opponent* opponent1;
 
     /**
      * @brief Pointer to the second red robot
      */
-    Robot* red2;
+    Opponent* opponent2;
 
     /**
      * @brief Pointer to the third red robot
      */
-    Robot* red3;
+    Opponent* opponent3;
 
     /**
      * @brief The Ball
@@ -61,8 +64,8 @@ public:
      * @param red2_in
      * @param red3_in
      */
-    Soccer_Tests(Robot* blue1_in, Robot* blue2_in, Robot* blue3_in,
-                 Robot* red1_in, Robot* red2_in, Robot* red3_in,
+    Soccer_Tests(Goalie *goalie_in, Striker *striker1_in, Striker *striker2_in,
+                 Opponent *opponent1_in, Opponent *opponent2_in, Opponent *opponent3_in,
                  RawBall* datBall_in);
 
     /**

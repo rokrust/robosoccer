@@ -8,16 +8,16 @@
 
 #include "soccer_tests.h"
 
-Soccer_Tests::Soccer_Tests(Robot* blue1_in, Robot* blue2_in, Robot* blue3_in,
-                           Robot* red1_in, Robot* red2_in, Robot* red3_in,
+Soccer_Tests::Soccer_Tests(Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
+                           Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in,
                            RawBall* datBall_in)
 {
-    blue1 = blue1_in;
-    blue2 = blue2_in;
-    blue3 = blue3_in;
-    red1 = red1_in;
-    red2 = red2_in;
-    red3 = red3_in;
+    goalie = goalie_in;
+    striker1 = striker1_in;
+    striker2 = striker2_in;
+    opponent1 = opponent1_in;
+    opponent2 = opponent2_in;
+    opponent3 = opponent3_in;
     datBall = datBall_in;
 }
 
@@ -45,22 +45,22 @@ void Soccer_Tests::move_in_out()
     {
         cout << "Moving all six robots to the outer positions" << endl;
 
-        blue1->GotoXY(posb0_out.GetX(), posb0_out.GetY(), 40, true);
-        blue2->GotoXY(posb1_out.GetX(), posb1_out.GetY(), 40, true);
-        blue3->GotoXY(posb2_out.GetX(), posb2_out.GetY(), 40, true);
-        red1->GotoXY(posb0_out.GetX(), posr0_out.GetY(), 40, true);
-        red2->GotoXY(posb1_out.GetX(), posr1_out.GetY(), 40, true);
-        red3->GotoXY(posb2_out.GetX(), posr2_out.GetY(), 40, true);
+        goalie->GotoXY(posb0_out.GetX(), posb0_out.GetY(), 40, true);
+        striker1->GotoXY(posb1_out.GetX(), posb1_out.GetY(), 40, true);
+        striker2->GotoXY(posb2_out.GetX(), posb2_out.GetY(), 40, true);
+        opponent1->GotoXY(posb0_out.GetX(), posr0_out.GetY(), 40, true);
+        opponent2->GotoXY(posb1_out.GetX(), posr1_out.GetY(), 40, true);
+        opponent3->GotoXY(posb2_out.GetX(), posr2_out.GetY(), 40, true);
 
         usleep(6000000);
         cout << "Moving all six robots to the inner positions" << endl;
 
-        blue1->GotoXY(posb0_out.GetX(), posb0_in.GetY(), 40, true);
-        blue2->GotoXY(posb1_out.GetX(), posb1_in.GetY(), 40, true);
-        blue3->GotoXY(posb2_out.GetX(), posb2_in.GetY(), 40, true);
-        red1->GotoXY(posb0_out.GetX(), posr0_in.GetY(), 40, true);
-        red2->GotoXY(posb1_out.GetX(), posr1_in.GetY(), 40, true);
-        red3->GotoXY(posb2_out.GetX(), posr2_in.GetY(), 40, true);
+        goalie->GotoXY(posb0_out.GetX(), posb0_in.GetY(), 40, true);
+        striker1->GotoXY(posb1_out.GetX(), posb1_in.GetY(), 40, true);
+        striker2->GotoXY(posb2_out.GetX(), posb2_in.GetY(), 40, true);
+        opponent1->GotoXY(posb0_out.GetX(), posr0_in.GetY(), 40, true);
+        opponent2->GotoXY(posb1_out.GetX(), posr1_in.GetY(), 40, true);
+        opponent3->GotoXY(posb2_out.GetX(), posr2_in.GetY(), 40, true);
 
         //loop = 0;
         usleep(6000000);
@@ -84,18 +84,18 @@ void Soccer_Tests::const_wheel_speed()
 
     while (loop)
     {
-        blue1->GotoXY(posstart.GetX(), posstart.GetY(), 40, true);
+        goalie->GotoXY(posstart.GetX(), posstart.GetY(), 40, true);
         usleep(6000000);
 
-        cur_phi = blue1->GetPhi();
+        cur_phi = goalie->GetPhi();
         while (abs(cur_phi.Deg() - to_pc.Deg()) > 10)
         {
-            blue1->TurnAbs(to_pc);
-            cur_phi = blue1->GetPhi();
+            goalie->TurnAbs(to_pc);
+            cur_phi = goalie->GetPhi();
             usleep(500000);
         }
 
-        blue1->MoveMs(v_left, v_right, run_ms, ramp_up);
+        goalie->MoveMs(v_left, v_right, run_ms, ramp_up);
 
         // loop = 0;
         usleep(6000000);
@@ -122,26 +122,26 @@ void Soccer_Tests::easy_p_ctrl()
     while (loop)
     {
         /** Go to starting position and adjust orientation */
-        blue1->GotoXY(posstart.GetX(), posstart.GetY(), 40, true);
+        goalie->GotoXY(posstart.GetX(), posstart.GetY(), 40, true);
         usleep(6000000);
 
-        cur_phi = blue1->GetPhi();
+        cur_phi = goalie->GetPhi();
         while (abs(cur_phi.Deg() - to_pc.Deg()) > 10)
         {
-            blue1->TurnAbs(to_pc);
-            cur_phi = blue1->GetPhi();
+            goalie->TurnAbs(to_pc);
+            cur_phi = goalie->GetPhi();
             usleep(500000);
         }
 
         /** Drive while the distance is above a threshold */
-        while (abs(blue1->GetX() - posgoal.GetX()) > 0.1)
+        while (abs(goalie->GetX() - posgoal.GetX()) > 0.1)
         {
-            cur_phi = blue1->GetPhi();
+            cur_phi = goalie->GetPhi();
             ddeg = goaldeg - cur_phi.Deg();
             v_left = base_velo - (ddeg / 2);
             v_right = base_velo + (ddeg / 2);
 
-            blue1->MoveMs(v_left, v_right, run_ms, ramp_up);
+            goalie->MoveMs(v_left, v_right, run_ms, ramp_up);
         }
 
         // loop = 0;
@@ -159,9 +159,9 @@ void Soccer_Tests::drive_to_pos()
     Position posgoal(0.7, 0.0);
     Position posgoal2(-0.7, 0.0);
     while(true) {
-        blue1->drive_to_pos(posgoal);
+        goalie->drive_to_pos(posgoal);
         cin.get();
-        blue1->drive_to_pos(posgoal2);
+        goalie->drive_to_pos(posgoal2);
         cin.get();
     }
 }
@@ -181,11 +181,11 @@ void Soccer_Tests::test_turns()
 
     while(true) {
 
-        wait_time = blue3->spot_turn(to_pc);
+        wait_time = striker2->spot_turn(to_pc);
         usleep(wait_time);
         cin.get();
 
-        wait_time = blue3->spot_turn(to_wall);
+        wait_time = striker2->spot_turn(to_wall);
         usleep(wait_time);
         cin.get();
 
@@ -207,7 +207,7 @@ void Soccer_Tests::turn_experiments()
         for (i = 1; i <= 10; i++) {
             cout << "Turn time " << 100*i << ", speed 60" << endl;
             cin.get();
-            r_value = blue1->spot_turn_time_speed(100*i, 60, true);
+            r_value = goalie->spot_turn_time_speed(100*i, 60, true);
         }
     }
 
@@ -227,19 +227,19 @@ int Soccer_Tests::test_goalie() {
     } else {
         goalie_pos_init.SetX(-1.3); // (-1.3, 0.25) - Angle to zero is fine
     }
-    blue1->GotoXY(goalie_pos_init.GetX(), goalie_pos_init.GetY(), 160, true);
+    goalie->GotoXY(goalie_pos_init.GetX(), goalie_pos_init.GetY(), 160, true);
     usleep(5000 * 1000);
 
-    blue1->spot_turn(goalie_angle_init);
+    goalie->spot_turn(goalie_angle_init);
     usleep(1.5 * pow(10,6));
 
     // Wait for a ball to appear close to the goal
     Position r1_ball = datBall->GetPos();
     Position r0_ball = r1_ball;
-    Position dr_ball = blue1->calc_pos_diff(r1_ball, r0_ball);
+    Position dr_ball = goalie->calc_pos_diff(r1_ball, r0_ball);
     Position dr_ball_mean = dr_ball;
 
-    Position r_goalie = blue1->GetPos();
+    Position r_goalie = goalie->GetPos();
     float x_goalline = r_goalie.GetX();
 
     bool wait4ball = true;
@@ -248,7 +248,7 @@ int Soccer_Tests::test_goalie() {
 
         r0_ball = r1_ball;
         r1_ball = datBall->GetPos();
-        dr_ball = blue1->calc_pos_diff(r1_ball, r0_ball);
+        dr_ball = goalie->calc_pos_diff(r1_ball, r0_ball);
 
         // Calculate the mean over the last 5 values
         dr_ball_mean.SetX(1*dr_ball.GetX() + 4*dr_ball_mean.GetX()/5);
@@ -270,7 +270,7 @@ int Soccer_Tests::test_goalie() {
 
             if (y_G < 0.25 && y_G >= -0.25) {
                 cout << "Goalie reaction" << endl;
-                blue1->GotoXY(x_G, y_G, 120, true);
+                goalie->GotoXY(x_G, y_G, 120, true);
             }
 
             usleep(4000 *1000);

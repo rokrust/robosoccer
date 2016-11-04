@@ -56,28 +56,55 @@ int main(void) {
             client_name.push_back((char) (client_nr + '0'));
             RTDBConn DBC(client_name.data(), 0.1, "");
 
-            // Create Robot objects
-            Robot blue1(DBC, 0);
-            Robot blue2(DBC, 1);
-            Robot blue3(DBC, 2);
-            Robot red1(DBC, 3);
-            Robot red2(DBC, 4);
-            Robot red3(DBC, 5);
-
             // Create Referee Object
             Referee ref_handler(DBC);
             ref_handler.Init();
 
+
+            // Get Robot Colour
+            bool is_team_blue = true;
+            cout << "Which Team? (0: red - 1: blue)";
+            cin >> is_team_blue;
+
+            // Get Side
+            // bool is_left_side = ref_handler.GetSide(); // 0: left side (Opp. PCs) - 1: right side (PCs)
+
+            // cout << "My Team is blue: " << is_team_blue << " - Playing on the side Opp. PCs: " << is_left_side << endl;
+
+            int myGoalieDvNr;
+            int myStriker1DvNr;
+            int theOpponent1DvNr;
+            if (is_team_blue) {
+                myGoalieDvNr = 0;
+                myStriker1DvNr = 1;
+                theOpponent1DvNr = 3;
+            }
+            else {
+                myGoalieDvNr = 3;
+                myStriker1DvNr = 4;
+                theOpponent1DvNr = 0;
+            }
+
+
+            // Create Robot objects
+            Goalie myGoalie(DBC, myGoalieDvNr);
+            Striker myStriker1(DBC, myStriker1DvNr);
+            Striker myStriker2(DBC, myStriker1DvNr+1);
+            Opponent theOpponent1(DBC, theOpponent1DvNr);
+            Opponent theOpponent2(DBC, theOpponent1DvNr+1);
+            Opponent theOpponent3(DBC, theOpponent1DvNr+2);
+
+
             // Create Game object
             Game game_handler(&ref_handler,
-                              &blue1, &blue2, &blue3,
-                              &red1, &red2, &red3);
+                              &myGoalie, &myStriker1, &myStriker2,
+                              &theOpponent1, &theOpponent2, &theOpponent3);
 
 
             /*
             // Initialize a Test object
-            Soccer_Tests Test_Obj(&blue1, &blue2, &blue3,
-                                  &red1, &red2, &red3);
+            Soccer_Tests Test_Obj(&myGoalie, &myStriker1, &myStriker2,
+                                  &theOpponent1, &theOpponent2, &theOpponent3);
             */
 
             /** Create a ball object
@@ -97,8 +124,8 @@ int main(void) {
 
 
             // Initialize a Test object
-            Soccer_Tests Test_Obj(&blue1, &blue2, &blue3,
-                                  &red1, &red2, &red3,
+            Soccer_Tests Test_Obj(&myGoalie, &myStriker1, &myStriker2,
+                                  &theOpponent1, &theOpponent2, &theOpponent3,
                                   &ball);
 
 

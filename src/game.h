@@ -5,6 +5,9 @@
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
 #include "robot.h"
+#include "goalie.h"
+#include "striker.h"
+#include "opponent.h"
 #include "referee.h"
 
 class Game
@@ -16,44 +19,18 @@ private:
 
     bool is_team_blue;
 
-    Robot* goalie;
-    Robot* striker1;
-    Robot* striker2;
-
-    /**
-     * @brief Pointer to the first blue robot
-     */
-    Robot* blue1;
-
-    /**
-     * @brief Pointer to the second blue robot
-     */
-    Robot* blue2;
-
-    /**
-     * @brief Pointer to the third blue robot
-     */
-    Robot* blue3;
-
-    /**
-     * @brief Pointer to the first red robot
-     */
-    Robot* red1;
-
-    /**
-     * @brief Pointer to the second red robot
-     */
-    Robot* red2;
-
-    /**
-     * @brief Pointer to the third red robot
-     */
-    Robot* red3;
+    Goalie* goalie;
+    Striker* striker1;
+    Striker* striker2;
+    Opponent* opponent1;
+    Opponent* opponent2;
+    Opponent* opponent3;
 
 public:
     Game(Referee* ref_in,
-         Robot* blue1_in, Robot* blue2_in, Robot* blue3_in,
-         Robot* red1_in, Robot* red2_in, Robot* red3_in);
+         Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
+         Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in);
+
     void step();
 
 

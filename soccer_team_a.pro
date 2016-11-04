@@ -19,13 +19,19 @@ HEADERS += \
     src/soccer_tests.h \
     src/robot.h \
     src/timer.h \
-    src/game.h
+    src/game.h \
+    src/goalie.h \
+    src/striker.h \
+    src/opponent.h
 SOURCES += \
     src/soccer_tests.cpp \
     src/main.cpp \
     src/robot.cpp \
     src/timer.cpp \
-    src/game.cpp
+    src/game.cpp \
+    src/goalie.cpp \
+    src/striker.cpp \
+    src/opponent.cpp
 		
 		
 ##############
