@@ -116,7 +116,7 @@ int Game::take_kick_off_position()
 
 void Game::perform_kick_off()
 {
-    striker1->GotoXY(striker1->datBall->GetX(), striker2->datBall->GetY(), 160, true);
+    striker1->GotoXY(datBall->GetX(), datBall->GetY(), 160, true);
 }
 
 int Game::take_penalty_position()
