@@ -3,11 +3,12 @@
 #define DEBUG 1
 #define WAIT_TIME_POSITION_TAKING 10000000
 
-Game::Game(Referee* ref_in,
+Game::Game(Referee* ref_in, bool is_team_blue_in,
            Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
            Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in)
 {
     referee_handler = ref_in;
+    is_team_blue = is_team_blue_in;
 
     goalie = goalie_in;
     striker1 = striker1_in;
@@ -225,4 +226,19 @@ int Game::take_kick_off_position(bool left_side, bool kicking_team)
     // turn robots into their needed orientation
 
     return 0;
+}
+
+void Game::set_is_left_side(bool is_left_side_in)
+{
+    is_left_side = is_left_side_in;
+}
+
+bool Game::check_is_team_blue()
+{
+    return is_team_blue;
+}
+
+bool Game::check_is_left_side()
+{
+    return is_left_side;
 }

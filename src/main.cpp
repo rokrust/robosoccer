@@ -37,7 +37,7 @@ int main(void) {
 
 
 	try {
-            int i = 1;
+            /* int i = 1;
             Timer utimer(100);
             utimer.enable();
 
@@ -48,7 +48,10 @@ int main(void) {
                 }
 
             }
-            cout << i;
+            cout << i; */
+
+
+
             // Establish connection to the RTDB
             cout << endl << "Connecting to RTDB..." << endl;
             // Create the client name with the unique client number*/
@@ -96,16 +99,10 @@ int main(void) {
 
 
             // Create Game object
-            Game game_handler(&ref_handler,
+            Game game_handler(&ref_handler, is_team_blue,
                               &myGoalie, &myStriker1, &myStriker2,
                               &theOpponent1, &theOpponent2, &theOpponent3);
 
-
-            /*
-            // Initialize a Test object
-            Soccer_Tests Test_Obj(&myGoalie, &myStriker1, &myStriker2,
-                                  &theOpponent1, &theOpponent2, &theOpponent3);
-            */
 
             /** Create a ball object
              *
@@ -132,7 +129,7 @@ int main(void) {
             //-------------------------------------- End Init ---------------------------------
 
             // select scenario
-            int SCENARIO = 8;
+            int SCENARIO = 1;
 
             if (SCENARIO == 1) {
                 Test_Obj.move_in_out();

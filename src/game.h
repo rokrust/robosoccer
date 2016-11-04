@@ -18,7 +18,9 @@ private:
     Referee* referee_handler;
 
     bool is_team_blue;
+    bool is_left_side;
 
+public:
     Goalie* goalie;
     Striker* striker1;
     Striker* striker2;
@@ -26,8 +28,7 @@ private:
     Opponent* opponent2;
     Opponent* opponent3;
 
-public:
-    Game(Referee* ref_in,
+    Game(Referee* ref_in, bool is_team_blue_in,
          Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
          Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in);
 
@@ -40,6 +41,12 @@ public:
 
     void set_phase(ePlayMode new_phase);
     ePlayMode get_phase(bool display=false);
+
+    void set_is_left_side(bool is_left_side_in);
+
+    bool check_is_team_blue();
+
+    bool check_is_left_side();
 };
 
 #endif // GAME_H
