@@ -5,11 +5,19 @@ Striker::Striker(RTDBConn DBC_in, int device_nr_in, RawBall *datBall_in) : Robot
 
 }
 
-Striker::shoot_penalty()
+int Striker::shoot_penalty()
 {
     Position pos_ball(datBall->GetPos());
+    Position strikerPos(GetPos());
 
-    GotoPos(pos_ball);
+    double dist = abs(calc_dist(strikerPos, pos_ball));
+    if (dist < 0.4) {
+        GotoPos(pos_ball);
+        cout << "Shoot" << endl;
+    }
+    else {
+        cout << "Ball too far away" << endl;
+    }
 
     return 0;
 }

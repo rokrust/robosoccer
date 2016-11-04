@@ -177,8 +177,8 @@ int main(void) {
             if (SCENARIO == 21) {
                 game_handler.take_penalty_position();
                 usleep(1000 * 1000);
-                // game_handler.bring_goalie_in_penalty_save_position();
             }
+
 
 	} catch (DBError err) {
 		cout << "Client died on Error: " << err.what() << endl;

@@ -196,10 +196,6 @@ int Game::take_penalty_position()
     striker1->spot_turn(angle4allRobots);
     striker2->spot_turn(angle4allRobots);
 
-    if (!kicking_team) {
-        goalie->go_to_penalty_save_position(is_left_side);
-    }
-
     return 0;
 }
 
@@ -254,8 +250,8 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
             cout << "Game Phase transition" << endl;
         }
 
+        // REFEREE_INIT -> BEFORE_KICK_OFF
         if ((previous_phase == 0) && (current_phase == 1)) {
-            // REFEREE_INIT -> BEFORE_KICK_OFF
             if (verbose) {
                 cout << "Changed from REFEREE_INIT to BEFORE_KICK_OFF" << endl;
             }
@@ -263,23 +259,23 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
             take_kick_off_position();
         }
 
+        // BEFORE_KICK_OFF -> KICK_OFF
         if ((previous_phase == 1) && (current_phase == 2)) {
-            // BEFORE_KICK_OFF -> KICK_OFF
             if (verbose) {
                 cout << "Changed from BEFORE_KICK_OFF to KICK_OFF" << endl;
             }
             perform_kick_off();
         }
 
+        // KICK_OFF -> PLAY_ON
         if ((previous_phase == 2) && (current_phase == 5)) {
-            // KICK_OFF -> PLAY_ON
             if (verbose) {
                 cout << "Changed from KICK_OFF to PLAY_ON" << endl;
             }
         }
 
+        // PLAY_ON -> BEFORE_KICK_OFF
         if ((previous_phase == 5) && (current_phase == 1)) {
-            // PLAY_ON -> BEFORE_KICK_OFF
             if (verbose) {
                 cout << "Changed from PLAY_ON to KICK_OFF" << endl;
             }
@@ -287,15 +283,15 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
             take_kick_off_position();
         }
 
+        // PLAY_ON -> REFEREE_INIT
         if ((previous_phase == 5) && (current_phase == 0)) {
-            // PLAY_ON -> REFEREE_INIT
             if (verbose) {
                 cout << "Changed from PLAY_ON to REFEREE_INIT" << endl;
             }
         }
 
+        // PLAY_ON -> BEFORE_PENALTY
         if ((previous_phase == 5) && (current_phase == 3)) {
-            // PLAY_ON -> BEFORE_PENALTY
             if (verbose) {
                 cout << "Changed from PLAY_ON to BEFORE_PENALTY" << endl;
             }
@@ -304,15 +300,23 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
             take_penalty_position();
         }
 
+        // BEFORE_PENALTY -> PENALTY
         if ((previous_phase == 3) && (current_phase == 4)) {
-            // BEFORE_PENALTY -> PENALTY
             if (verbose) {
                 cout << "Changed from BEFORE_PENALTY to PENALTY" << endl;
             }
+            update_kick_off();
+            update_side();
+            if (has_kick_off) {
+                striker1->shoot_penalty();
+            }
+            else {
+                goalie->go_to_penalty_save_position(is_left_side);
+            }
         }
 
+        // PENALTY -> BEFORE_PENALTY
         if ((previous_phase == 4) && (current_phase == 3)) {
-            // PENALTY -> BEFORE_PENALTY
             if (verbose) {
                 cout << "Changed from PENALTY to BEFORE_PENALTY" << endl;
             }
@@ -321,40 +325,40 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
             take_penalty_position();
         }
 
+        // PENALTY -> REFEREE_INIT
         if ((previous_phase == 4) && (current_phase == 0)) {
-            // PENALTY -> REFEREE_INIT
             if (verbose) {
                 cout << "Changed from PENALTY to REFEREE_INIT" << endl;
             }
         }
 
         // existing but senseless transitions
+        // BEFORE_KICK_OFF -> PENALTY
         if ((previous_phase == 1) && (current_phase == 4)) {
-            // BEFORE_KICK_OFF -> PENALTY
             if (verbose) {
                 cout << "Changed from BEFORE_KICK_OFF to PENALTY" << endl;
                 cout << "--Exceptional Transition--" << endl;
             }
         }
 
+        // REFEREE_INIT -> PENALTY
         if ((previous_phase == 0) && (current_phase == 4)) {
-            // REFEREE_INIT -> PENALTY
             if (verbose) {
                 cout << "Changed from REFEREE_INIT to PENALTY" << endl;
                 cout << "--Exceptional Transition--" << endl;
             }
         }
 
+        // KICK_OFF -> PENALTY
         if ((previous_phase == 2) && (current_phase == 4)) {
-            // KICK_OFF -> PENALTY
             if (verbose) {
                 cout << "Changed from KICK_OFF to PENALTY" << endl;
                 cout << "--Exceptional Transition--" << endl;
             }
         }
 
+        // PLAY_ON -> PENALTY
         if ((previous_phase == 5) && (current_phase == 4)) {
-            // PLAY_ON -> PENALTY
             if (verbose) {
                 cout << "Changed from PLAY_ON to PENALTY" << endl;
                 cout << "--Exceptional Transition--" << endl;
