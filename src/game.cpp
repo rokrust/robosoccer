@@ -312,12 +312,12 @@ void Game::set_is_left_side(bool is_left_side_in)
     is_left_side = is_left_side_in;
 }
 
-bool Game::check_is_team_blue()
+bool Game::get_is_team_blue()
 {
     return is_team_blue;
 }
 
-bool Game::check_is_left_side()
+bool Game::get_is_left_side()
 {
     return is_left_side;
 }

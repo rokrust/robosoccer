@@ -46,9 +46,9 @@ public:
 
     void set_is_left_side(bool is_left_side_in);
 
-    bool check_is_team_blue();
+    bool get_is_team_blue();
 
-    bool check_is_left_side();
+    bool get_is_left_side();
 };
 
 #endif // GAME_H
