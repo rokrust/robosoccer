@@ -115,7 +115,7 @@ int main(void) {
 
 
             // Create Game object
-            Game game_handler(&ref_handler, is_team_blue,
+            Game game_handler(&ref_handler, is_team_blue, &ball,
                               &myGoalie, &myStriker1, &myStriker2,
                               &theOpponent1, &theOpponent2, &theOpponent3);
 

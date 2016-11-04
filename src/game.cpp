@@ -4,12 +4,13 @@
 #define WAIT_TIME_POSITION_TAKING 10000000
 #define WAIT_TIME_TURNING 3000000
 
-Game::Game(Referee* ref_in, bool is_team_blue_in,
+Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
            Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
            Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in)
 {
     referee_handler = ref_in;
     is_team_blue = is_team_blue_in;
+    datBall = datBall_in;
 
     goalie = goalie_in;
     striker1 = striker1_in;
