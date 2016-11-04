@@ -307,6 +307,13 @@ int Game::take_penalty_position(bool kicking_team)
     return 0;
 }
 
+int Game::bring_goalie_in_penalty_save_position()
+{
+    goalie->go_to_penalty_save_position(is_left_side);
+
+    return 0;
+}
+
 void Game::set_is_left_side(bool is_left_side_in)
 {
     is_left_side = is_left_side_in;

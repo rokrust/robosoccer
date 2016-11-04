@@ -10,7 +10,7 @@ private:
 
 
 public:
-    Opponent(RTDBConn DBC_in, int device_nr_in);
+    Opponent(RTDBConn DBC_in, int device_nr_in, RawBall *datBall_in);
 };
 
 #endif // OPPONENT_H

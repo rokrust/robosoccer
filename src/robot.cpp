@@ -29,9 +29,10 @@
 #define DIST_THRESHOLD_STOP 0.10
 
 
-Robot::Robot(RTDBConn DBC_in, int device_nr_in) : RoboControl(DBC_in, device_nr_in)
+Robot::Robot(RTDBConn DBC_in, int device_nr_in, RawBall *datBall_in) : RoboControl(DBC_in, device_nr_in)
 {
     device_nr = device_nr_in;
+    datBall = datBall_in;
 }
 
 Robot::~Robot()

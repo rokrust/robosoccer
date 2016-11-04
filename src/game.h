@@ -39,9 +39,12 @@ public:
 
     int take_penalty_position(bool kicking_team);
 
+    int bring_goalie_in_penalty_save_position();
+
     void set_team(bool is_blue);
 
     void set_phase(ePlayMode new_phase);
+
     ePlayMode get_phase(bool display=false);
 
     void set_is_left_side(bool is_left_side_in);
