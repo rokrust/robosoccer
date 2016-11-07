@@ -131,7 +131,7 @@ int main(void) {
             //-------------------------------------- End Init ---------------------------------
 
             // select scenario
-            int SCENARIO = 4;
+            int SCENARIO = 11;
 
 
             if (SCENARIO == 1) {
@@ -172,6 +172,10 @@ int main(void) {
 
             if (SCENARIO == 10) {
                 game_handler.take_kick_off_position();
+            }
+
+            if (SCENARIO == 11) {
+                Test_Obj.test_command_driving();
             }
 
             if (SCENARIO == 21) {

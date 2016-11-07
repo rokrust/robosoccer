@@ -26,6 +26,8 @@ public:
     Robot(RTDBConn DBC_in, int device_nr_in, RawBall* datBall_in);
     ~Robot();
 
+    void drive_precise(Position pos_in, bool verbose);
+
     /**
      * @brief Custom driving function
      * @param pos_in Position to drive to

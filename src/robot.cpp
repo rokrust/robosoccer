@@ -28,7 +28,7 @@
 #define WHEEL_SPEED_RAMPUP 10
 #define DRIVE_RAMP_UP_START 100
 #define DIST_THRESHOLD_LINEAR 0.40
-#define DIST_THRESHOLD_STOP 0.15
+#define DIST_THRESHOLD_STOP 0.08
 
 
 Robot::Robot(RTDBConn DBC_in, int device_nr_in, RawBall *datBall_in) : RoboControl(DBC_in, device_nr_in)
@@ -115,6 +115,8 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
             } else {
                 ramp_up = DRIVE_RAMP_UP_START;
             }
+
+            ramp_up = 50;
 
             if (verbose) {
                 cout << "Disance to goal is: " << dist << endl;

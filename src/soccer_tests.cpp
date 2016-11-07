@@ -166,10 +166,20 @@ void Soccer_Tests::drive_to_pos()
     }
 }
 
-void Soccer_Tests::test_goal_positions()
+void Soccer_Tests::test_command_driving()
 {
-    Position goal_left1(-1.23, 0.06);
-    Position goal_left2(-1.23, -0.44);
+    double x_in, y_in;
+
+    while(true) {
+        cout << "X: " << endl;
+        cin >> x_in;
+        cout << "Y: " << endl;
+        cin >> y_in;
+        Position goal_pos(x_in, y_in);
+        cout << "Going to position x:" << x_in << " y:" << y_in << endl;
+        goalie->drive_to_pos(goal_pos, true);
+        cin.get();
+    }
 }
 
 void Soccer_Tests::test_turns()
