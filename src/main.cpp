@@ -131,7 +131,7 @@ int main(void) {
             //-------------------------------------- End Init ---------------------------------
 
             // select scenario
-            int SCENARIO = 8;
+            int SCENARIO = 4;
 
 
             if (SCENARIO == 1) {

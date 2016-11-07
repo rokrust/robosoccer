@@ -159,9 +159,9 @@ void Soccer_Tests::drive_to_pos()
     Position posgoal(0.7, 0.0);
     Position posgoal2(-0.7, 0.0);
     while(true) {
-        goalie->drive_to_pos(posgoal);
+        goalie->drive_to_pos(posgoal, true);
         cin.get();
-        goalie->drive_to_pos(posgoal2);
+        goalie->drive_to_pos(posgoal2, true);
         cin.get();
     }
 }

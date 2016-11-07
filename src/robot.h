@@ -30,7 +30,9 @@ public:
      * @brief Custom driving function
      * @param pos_in Position to drive to
      */
-    void drive_to_pos(Position pos_in);
+    void drive_to_pos(Position pos_in, bool verbose);
+
+    int calc_ddeg(Angle goal_phi);
 
     /**
      * @brief Calculate Euclidean distance between two positions
