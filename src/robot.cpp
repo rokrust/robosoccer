@@ -20,15 +20,15 @@
 // drive constants
 #define PI 3.14159265
 #define ANGLE_TURN_THRESHOLD 35
-#define DSPEED_GAIN 5.5
-#define V_GROUND_MAX 80
+#define DSPEED_GAIN 2.0
+#define V_GROUND_MAX 100
 #define V_GROUND_MIN 0
 #define MAX_DSPEED_REL 0.1
-#define DRIVE_DURATION 100
+#define DRIVE_DURATION 200
 #define WHEEL_SPEED_RAMPUP 10
 #define DRIVE_RAMP_UP_START 100
 #define DIST_THRESHOLD_LINEAR 0.40
-#define DIST_THRESHOLD_STOP 0.20
+#define DIST_THRESHOLD_STOP 0.15
 
 
 Robot::Robot(RTDBConn DBC_in, int device_nr_in, RawBall *datBall_in) : RoboControl(DBC_in, device_nr_in)
