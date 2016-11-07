@@ -166,6 +166,12 @@ void Soccer_Tests::drive_to_pos()
     }
 }
 
+void Soccer_Tests::test_goal_positions()
+{
+    Position goal_left1(-1.23, 0.06);
+    Position goal_left2(-1.23, -0.44);
+}
+
 void Soccer_Tests::test_turns()
 {
     Angle to_pc(90);

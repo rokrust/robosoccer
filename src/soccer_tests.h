@@ -88,6 +88,8 @@ public:
      */
     void drive_to_pos();
 
+    void test_goal_positions();
+
     /**
      * @brief Test the custom turning function with two turns
      */
