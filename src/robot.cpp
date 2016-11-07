@@ -42,7 +42,7 @@ Robot::~Robot()
 }
 
 void Robot::drive_to_pos(Position pos_in, bool verbose=false)
-{
+{    
     // initialize left and right wheel speed, ground speed and speed difference
     int v_left, v_right, v_ground, dspeed;
 
@@ -59,79 +59,76 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
     Angle goal_phi = cur_pos.AngleOfLineToPos(goal_pos);
     int ddeg = calc_ddeg(goal_phi);
 
-    if (verbose) {
-        cout << "Current orientation is: " << cur_phi.Deg() << endl;
-        cout << "Goal line orientation is: " << goal_phi.Deg() << endl;
-        cout << "Angle difference is: " << ddeg << endl;
-    }
-
-    // if the orientation difference is above a threshold, turn on the spot before driving
-    if (abs(ddeg) > ANGLE_TURN_THRESHOLD) {
-        int wait_time = this->spot_turn(goal_phi);
-        usleep(wait_time);
-    }
-
-    // drive the robot while the distance is above the threshold
-    while (dist > DIST_THRESHOLD_STOP) {
+    if (dist > DIST_THRESHOLD_STOP) {
         /*
+        if (verbose) {
+            cout << "Current orientation is: " << cur_phi.Deg() << endl;
+            cout << "Goal line orientation is: " << goal_phi.Deg() << endl;
+            cout << "Angle difference is: " << ddeg << endl;
+        }
+        */
+
         // if the orientation difference is above a threshold, turn on the spot before driving
         if (abs(ddeg) > ANGLE_TURN_THRESHOLD) {
             int wait_time = this->spot_turn(goal_phi);
             usleep(wait_time);
         }
-        */
 
-        // update the difference in orientation
-        cur_phi = this->GetPhi();
-        goal_phi = cur_pos.AngleOfLineToPos(goal_pos);
-        ddeg = calc_ddeg(goal_phi);
+        // drive the robot while the distance is above the threshold
+        while (dist > DIST_THRESHOLD_STOP) {
+            // update the difference in orientation
+            cur_phi = this->GetPhi();
+            goal_phi = cur_pos.AngleOfLineToPos(goal_pos);
+            ddeg = calc_ddeg(goal_phi);
 
-        // update the distance
-        cur_pos = this->GetPos();
-        dist = this->calc_dist(cur_pos, pos_in);
+            // update the distance
+            cur_pos = this->GetPos();
+            dist = this->calc_dist(cur_pos, pos_in);
 
-        // calculate the ground speed depending on the distance
-        if (dist > DIST_THRESHOLD_LINEAR) {
-            v_ground = V_GROUND_MAX;
-        } else {
-            v_ground = int(dist*((V_GROUND_MAX - V_GROUND_MIN) / DIST_THRESHOLD_LINEAR) + V_GROUND_MIN);
+            // calculate the ground speed depending on the distance
+            if (dist > DIST_THRESHOLD_LINEAR) {
+                v_ground = V_GROUND_MAX;
+            } else {
+                v_ground = int(dist*((V_GROUND_MAX - V_GROUND_MIN) / DIST_THRESHOLD_LINEAR) + V_GROUND_MIN);
+            }
+
+            // calculate the speed difference that will be applied on the wheels,
+            // depending on the ground speed and the difference in orientation
+            dspeed = int((float(abs(sin(ddeg*PI/180))) * float(DSPEED_GAIN)) * float(MAX_DSPEED_REL) * float(v_ground));
+            if (ddeg > 0) {
+                // robot orientation too far left of goal in driving direction
+                v_left = v_ground - dspeed;
+                v_right = v_ground + dspeed;
+            } else {
+                // robot orientation too far right of goal in driving direction
+                v_left = v_ground + dspeed;
+                v_right = v_ground - dspeed;
+            }
+
+            int cur_left = this->GetSpeedLeft();
+            int cur_right = this->GetSpeedRight();
+            int ramp_up;
+
+
+            if ((cur_left > WHEEL_SPEED_RAMPUP) || (cur_right > WHEEL_SPEED_RAMPUP)) {
+                ramp_up = 0;
+            } else {
+                ramp_up = DRIVE_RAMP_UP_START;
+            }
+
+            if (verbose) {
+                cout << "Disance to goal is: " << dist << endl;
+                cout << "Ground speed is: " << v_ground << endl;
+                cout << "ddeg is: " << ddeg << endl;
+                cout << "Left speed: " << v_left << "   Right speed: " << v_right << endl;
+                cout << "RampUp is: " << ramp_up << endl;
+                cout << "---------------------" << endl;
+            }
+
+            // set the wheel speeds for the run time
+            this->MoveMs(v_left, v_right, DRIVE_DURATION, ramp_up);
+            usleep((DRIVE_DURATION + 30)*1000);
         }
-
-        // calculate the speed difference that will be applied on the wheels,
-        // depending on the ground speed and the difference in orientation
-        dspeed = int((float(abs(sin(ddeg*PI/180))) * float(DSPEED_GAIN)) * float(MAX_DSPEED_REL) * float(v_ground));
-        if (ddeg > 0) {
-            // robot orientation too far left of goal in driving direction
-            v_left = v_ground - dspeed;
-            v_right = v_ground + dspeed;
-        } else {
-            // robot orientation too far right of goal in driving direction
-            v_left = v_ground + dspeed;
-            v_right = v_ground - dspeed;
-        }
-
-        int cur_left = this->GetSpeedLeft();
-        int cur_right = this->GetSpeedRight();
-        int ramp_up;
-
-
-        if ((cur_left > WHEEL_SPEED_RAMPUP) || (cur_right > WHEEL_SPEED_RAMPUP)) {
-            ramp_up = 0;
-        } else {
-            ramp_up = DRIVE_RAMP_UP_START;
-        }
-
-        if (verbose) {
-            cout << "Disance to goal is: " << dist << endl;
-            cout << "Ground speed is: " << v_ground << endl;
-            cout << "ddeg is: " << ddeg << endl;
-            cout << "Left speed: " << v_left << "   Right speed: " << v_right << endl;
-            cout << "RampUp is: " << ramp_up << endl;
-        }
-
-        // set the wheel speeds for the run time
-        this->MoveMs(v_left, v_right, DRIVE_DURATION, ramp_up);
-        usleep((DRIVE_DURATION + 30)*1000);
     }
 }
 
