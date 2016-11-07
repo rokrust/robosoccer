@@ -67,7 +67,8 @@ int Goalie::go_to_penalty_save_position(bool is_left_side)
             if (y_G < 0.25 && y_G >= -0.25) {
                 // cout << "Goalie reaction" << endl;
                 cout << "Goalie going to (" << x_G << " , " << y_G << ")" << endl;
-                GotoPos(Position(x_G, y_G));
+                drive_to_pos(Position(x_G, y_G), false);
+                // GotoPos(Position(x_G, y_G));
                 // GotoXY(x_G, y_G, 120, true);
             }
         }

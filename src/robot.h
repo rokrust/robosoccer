@@ -32,6 +32,18 @@ public:
      */
     void drive_to_pos(Position pos_in, bool verbose);
 
+    /**
+     * @brief drive_parallel
+     * @param pos_in
+     * @param verbose
+     */
+    void drive_parallel(float diff_to_drive, bool verbose);
+
+    /**
+     * @brief calc_ddeg
+     * @param goal_phi
+     * @return
+     */
     int calc_ddeg(Angle goal_phi);
 
     /**

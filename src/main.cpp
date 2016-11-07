@@ -131,7 +131,7 @@ int main(void) {
             //-------------------------------------- End Init ---------------------------------
 
             // select scenario
-            int SCENARIO = 4;
+            int SCENARIO = 22;
 
 
             if (SCENARIO == 1) {
@@ -177,6 +177,10 @@ int main(void) {
             if (SCENARIO == 21) {
                 game_handler.take_penalty_position();
                 usleep(1000 * 1000);
+            }
+
+            if (SCENARIO == 22) {
+                game_handler.goalie->drive_parallel(+10, false);
             }
 
 

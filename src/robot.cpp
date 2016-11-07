@@ -132,6 +132,66 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
     }
 }
 
+void Robot::drive_parallel(float diff_to_drive, bool verbose=false)
+{
+    // Optimized for Distances between +/- 0.25m
+    int v_left, v_right;
+    int run_speed = BASE_TURN_SPEED;
+
+    // calculate the difference in the current and the desired orientation
+    if (diff_to_drive > 0) {
+        // forward
+        v_left = run_speed;
+        v_right = run_speed;
+    } else {
+        // backward
+        v_left = -run_speed;
+        v_right = -run_speed;
+    }
+
+    // set the wheel speed for the turn time
+    Position r1 = this->GetPos();
+    Position r0 = r1;
+
+    cin.get();
+    cin.get();
+
+    cout << "Sign" << "\t" << "Runtime" << "\t" << "Pos_Diff" << endl;
+
+    int run_time = 100;
+    int time_step = 100;
+    for (run_time = 100; run_time <= 1000; run_time = run_time + time_step) {
+
+        // Test forward
+        this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
+        usleep((run_time+500) * 1000 + 1000000);
+
+        r0 = r1;
+        r1 = this->GetPos();
+
+        cout << "'+" << "\t'" << run_time << "\t'" << this->calc_dist(r1, r0) << endl;
+
+        // cout << "Forward: run_time = " << run_time << " - PosDiff = " << this->calc_dist(r1, r0);
+        // cin.get();
+
+        // Test backward
+        this->MoveMs(-v_left, -v_right, run_time, TURN_RAMP_UP);
+        usleep((run_time+500) * 1000 + 1000000);
+
+        r0 = r1;
+        r1 = this->GetPos();
+
+        cout << "'-" << "\t'" << run_time << "\t'" << this->calc_dist(r1, r0) << endl;
+
+        // cout << "Backward: run_time = " << run_time << " - PosDiff = -" << this->calc_dist(r1, r0);
+        // cin.get();
+    }
+
+    cout << "DONE" << endl;
+
+}
+
+
 int Robot::calc_ddeg(Angle goal_phi) {
     Angle cur_phi = this->GetPhi();
     int ddeg = goal_phi.Deg() - cur_phi.Deg();
