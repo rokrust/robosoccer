@@ -141,6 +141,31 @@ Position pos4(-0.2, 0.7);
 Position pos5(-0.7, 0.7);
 Position pos6(-0.7, 0.0);
 
+
+MEASURE FOR DRIVE_PARALLEL WHICH RUNTIME RESULTS IN WHICH RUNWAY
 /** Define orientations */
 Angle to_pc(0);
 Angle to_wall(180);
+
+    /* int run_time = 100;
+    int time_step = 100;
+    for (run_time = 100; run_time <= 1000; run_time = run_time + time_step) {
+
+        // Test forward
+        this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
+        usleep((run_time+500) * 1000 + 1000000);
+
+        r0 = r1;
+        r1 = this->GetPos();
+
+        cout << "'+" << "\t'" << run_time << "\t'" << this->calc_dist(r1, r0) << endl;
+
+        // Test backward
+        this->MoveMs(-v_left, -v_right, run_time, TURN_RAMP_UP);
+        usleep((run_time+500) * 1000 + 1000000);
+
+        r0 = r1;
+        r1 = this->GetPos();
+
+        cout << "'-" << "\t'" << run_time << "\t'" << this->calc_dist(r1, r0) << endl;
+    } */

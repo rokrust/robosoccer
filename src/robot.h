@@ -39,7 +39,7 @@ public:
      * @param pos_in
      * @param verbose
      */
-    void drive_parallel(float diff_to_drive, bool verbose);
+    int drive_parallel(float diff_to_drive, bool verbose);
 
     /**
      * @brief calc_ddeg

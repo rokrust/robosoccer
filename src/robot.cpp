@@ -134,25 +134,34 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
     }
 }
 
-void Robot::drive_parallel(float diff_to_drive, bool verbose=false)
+int Robot::drive_parallel(float diff_to_drive, bool verbose=false)
 {
     // Optimized for Distances between +/- 0.25m
     int v_left, v_right;
     int run_speed = BASE_TURN_SPEED;
 
     // calculate the difference in the current and the desired orientation
+    float run_time;
     if (diff_to_drive > 0) {
         // forward
+        run_time = 3200 * diff_to_drive;
         v_left = run_speed;
         v_right = run_speed;
     } else {
         // backward
+        run_time = 3400 * diff_to_drive;
         v_left = -run_speed;
         v_right = -run_speed;
     }
-    // cout << v_left << v_right << endl;
 
-    // set the wheel speed for the turn time
+    this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
+
+    int wait_time = (run_time + 200) * 1000;
+
+    return wait_time;
+}
+
+    /* // set the wheel speed for the turn time
     Position r1 = this->GetPos();
     Position r0 = r1;
 
@@ -161,21 +170,21 @@ void Robot::drive_parallel(float diff_to_drive, bool verbose=false)
     // Go backward at 3076.92 ms per m
     // Formula to apply: run_time = 3076.92(ms/m) * diff_to_drive(m)
 
-    cout << "In drive_parallel" << endl;
-
     cin.get();
     cin.get();
 
     cout << "Sign" << "\t" << "diff_to_drive" << "\t" << "Runtime" << "\t" << "diff_driven" << endl;
 
-    float run_time = 0;
+
     float diff_to_drive_step = 0.05;
+
+
 
     for (float diff_to_drive = 0.05; diff_to_drive < 0.31; diff_to_drive = diff_to_drive + diff_to_drive_step)
     {
         // Test forward
-        run_time = 3076.92 * diff_to_drive;
-        this->MoveMs(80, 80, run_time, TURN_RAMP_UP);
+        run_time = 3200 * diff_to_drive; // forward: old: 3076.92
+        this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
         usleep((run_time+500) * 1000 + 1000000);
 
         r0 = r1;
@@ -184,6 +193,7 @@ void Robot::drive_parallel(float diff_to_drive, bool verbose=false)
         cout << "'+" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'" << this->calc_dist(r1, r0) << endl;
 
         // Test backward
+        run_time = 3400 * diff_to_drive; // backward: old: 3076.92
         this->MoveMs(-v_left, -v_right, run_time, TURN_RAMP_UP);
         usleep((run_time+500) * 1000 + 1000000);
 
@@ -191,34 +201,7 @@ void Robot::drive_parallel(float diff_to_drive, bool verbose=false)
         r1 = this->GetPos();
 
         cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'" << this->calc_dist(r1, r0) << endl;
-    }
-
-    /* int run_time = 100;
-    int time_step = 100;
-    for (run_time = 100; run_time <= 1000; run_time = run_time + time_step) {
-
-        // Test forward
-        this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
-        usleep((run_time+500) * 1000 + 1000000);
-
-        r0 = r1;
-        r1 = this->GetPos();
-
-        cout << "'+" << "\t'" << run_time << "\t'" << this->calc_dist(r1, r0) << endl;
-
-        // Test backward
-        this->MoveMs(-v_left, -v_right, run_time, TURN_RAMP_UP);
-        usleep((run_time+500) * 1000 + 1000000);
-
-        r0 = r1;
-        r1 = this->GetPos();
-
-        cout << "'-" << "\t'" << run_time << "\t'" << this->calc_dist(r1, r0) << endl;
     } */
-
-    cout << "DONE" << endl;
-
-}
 
 
 int Robot::calc_ddeg(Angle goal_phi) {

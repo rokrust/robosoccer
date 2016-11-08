@@ -10,18 +10,18 @@ int Goalie::go_to_penalty_save_position(bool is_left_side)
     Position goaliePos;
     Angle goalieAngle(-90);
 
-    if (is_left_side) {
+    /* if (is_left_side) {
         goaliePos.SetX(-1.3);
-        goaliePos.SetY(0.25);
+        goaliePos.SetY(0.0);
     }
     else {
         goaliePos.SetX(1.3);
-        goaliePos.SetY(0.25);
+        goaliePos.SetY(0.0);
     }
 
     GotoPos(goaliePos);
     usleep(4000 * 1000);
-    spot_turn(goalieAngle);
+    spot_turn(goalieAngle); */
 
 
 
@@ -38,6 +38,8 @@ int Goalie::go_to_penalty_save_position(bool is_left_side)
     int i = 0;
     while (wait4ball) {
         usleep(100 * 1000); // x (ms) * 1000
+
+        r_goalie = this->GetPos();
         i = i + 1;
 
         r0_ball = r1_ball;
@@ -58,18 +60,15 @@ int Goalie::go_to_penalty_save_position(bool is_left_side)
 
         float dx_ball2goalline = abs(x_goalline - r1_ball.GetX()); // Distance from Ball to the Goalline, only x relevant
 
-
         cout << i << "  dx_ball = " << dx_ball2goalline << " - dr_ball = " << dr_ball_mean.GetPos();
         cout << i << "  y_G = " << y_G << endl;
 
-        if (i % 5 == 0)
+        if (i % 5 == 0 && abs(dr_ball_mean.GetX()) > 0.005)
         {
             if (y_G < 0.25 && y_G >= -0.25) {
-                // cout << "Goalie reaction" << endl;
-                cout << "Goalie going to (" << x_G << " , " << y_G << ")" << endl;
-                drive_to_pos(Position(x_G, y_G), false);
-                // GotoPos(Position(x_G, y_G));
-                // GotoXY(x_G, y_G, 120, true);
+                float deltaY = y_G-r_goalie.GetY();
+                cout << "Goalie moving deltaY = " << deltaY << endl; // to (" << x_G << " , " << y_G << ")" << endl;
+                this->drive_parallel(deltaY, false);
             }
         }
 

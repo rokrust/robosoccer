@@ -89,8 +89,12 @@ int main(void) {
             cout << "\t initial direction: " << ball.GetPhi() << endl;
             cout << "\t initial velocity: " << ball.GetVelocity() << endl;
 
-            Goalie myGoalie(DBC, 0, &ball);
-            myGoalie.drive_parallel(+10, false);
+            Goalie myGoalie(DBC, 3, &ball);
+            myGoalie.GotoPos(Position(-1.3, 0.0));
+            usleep(7000 * 1000);
+            myGoalie.spot_turn(90);
+            myGoalie.go_to_penalty_save_position(true);
+            // myGoalie.drive_parallel(+10, false);
 
 
             /* int myGoalieDvNr;
