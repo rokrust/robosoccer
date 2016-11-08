@@ -89,8 +89,11 @@ int main(void) {
             cout << "\t initial direction: " << ball.GetPhi() << endl;
             cout << "\t initial velocity: " << ball.GetVelocity() << endl;
 
+            Goalie myGoalie(DBC, 0, &ball);
+            myGoalie.drive_parallel(+10, false);
 
-            int myGoalieDvNr;
+
+            /* int myGoalieDvNr;
             int myStriker1DvNr;
             int theOpponent1DvNr;
             if (is_team_blue) {
@@ -103,7 +106,6 @@ int main(void) {
                 myStriker1DvNr = 4;
                 theOpponent1DvNr = 0;
             }
-
 
             // Create Robot objects
             Goalie myGoalie(DBC, myGoalieDvNr, &ball);
@@ -185,7 +187,7 @@ int main(void) {
 
             if (SCENARIO == 22) {
                 game_handler.goalie->drive_parallel(+10, false);
-            }
+            } */
 
 
 	} catch (DBError err) {

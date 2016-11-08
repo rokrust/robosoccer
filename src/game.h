@@ -32,7 +32,7 @@ public:
 
     Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
          Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
-         Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in);
+         Opponent* opponent1_in = 0, Opponent* opponent2_in = 0, Opponent* opponent3_in = 0);
 
     void step(bool verbose=false);
 
