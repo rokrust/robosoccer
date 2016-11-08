@@ -67,7 +67,8 @@ int main(void) {
             // Get Robot Colour
             bool is_team_blue = true;
             cout << "Which Team? (0: red - 1: blue) ";
-            cin >> is_team_blue;
+            //cin >> is_team_blue;
+            is_team_blue=1;
 
             // Get Side
             // bool is_left_side = ref_handler.GetSide(); // 0: left side (Opp. PCs) - 1: right side (PCs)
@@ -132,7 +133,7 @@ int main(void) {
 
             // select scenario
 
-            int SCENARIO = 22;
+            int SCENARIO = 30;
 
             if (SCENARIO == 1) {
                 Test_Obj.move_in_out();
