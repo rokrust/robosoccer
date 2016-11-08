@@ -131,7 +131,7 @@ int main(void) {
             //-------------------------------------- End Init ---------------------------------
 
             // select scenario
-            int SCENARIO = 8;
+            int SCENARIO = 30;
 
 
             if (SCENARIO == 1) {
@@ -177,6 +177,10 @@ int main(void) {
             if (SCENARIO == 21) {
                 game_handler.take_penalty_position();
                 usleep(1000 * 1000);
+            }
+
+            if (SCENARIO == 30){
+                myStriker1.shoot_ball_at_goal(game_handler.get_is_left_side());
             }
 
 
