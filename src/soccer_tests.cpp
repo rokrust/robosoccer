@@ -159,9 +159,25 @@ void Soccer_Tests::drive_to_pos()
     Position posgoal(0.7, 0.0);
     Position posgoal2(-0.7, 0.0);
     while(true) {
-        goalie->drive_to_pos(posgoal);
+        goalie->drive_to_pos(posgoal, true);
         cin.get();
-        goalie->drive_to_pos(posgoal2);
+        goalie->drive_to_pos(posgoal2, true);
+        cin.get();
+    }
+}
+
+void Soccer_Tests::test_command_driving()
+{
+    double x_in, y_in;
+
+    while(true) {
+        cout << "X: " << endl;
+        cin >> x_in;
+        cout << "Y: " << endl;
+        cin >> y_in;
+        Position goal_pos(x_in, y_in);
+        cout << "Going to position x:" << x_in << " y:" << y_in << endl;
+        goalie->drive_to_pos(goal_pos, true);
         cin.get();
     }
 }

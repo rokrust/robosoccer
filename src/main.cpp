@@ -131,8 +131,8 @@ int main(void) {
             //-------------------------------------- End Init ---------------------------------
 
             // select scenario
-            int SCENARIO = 30;
 
+            int SCENARIO = 22;
 
             if (SCENARIO == 1) {
                 Test_Obj.move_in_out();
@@ -174,9 +174,19 @@ int main(void) {
                 game_handler.take_kick_off_position();
             }
 
+            if (SCENARIO == 11) {
+                Test_Obj.test_command_driving();
+            }
+
             if (SCENARIO == 21) {
                 game_handler.take_penalty_position();
                 usleep(1000 * 1000);
+            }
+
+
+            if (SCENARIO == 22) {
+                game_handler.goalie->drive_parallel(+10, false);
+
             }
 
             if (SCENARIO == 30){

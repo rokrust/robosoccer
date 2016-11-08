@@ -26,11 +26,27 @@ public:
     Robot(RTDBConn DBC_in, int device_nr_in, RawBall* datBall_in);
     ~Robot();
 
+    void drive_precise(Position pos_in, bool verbose);
+
     /**
      * @brief Custom driving function
      * @param pos_in Position to drive to
      */
-    void drive_to_pos(Position pos_in);
+    void drive_to_pos(Position pos_in, bool verbose);
+
+    /**
+     * @brief drive_parallel
+     * @param pos_in
+     * @param verbose
+     */
+    void drive_parallel(float diff_to_drive, bool verbose);
+
+    /**
+     * @brief calc_ddeg
+     * @param goal_phi
+     * @return
+     */
+    int calc_ddeg(Angle goal_phi);
 
     /**
      * @brief Calculate Euclidean distance between two positions
