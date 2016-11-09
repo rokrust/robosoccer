@@ -39,11 +39,11 @@ void Striker::shoot_ball_at_goal(bool is_left_side){
     //Set a flat line under the ball to shoot from
     if(is_left_side){
         goal.SetX(GOAL_RIGHT_XPOS);
-        shooting_pos.SetX(datBall->GetX() - 0.1);
+        shooting_pos.SetX(datBall->GetX() - 0.3);
     }
     else{
         goal.SetX(GOAL_LEFT_XPOS);
-        shooting_pos.SetX(datBall->GetX() + 0.1);
+        shooting_pos.SetX(datBall->GetX() + 0.3);
     }
 
     //Find equation for the line between ball and goal
@@ -54,8 +54,9 @@ void Striker::shoot_ball_at_goal(bool is_left_side){
     //find y-coordinate where estimation line and shooting line crosses
     shooting_pos.SetY(ascent*shooting_pos.GetX() + constant);
 
+
+    this->GotoXY(shooting_pos.GetX(), shooting_pos.GetY(), 160, true);
     //this->GotoPos(shooting_pos);
-    this->GotoPos(shooting_pos);
 
     //wait until position is reached
     usleep(5000000);
