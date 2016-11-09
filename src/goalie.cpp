@@ -1,8 +1,8 @@
 #include "goalie.h"
 
 #define GOALIE_SLEEP_TIME 0.2
-#define CALCULUS_RATE 5
-#define MAX_LOOP_COUNTDOWN -1000
+#define CALCULUS_RATE 1
+#define MAX_LOOP_COUNTDOWN -250
 #define V_X_THRESHOLD 0.01
 
 Goalie::Goalie(RTDBConn DBC_in, int device_nr_in, RawBall* datBall_in) : Robot(DBC_in, device_nr_in, datBall_in)
@@ -109,9 +109,9 @@ int Goalie::go_to_penalty_save_position(bool is_left_side)
             // enter possible movement not with every calculation update
             if ((calculus_countup % CALCULUS_RATE) == 0) {
                 if ((y_G < 0.25) && (y_G > -0.25) && (abs(v_x) > V_X_THRESHOLD)) {
-                    delta_y_G = y_G - goalie_pos.GetY();
+                    delta_y_G = y_G - GetPos().GetY();
                     cout << "delta_y_G: " << delta_y_G << endl;
-                    cout << "Moving the goalie!" << endl;
+                    cout << "Moving the goalie!-------------------" << endl;
                     this->drive_parallel(delta_y_G, false);
                 } else {
                     cout << "y_G is not within the goal, therefore the goalie does not move." << endl;
@@ -119,11 +119,11 @@ int Goalie::go_to_penalty_save_position(bool is_left_side)
             }
         }
 
-        if ((ball_t3.GetX() > 1.3)) {
+        if ((ball_t3.GetX() > 1.20)) {
             loop = false;
             cout << "Exiting loop because of ball position x: " << ball_t3.GetX() << endl;
         }
-        if ((ball_t3.GetX() < -1.3)) {
+        if ((ball_t3.GetX() < -1.20)) {
             loop = false;
             cout << "Exiting loop because of ball position x: " << ball_t3.GetX() << endl;
         }

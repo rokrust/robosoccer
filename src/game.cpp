@@ -71,7 +71,7 @@ int Game::take_kick_off_position()
     Angle* orientation_goalie;
     Angle left_forward(0);
     Angle right_forward(180);
-    Angle goalie_left(-90);
+    Angle goalie_left(90);
     Angle goalie_right(90);
     Angle left_side_striker1(45);
     Angle left_side_striker2(-45);

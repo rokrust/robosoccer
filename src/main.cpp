@@ -37,21 +37,6 @@ int main(void) {
 
 
 	try {
-            /* int i = 1;
-            Timer utimer(100);
-            utimer.enable();
-
-            while(1){
-                if(utimer.timeout()){
-                    cout << "Timeout: " << i++ << " detected" << std::endl;
-                    utimer.enable();
-                }
-
-            }
-            cout << i; */
-
-
-
             // Establish connection to the RTDB
             cout << endl << "Connecting to RTDB..." << endl;
             // Create the client name with the unique client number*/
@@ -156,7 +141,7 @@ int main(void) {
 
             if (SCENARIO == 2) {
                 game_handler.goalie->GotoPos(Position(-1.3, 0.0));
-                usleep(7000 * 1000);
+                usleep(12000 * 1000);
                 game_handler.goalie->spot_turn(90);
                 game_handler.goalie->go_to_penalty_save_position(true);
 
@@ -173,7 +158,7 @@ int main(void) {
             if (SCENARIO == 3){
                 myStriker1.shoot_ball_at_goal(game_handler.get_is_left_side());
             }
-
+/*
             if (SCENARIO == 100) {
                 Test_Obj.move_in_out();
             }
@@ -223,6 +208,7 @@ int main(void) {
                 game_handler.goalie->drive_parallel(+10, false);
 
             }
+            */
 
 	} catch (DBError err) {
 		cout << "Client died on Error: " << err.what() << endl;

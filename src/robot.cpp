@@ -144,7 +144,7 @@ int Robot::drive_parallel(float diff_to_drive, bool verbose=false)
     float run_time;
     if (diff_to_drive > 0) {
         // forward
-        run_time = 3200 * diff_to_drive;
+        run_time = 3200 * abs(diff_to_drive);
         v_left = run_speed;
         v_right = run_speed;
     } else {
@@ -154,6 +154,7 @@ int Robot::drive_parallel(float diff_to_drive, bool verbose=false)
         v_right = -run_speed;
     }
 
+    cout << "Runtime: " << run_time << endl;
     this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
 
     int wait_time = (run_time + 200) * 1000;
