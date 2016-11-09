@@ -4,6 +4,9 @@
 #define WAIT_TIME_POSITION_TAKING 10000000
 #define WAIT_TIME_TURNING 3000000
 #define WAIT_FOR_PENALTY_POS 12000000
+#define WAIT_TIME_POSITION_CORRECTING 2000000
+
+#define ROBOT_ARRIVED_THRESHOLD 0.2
 
 Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
            Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
@@ -40,6 +43,12 @@ int Game::take_kick_off_position()
     bool kicking_team = has_kick_off;
     bool left_side = is_left_side;
 
+    // define position pointers
+    // they are needed to check the positions without determining the side and role again
+    Position* goalie_pos;
+    Position* striker1_pos;
+    Position* striker2_pos;
+
     // define kick-off positions
     Position pos_goalie_left(-1.3, 0.0);
     Position pos_goalie_right(1.3, 0.0);
@@ -71,38 +80,80 @@ int Game::take_kick_off_position()
 
     if (left_side) {
         orientation_goalie = &goalie_left;
-        goalie->GotoPos(pos_goalie_left);
+        goalie_pos = &pos_goalie_left;
         if (kicking_team) {
             orientation_striker1 = &left_side_striker1;
             orientation_striker2 = &left_side_striker2;
-            striker1->GotoPos(pos_striker1_left);
-            striker2->GotoPos(pos_striker2_left);
+            striker1_pos = &pos_striker1_left;
+            striker2_pos = &pos_striker2_left;
         } else {
             orientation_striker1 = &left_forward;
             orientation_striker2 = &left_forward;
-            striker1->GotoPos(pos_defender1_left);
-            striker2->GotoPos(pos_defender2_left);
+            striker1_pos = &pos_defender1_left;
+            striker2_pos = &pos_defender2_left;
         }
     } else {
         orientation_goalie = &goalie_right;
-        goalie->GotoPos(pos_goalie_right);
+        goalie_pos = &pos_goalie_right;
         if (kicking_team) {
             orientation_striker1 = &right_side_striker1;
             orientation_striker2 = &right_side_striker2;
-            striker1->GotoPos(pos_striker1_right);
-            striker2->GotoPos(pos_striker2_right);
+            striker1_pos = &pos_striker1_right;
+            striker2_pos = &pos_striker2_right;
         } else {
             orientation_striker1 = &right_forward;
             orientation_striker2 = &right_forward;
-            striker1->GotoPos(pos_defender1_right);
-            striker2->GotoPos(pos_defender2_right);
+            striker1_pos = &pos_defender1_right;
+            striker2_pos = &pos_defender2_right;
         }
     }
 
+    goalie->GotoPos(*goalie_pos);
+    striker1->GotoPos(*striker1_pos);
+    striker2->GotoPos(*striker2_pos);
+
     usleep(WAIT_TIME_POSITION_TAKING);
 
-    // TODO Check if robots arrived savely
+    // check if robots arrived savely
+    bool goalie_unfinished = true;
+    bool striker1_unfinished = true;
+    bool striker2_unfinished = true;
+    while (goalie_unfinished || striker1_unfinished || striker2_unfinished) {
+        if (goalie->GetPos().DistanceTo(*goalie_pos) > ROBOT_ARRIVED_THRESHOLD) {
+            cout << "Goalie did not arrive so far" << endl;
+            goalie->Turn(90);
+            goalie->MoveDist(0.2, 30, false);
+        } else {
+            goalie_unfinished = false;
+        }
+        if (striker1->GetPos().DistanceTo(*striker1_pos) > ROBOT_ARRIVED_THRESHOLD) {
+            cout << "Striker1 did not arrive so far" << endl;
+            striker1->Turn(90);
+            striker1->MoveDist(0.2, 30, false);
+        } else {
+            striker1_unfinished = false;
+        }
+        if (striker2->GetPos().DistanceTo(*striker2_pos) > ROBOT_ARRIVED_THRESHOLD) {
+            cout << "Striker2 did not arrive so far" << endl;
+            striker2->Turn(90);
+            striker2->MoveDist(0.2, 30, false);
+        } else {
+            striker2_unfinished = false;
+        }
 
+        usleep(WAIT_TIME_POSITION_CORRECTING);
+
+        if (goalie_unfinished) {
+            goalie->GotoPos(*goalie_pos);
+        }
+        if (striker1_unfinished) {
+            striker1->GotoPos(*striker1_pos);
+        }
+        if (striker2_unfinished) {
+            striker2->GotoPos(*striker2_pos);
+        }
+        usleep(WAIT_TIME_POSITION_TAKING);
+    }
 
     // turn robots into their needed orientation
     goalie->spot_turn(*orientation_goalie);
