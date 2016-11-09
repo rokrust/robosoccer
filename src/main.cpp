@@ -89,15 +89,16 @@ int main(void) {
             cout << "\t initial direction: " << ball.GetPhi() << endl;
             cout << "\t initial velocity: " << ball.GetVelocity() << endl;
 
+            /*
             Goalie myGoalie(DBC, 0, &ball);
             myGoalie.GotoPos(Position(-1.3, 0.0));
             usleep(7000 * 1000);
             myGoalie.spot_turn(90);
             myGoalie.go_to_penalty_save_position(true);
             // myGoalie.drive_parallel(+10, false);
+*/
 
-
-            /* int myGoalieDvNr;
+            int myGoalieDvNr;
             int myStriker1DvNr;
             int theOpponent1DvNr;
             if (is_team_blue) {
@@ -125,7 +126,7 @@ int main(void) {
                               &myGoalie, &myStriker1, &myStriker2,
                               &theOpponent1, &theOpponent2, &theOpponent3);
 
-            game_handler.set_is_left_side(true);
+            //game_handler.set_is_left_side(true);
 
 
             // Initialize a Test object
@@ -136,51 +137,76 @@ int main(void) {
 
             //-------------------------------------- End Init ---------------------------------
 
+            int SCENARIO;
+            cout << "Select Scenario to play: " << endl;
+            cout << "1: Run the state machine" << endl;
+            cout << "2: Run the goalie ball stopping scenario" << endl;
+            cout << "3: Run the striker penalty shooting scenario" << endl;
+            cout << "...or enter another scenario number known to you" << endl;
+            cout << "SCENARIO = ";
+            cin >> SCENARIO;
+
             // select scenario
 
-            int SCENARIO = 22;
-
             if (SCENARIO == 1) {
-                Test_Obj.move_in_out();
-            }
-
-            if (SCENARIO == 2) {
-                Test_Obj.const_wheel_speed();
-            }
-
-            if (SCENARIO == 3) {
-                Test_Obj.easy_p_ctrl();
-            }
-
-            if (SCENARIO == 4) {
-                Test_Obj.drive_to_pos();
-            }
-
-            if (SCENARIO == 5) {
-                Test_Obj.test_turns();
-            }
-
-            // Goalie testing
-            if (SCENARIO == 6) {
-                Test_Obj.test_goalie();
-            }
-
-            if (SCENARIO == 7) {
-                Test_Obj.turn_experiments();
-            }
-
-            if (SCENARIO == 8) {
                 bool keep_running = 1;
                 while (keep_running) {
                     game_handler.step();
                 }
             }
 
-            if (SCENARIO == 10) {
+            if (SCENARIO == 2) {
+                game_handler.goalie->GotoPos(Position(-1.3, 0.0));
+                usleep(7000 * 1000);
+                game_handler.goalie->spot_turn(90);
+                game_handler.goalie->go_to_penalty_save_position(true);
+
+                /*
+                Goalie myGoalie(DBC, 0, &ball);
+                myGoalie.GotoPos(Position(-1.3, 0.0));
+                usleep(7000 * 1000);
+                myGoalie.spot_turn(90);
+                myGoalie.go_to_penalty_save_position(true);
+                // myGoalie.drive_parallel(+10, false);
+                */
+            }
+
+            if (SCENARIO == 100) {
+                Test_Obj.move_in_out();
+            }
+
+            if (SCENARIO == 200) {
+                Test_Obj.const_wheel_speed();
+            }
+
+            if (SCENARIO == 300) {
+                Test_Obj.easy_p_ctrl();
+            }
+
+            if (SCENARIO == 400) {
+                Test_Obj.drive_to_pos();
+            }
+
+            if (SCENARIO == 500) {
+                Test_Obj.test_turns();
+            }
+
+            // Goalie testing
+            if (SCENARIO == 600) {
+                Test_Obj.test_goalie();
+            }
+
+            if (SCENARIO == 700) {
+                Test_Obj.turn_experiments();
+            }
+
+
+
+            if (SCENARIO == 1000) {
                 game_handler.take_kick_off_position();
             }
 
-            if (SCENARIO == 11) {
+            if (SCENARIO == 1100) {
                 Test_Obj.test_command_driving();
             }
 
@@ -191,7 +217,7 @@ int main(void) {
 
             if (SCENARIO == 22) {
                 game_handler.goalie->drive_parallel(+10, false);
-            } */
+            }
 
 
 	} catch (DBError err) {
