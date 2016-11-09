@@ -147,7 +147,6 @@ int main(void) {
             cin >> SCENARIO;
 
             // select scenario
-
             if (SCENARIO == 1) {
                 bool keep_running = 1;
                 while (keep_running) {
@@ -169,6 +168,10 @@ int main(void) {
                 myGoalie.go_to_penalty_save_position(true);
                 // myGoalie.drive_parallel(+10, false);
                 */
+            }
+
+            if (SCENARIO == 3){
+                myStriker1.shoot_ball_at_goal(game_handler.get_is_left_side());
             }
 
             if (SCENARIO == 100) {
@@ -215,10 +218,11 @@ int main(void) {
                 usleep(1000 * 1000);
             }
 
+
             if (SCENARIO == 22) {
                 game_handler.goalie->drive_parallel(+10, false);
-            }
 
+            }
 
 	} catch (DBError err) {
 		cout << "Client died on Error: " << err.what() << endl;
