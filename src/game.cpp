@@ -430,6 +430,11 @@ bool Game::get_is_left_side()
     return is_left_side;
 }
 
+bool Game::get_has_kick_off()
+{
+    return has_kick_off;
+}
+
 ePlayMode Game::get_phase(bool display)
 {
     if (display) {

@@ -55,6 +55,7 @@ public:
 
     bool get_is_team_blue();
     bool get_is_left_side();
+    bool get_has_kick_off();
     ePlayMode get_phase(bool display=false);
 };
 

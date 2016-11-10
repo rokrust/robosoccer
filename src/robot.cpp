@@ -54,7 +54,7 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
     // calculate the distance between the robot and the goal
     Position goal_pos = pos_in;
     Position cur_pos = this->GetPos();
-    double dist = this->calc_dist(cur_pos, pos_in);
+    double dist = cur_pos.DistanceTo(pos_in);
     if (verbose) {
         cout << "Distance to goal: " << dist << "\n" << endl;
     }
@@ -80,7 +80,7 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
 
             // update the distance
             cur_pos = this->GetPos();
-            dist = this->calc_dist(cur_pos, pos_in);
+            dist = cur_pos.DistanceTo(pos_in);
 
             // calculate the ground speed depending on the distance
             if (dist > DIST_THRESHOLD_LINEAR) {
@@ -170,15 +170,6 @@ int Robot::calc_ddeg(Angle goal_phi) {
         ddeg = ddeg + 360;
     }
     return ddeg;
-}
-
-double Robot::calc_dist(Position pos_a, Position pos_b)
-{
-    // calculate the Euclidean distance between two positions
-    double x_dist = pos_a.GetX() - pos_b.GetX();
-    double y_dist = pos_a.GetY() - pos_b.GetY();
-    double dist = sqrt(pow(x_dist, 2) + pow(y_dist, 2));
-    return dist;
 }
 
 Position Robot::calc_pos_diff(Position pos_a, Position pos_b)
@@ -310,7 +301,7 @@ void Robot::test_loop_drive_parallel()
         r1 = this->GetPos();
 
         cout << "'+" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'"
-             << this->calc_dist(r1, r0) << "\t'" << this->calc_dist(r1, r0)/diff_to_drive << endl;
+             << r1.DistanceTo(r0) << "\t'" << r1.DistanceTo(r0)/diff_to_drive << endl;
 
         // Test backward
         run_time = 2600 * diff_to_drive; // backward: 3400 for speed 80 | 2150 for speed 120
@@ -322,6 +313,6 @@ void Robot::test_loop_drive_parallel()
         r1 = this->GetPos();
 
         cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'"
-             << this->calc_dist(r1, r0) << "\t'" << this->calc_dist(r1, r0)/diff_to_drive << endl;
+             << r1.DistanceTo(r0) << "\t'" << r1.DistanceTo(r0)/diff_to_drive << endl;
     }
 }
