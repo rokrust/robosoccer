@@ -196,7 +196,6 @@ int Robot::drive_parallel(float diff_to_drive, bool verbose=false)
         cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'" << r1.DistanceTo(r0) << endl;
     } */
 
-
 int Robot::calc_ddeg(Angle goal_phi) {
     Angle cur_phi = this->GetPhi();
     int ddeg = goal_phi.Deg() - cur_phi.Deg();

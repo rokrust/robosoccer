@@ -95,12 +95,12 @@ public:
      */
     void test_turns();
 
+    void turn_experiments();
+
     /**
      * @brief Do some stuff with the goalie
      */
     int test_goalie();
-
-    void turn_experiments();
 
 };
 
