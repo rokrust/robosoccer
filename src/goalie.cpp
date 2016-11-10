@@ -1,6 +1,6 @@
 #include "goalie.h"
 
-#define GOALIE_SLEEP_TIME 0.1
+#define GOALIE_SLEEP_TIME 0.15
 #define CALCULUS_RATE 1
 #define MAX_LOOP_COUNTDOWN -250
 #define V_X_THRESHOLD 0.01
