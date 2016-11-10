@@ -86,7 +86,7 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
 
             // calculate the speed difference that will be applied on the wheels,
             // depending on the ground speed and the difference in orientation
-            dspeed = int((float(abs(sin(ddeg*PI/180))) * float(DSPEED_GAIN)) * float(MAX_DSPEED_REL) * float(v_ground));
+            dspeed = int((float(fabs(sin(ddeg*PI/180))) * float(DSPEED_GAIN)) * float(MAX_DSPEED_REL) * float(v_ground));
             if (ddeg > 0) {
                 // robot orientation too far left of goal in driving direction
                 v_left = v_ground - dspeed;
@@ -136,7 +136,7 @@ int Robot::drive_parallel(float diff_to_drive, bool verbose=false)
     float run_time;
     if (diff_to_drive > 0) {
         // forward
-        run_time = 3200 * abs(diff_to_drive);
+        run_time = 3200 * fabs(diff_to_drive);
         v_left = run_speed;
         v_right = run_speed;
     } else {
@@ -149,7 +149,7 @@ int Robot::drive_parallel(float diff_to_drive, bool verbose=false)
     cout << "Runtime: " << run_time << endl;
     this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
 
-    int wait_time = (run_time + 200) * 1000;
+    int wait_time = (int(run_time) + 200) * 1000;
 
     return wait_time;
 }
