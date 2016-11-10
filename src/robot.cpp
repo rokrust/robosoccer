@@ -31,10 +31,18 @@
 #define DIST_THRESHOLD_STOP 0.08
 
 
+
+
+
 Robot::Robot(RTDBConn DBC_in, int device_nr_in, RawBall *datBall_in) : RoboControl(DBC_in, device_nr_in)
 {
     device_nr = device_nr_in;
+    left_wheel_speed = 0;
+    right_wheel_speed = 0;
     datBall = datBall_in;
+
+    //Couldn't do this in the declaration for some reason
+    controller_timer = Timer((int)SAMPLING_TIME*1000);
 }
 
 Robot::~Robot()
@@ -327,3 +335,55 @@ int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negati
 
     return 0;
 }
+
+
+void Robot::move_to_pos(Position pos, int speed){
+
+    //Set initial speed
+    left_wheel_speed = speed;
+    right_wheel_speed = speed;
+
+    //Might have to change the last two arguments. Run time is kinda random so far
+    MoveMs(left_wheel_speed, right_wheel_speed, 10, TURN_RAMP_UP);
+
+
+    /*--------------Should be called every now and then-----------*/
+    controller_timer.enable();
+    Angle ref_heading = GetPos().AngleOfLineToPos(pos);
+    Angle current_heading = GetPhi();
+    double integratedDistance = 0;
+
+    //Heading controller
+    adjust_wheel_diff(K_ph*(ref_heading - current_heading).Get());
+
+    //Translational controller. sampling_time is defined elsewhere
+    integratedDistance += GetPos().DistanceTo(pos) * SAMPLING_TIME;
+    int wheel_speed = K_pt*(GetPos().DistanceTo(pos)) +
+                      K_it*(integratedDistance);
+    left_wheel_speed += wheel_speed;
+    right_wheel_speed += wheel_speed;
+
+    //Might have to change the last two arguments
+    MoveMs(left_wheel_speed, right_wheel_speed, 10, TURN_RAMP_UP);
+    /*------------------------------------------------------------*/
+
+}
+
+//adjust turning
+void Robot::adjust_wheel_diff(int input){
+    //might have to change the order of these
+    if(input > 0){
+        left_wheel_speed += input;
+        right_wheel_speed -= input;
+    }
+    else{
+        left_wheel_speed -= input;
+        right_wheel_speed += input;
+    }
+
+    //Might have to change the last two arguments
+    MoveMs(left_wheel_speed, right_wheel_speed, 10, TURN_RAMP_UP);
+
+}
+
+
