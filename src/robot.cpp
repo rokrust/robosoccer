@@ -133,7 +133,7 @@ int Robot::drive_parallel(float diff_to_drive, bool verbose=false)
     int run_speed = BASE_TURN_SPEED;
 
     // calculate the difference in the current and the desired orientation
-    float run_time;
+    int run_time;
     if (diff_to_drive > 0) {
         // forward
         run_time = 3200 * abs(diff_to_drive);
@@ -147,7 +147,7 @@ int Robot::drive_parallel(float diff_to_drive, bool verbose=false)
     }
 
     cout << "Runtime: " << run_time << endl;
-    this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
+    this->MoveMs(v_left, v_right, abs(run_time), TURN_RAMP_UP);
 
     int wait_time = (run_time + 200) * 1000;
 
