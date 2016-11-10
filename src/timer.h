@@ -11,15 +11,18 @@
 class Timer{
 private:
     timespec start_time, current_time, temp;
-    int utimestamp;
+    int utimeout_time;
 
 public:
     Timer(){;}
-    Timer(int time):utimestamp(time*1000){}
+
+    //translate from micro to nano
+    Timer(int time):utimeout_time(time*1000){}
+
 
     void enable(){clock_gettime( CLOCK_MONOTONIC, &start_time); }
 
-    void set_timestamp(int timestamp){ utimestamp = timestamp*1000; }
+    void set_timestamp(int timestamp){ utimeout_time = timestamp*1000; }
 
     bool timeout();
 };

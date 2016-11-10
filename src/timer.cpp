@@ -10,6 +10,6 @@ bool Timer::timeout(){
     }
 
     else{
-        return current_time.tv_nsec - start_time.tv_nsec >= utimestamp;
+        return current_time.tv_nsec - start_time.tv_nsec >= utimeout_time;
     }
 }

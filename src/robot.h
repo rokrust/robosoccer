@@ -11,6 +11,18 @@
 
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
+#include "timer.h"
+
+
+//Controller parameters
+#define K_ph 0.5
+#define K_pt 0.5
+#define K_it 0.5
+
+//Timer variables
+#define SAMPLING_TIME 0.1
+
+
 
 class Robot : public RoboControl
 {
@@ -19,6 +31,10 @@ private:
      * @brief Device number of the robot
      */
     int device_nr;
+    int left_wheel_speed;
+    int right_wheel_speed;
+
+    Timer controller_timer;
 
 public:
     RawBall* datBall;
@@ -62,6 +78,10 @@ public:
     int spot_turn(Angle phi_in);
 
     int spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negativ);
+
+    void move_to_pos(Position pos, int speed);
+
+    void adjust_wheel_diff(int input);
 };
 
 #endif // ROBOT_H
