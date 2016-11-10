@@ -49,7 +49,7 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
     // calculate the distance between the robot and the goal
     Position goal_pos = pos_in;
     Position cur_pos = this->GetPos();
-    double dist = this->calc_dist(cur_pos, pos_in);
+    double dist = cur_pos.DistanceTo(pos_in);
     if (verbose) {
         cout << "Distance to goal: " << dist << "\n" << endl;
     }
@@ -60,14 +60,6 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
     int ddeg = calc_ddeg(goal_phi);
 
     if (dist > DIST_THRESHOLD_STOP) {
-        /*
-        if (verbose) {
-            cout << "Current orientation is: " << cur_phi.Deg() << endl;
-            cout << "Goal line orientation is: " << goal_phi.Deg() << endl;
-            cout << "Angle difference is: " << ddeg << endl;
-        }
-        */
-
         // if the orientation difference is above a threshold, turn on the spot before driving
         if (abs(ddeg) > ANGLE_TURN_THRESHOLD) {
             int wait_time = this->spot_turn(goal_phi);
@@ -83,7 +75,7 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
 
             // update the distance
             cur_pos = this->GetPos();
-            dist = this->calc_dist(cur_pos, pos_in);
+            dist = cur_pos.DistanceTo(pos_in);
 
             // calculate the ground speed depending on the distance
             if (dist > DIST_THRESHOLD_LINEAR) {
@@ -144,7 +136,7 @@ int Robot::drive_parallel(float diff_to_drive, bool verbose=false)
     float run_time;
     if (diff_to_drive > 0) {
         // forward
-        run_time = 3200 * diff_to_drive;
+        run_time = 3200 * abs(diff_to_drive);
         v_left = run_speed;
         v_right = run_speed;
     } else {
@@ -154,6 +146,7 @@ int Robot::drive_parallel(float diff_to_drive, bool verbose=false)
         v_right = -run_speed;
     }
 
+    cout << "Runtime: " << run_time << endl;
     this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
 
     int wait_time = (run_time + 200) * 1000;
@@ -190,7 +183,7 @@ int Robot::drive_parallel(float diff_to_drive, bool verbose=false)
         r0 = r1;
         r1 = this->GetPos();
 
-        cout << "'+" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'" << this->calc_dist(r1, r0) << endl;
+        cout << "'+" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'" << r1.DistanceTo(r0) << endl;
 
         // Test backward
         run_time = 3400 * diff_to_drive; // backward: old: 3076.92
@@ -200,9 +193,8 @@ int Robot::drive_parallel(float diff_to_drive, bool verbose=false)
         r0 = r1;
         r1 = this->GetPos();
 
-        cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'" << this->calc_dist(r1, r0) << endl;
+        cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'" << r1.DistanceTo(r0) << endl;
     } */
-
 
 int Robot::calc_ddeg(Angle goal_phi) {
     Angle cur_phi = this->GetPhi();
@@ -214,15 +206,6 @@ int Robot::calc_ddeg(Angle goal_phi) {
         ddeg = ddeg + 360;
     }
     return ddeg;
-}
-
-double Robot::calc_dist(Position pos_a, Position pos_b)
-{
-    // calculate the Euclidean distance between two positions
-    double x_dist = pos_a.GetX() - pos_b.GetX();
-    double y_dist = pos_a.GetY() - pos_b.GetY();
-    double dist = sqrt(pow(x_dist, 2) + pow(y_dist, 2));
-    return dist;
 }
 
 Position Robot::calc_pos_diff(Position pos_a, Position pos_b)
@@ -272,19 +255,6 @@ int Robot::spot_turn(Angle phi_in)
     if (DEBUG) {
         cout << "Wait time in ms: " << wait_time << endl;
     }
-
-
-    /*
-    if (DEBUG) {
-        // wait for the turn to finish and check the orientation after the turn to tweak the parameters
-        usleep(wait_time);
-        cur_phi = this->GetPhi();
-        goal_phi = phi_in;
-        ddeg = goal_phi.Deg() - cur_phi.Deg();
-        cout << "After turn angle difference: " << ddeg << endl;
-        return 0;
-    }
-    */
 
     // return the time that the turn will take for higher level functions to wait
     return wait_time;

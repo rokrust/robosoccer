@@ -12,7 +12,7 @@ private:
 public:
     Goalie(RTDBConn DBC_in, int device_nr_in, RawBall *datBall_in);
 
-    int go_to_penalty_save_position(bool is_left_side);
+    int go_to_penalty_save_position();
 
 };
 

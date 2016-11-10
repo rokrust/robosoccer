@@ -71,7 +71,7 @@ int Game::take_kick_off_position()
     Angle* orientation_goalie;
     Angle left_forward(0);
     Angle right_forward(180);
-    Angle goalie_left(-90);
+    Angle goalie_left(90);
     Angle goalie_right(90);
     Angle left_side_striker1(45);
     Angle left_side_striker2(-45);
@@ -287,11 +287,6 @@ void Game::update_kick_off()
     }
 }
 
-void Game::set_is_left_side(bool is_left_side_in)
-{
-    is_left_side = is_left_side_in;
-}
-
 void Game::set_phase(ePlayMode new_phase, bool verbose=true)
 {
     previous_phase = current_phase;
@@ -369,7 +364,7 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
                 striker1->shoot_penalty();
             }
             else {
-                goalie->go_to_penalty_save_position(is_left_side);
+                goalie->go_to_penalty_save_position();
             }
         }
 
@@ -433,6 +428,11 @@ bool Game::get_is_team_blue()
 bool Game::get_is_left_side()
 {
     return is_left_side;
+}
+
+bool Game::get_has_kick_off()
+{
+    return has_kick_off;
 }
 
 ePlayMode Game::get_phase(bool display)

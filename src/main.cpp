@@ -37,21 +37,6 @@ int main(void) {
 
 
 	try {
-            /* int i = 1;
-            Timer utimer(100);
-            utimer.enable();
-
-            while(1){
-                if(utimer.timeout()){
-                    cout << "Timeout: " << i++ << " detected" << std::endl;
-                    utimer.enable();
-                }
-
-            }
-            cout << i; */
-
-
-
             // Establish connection to the RTDB
             cout << endl << "Connecting to RTDB..." << endl;
             // Create the client name with the unique client number*/
@@ -62,7 +47,6 @@ int main(void) {
             // Create Referee Object
             Referee ref_handler(DBC);
             ref_handler.Init();
-
 
             // Get Robot Colour
             bool is_team_blue = true;
@@ -89,15 +73,7 @@ int main(void) {
             cout << "\t initial direction: " << ball.GetPhi() << endl;
             cout << "\t initial velocity: " << ball.GetVelocity() << endl;
 
-            /*
-            Goalie myGoalie(DBC, 0, &ball);
-            myGoalie.GotoPos(Position(-1.3, 0.0));
-            usleep(7000 * 1000);
-            myGoalie.spot_turn(90);
-            myGoalie.go_to_penalty_save_position(true);
-            // myGoalie.drive_parallel(+10, false);
-*/
-
+            // derive bot numbers from the team color
             int myGoalieDvNr;
             int myStriker1DvNr;
             int theOpponent1DvNr;
@@ -156,22 +132,25 @@ int main(void) {
 
             if (SCENARIO == 2) {
                 game_handler.goalie->GotoPos(Position(-1.3, 0.0));
-                usleep(7000 * 1000);
+                usleep(12000 * 1000);
                 game_handler.goalie->spot_turn(90);
-                game_handler.goalie->go_to_penalty_save_position(true);
-
-                /*
-                Goalie myGoalie(DBC, 0, &ball);
-                myGoalie.GotoPos(Position(-1.3, 0.0));
-                usleep(7000 * 1000);
-                myGoalie.spot_turn(90);
-                myGoalie.go_to_penalty_save_position(true);
-                // myGoalie.drive_parallel(+10, false);
-                */
+                game_handler.goalie->go_to_penalty_save_position();
             }
 
             if (SCENARIO == 3){
                 myStriker1.shoot_ball_at_goal(game_handler.get_is_left_side());
+            }
+
+
+            if (SCENARIO == 13) {
+                while(1) {
+                    game_handler.update_side();
+                    game_handler.update_kick_off();
+                    cout << "----" << endl;
+                    cout << "is_left_side: " << game_handler.get_is_left_side() << endl;
+                    cout << "has_kick_off: " << game_handler.get_has_kick_off() << endl;
+                    cin.get();
+                }
             }
 
             if (SCENARIO == 100) {

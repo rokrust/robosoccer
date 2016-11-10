@@ -10,7 +10,7 @@ int Striker::shoot_penalty()
     Position pos_ball(datBall->GetPos());
     Position strikerPos(GetPos());
 
-    double dist = abs(calc_dist(strikerPos, pos_ball));
+    double dist = fabs(strikerPos.DistanceTo(pos_ball));
     if (dist < 0.4) {
         GotoPos(pos_ball);
         cout << "Shoot" << endl;

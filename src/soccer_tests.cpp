@@ -150,12 +150,6 @@ void Soccer_Tests::easy_p_ctrl()
 
 void Soccer_Tests::drive_to_pos()
 {
-    //Position posstart(-0.7, 0.0);
-    /*
-    Position posgoal(0.35, 0.3);
-    blue1->drive_to_pos(posgoal);
-    */
-
     Position posgoal(0.7, 0.0);
     Position posgoal2(-0.7, 0.0);
     while(true) {
@@ -189,12 +183,6 @@ void Soccer_Tests::test_turns()
 
     int wait_time;
 
-    /*
-    wait_time = blue1->spot_turn(to_pc);
-    //blue1->TurnAbs(0);
-    usleep(wait_time);
-    */
-
     while(true) {
 
         wait_time = striker2->spot_turn(to_pc);
@@ -211,12 +199,6 @@ void Soccer_Tests::test_turns()
 void Soccer_Tests::turn_experiments()
 {
     int r_value;
-
-    /*
-    // blue1->TurnAbs(180);
-    wait_time = blue1->spot_turn(to_wall);
-    usleep(wait_time);
-    */
 
     int i, j;
     for (j = 0; j < 5; j++) {
