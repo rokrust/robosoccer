@@ -26,8 +26,6 @@ public:
     Robot(RTDBConn DBC_in, int device_nr_in, RawBall* datBall_in);
     ~Robot();
 
-    void drive_precise(Position pos_in, bool verbose);
-
     /**
      * @brief Custom driving function
      * @param pos_in Position to drive to
@@ -47,14 +45,6 @@ public:
      * @return
      */
     int calc_ddeg(Angle goal_phi);
-
-    /**
-     * @brief Calculate Euclidean distance between two positions
-     * @param pos_a First position
-     * @param pos_b Second position
-     * @return Distance between the two positions in meters
-     */
-    double calc_dist(Position pos_a, Position pos_b);
 
     /**
      * @brief Calculate the difference between two position (e.g. the direction of a movement)
