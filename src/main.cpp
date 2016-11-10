@@ -141,6 +141,18 @@ int main(void) {
                 myStriker1.shoot_ball_at_goal(game_handler.get_is_left_side());
             }
 
+
+            if (SCENARIO == 13) {
+                while(1) {
+                    game_handler.update_side();
+                    game_handler.update_kick_off();
+                    cout << "----" << endl;
+                    cout << "is_left_side: " << game_handler.get_is_left_side() << endl;
+                    cout << "has_kick_off: " << game_handler.get_has_kick_off() << endl;
+                    cin.get();
+                }
+            }
+
             if (SCENARIO == 100) {
                 Test_Obj.move_in_out();
             }
