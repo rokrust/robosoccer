@@ -51,7 +51,6 @@ public:
     void update_side();
     void update_kick_off();
 
-    void set_is_left_side(bool is_left_side_in);
     void set_phase(ePlayMode new_phase, bool verbose);
 
     bool get_is_team_blue();

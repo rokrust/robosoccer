@@ -287,11 +287,6 @@ void Game::update_kick_off()
     }
 }
 
-void Game::set_is_left_side(bool is_left_side_in)
-{
-    is_left_side = is_left_side_in;
-}
-
 void Game::set_phase(ePlayMode new_phase, bool verbose=true)
 {
     previous_phase = current_phase;
@@ -369,7 +364,7 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
                 striker1->shoot_penalty();
             }
             else {
-                goalie->go_to_penalty_save_position(is_left_side);
+                goalie->go_to_penalty_save_position();
             }
         }
 

@@ -60,14 +60,6 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
     int ddeg = calc_ddeg(goal_phi);
 
     if (dist > DIST_THRESHOLD_STOP) {
-        /*
-        if (verbose) {
-            cout << "Current orientation is: " << cur_phi.Deg() << endl;
-            cout << "Goal line orientation is: " << goal_phi.Deg() << endl;
-            cout << "Angle difference is: " << ddeg << endl;
-        }
-        */
-
         // if the orientation difference is above a threshold, turn on the spot before driving
         if (abs(ddeg) > ANGLE_TURN_THRESHOLD) {
             int wait_time = this->spot_turn(goal_phi);
@@ -273,19 +265,6 @@ int Robot::spot_turn(Angle phi_in)
     if (DEBUG) {
         cout << "Wait time in ms: " << wait_time << endl;
     }
-
-
-    /*
-    if (DEBUG) {
-        // wait for the turn to finish and check the orientation after the turn to tweak the parameters
-        usleep(wait_time);
-        cur_phi = this->GetPhi();
-        goal_phi = phi_in;
-        ddeg = goal_phi.Deg() - cur_phi.Deg();
-        cout << "After turn angle difference: " << ddeg << endl;
-        return 0;
-    }
-    */
 
     // return the time that the turn will take for higher level functions to wait
     return wait_time;
