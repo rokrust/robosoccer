@@ -203,6 +203,13 @@ int main(void) {
 
             }
 
+
+			while(1){
+				if(robot.controller_timer.timeout()){
+					robot.set_wheelspeed();
+				}
+			}
+
 	} catch (DBError err) {
 		cout << "Client died on Error: " << err.what() << endl;
 	}

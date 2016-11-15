@@ -33,13 +33,13 @@ private:
     int device_nr;
     int left_wheel_speed;
     int right_wheel_speed;
+	Position target_pos;
 
     Timer controller_timer;
 
 public:
-    RawBall* datBall;
 
-    Robot(RTDBConn DBC_in, int device_nr_in, RawBall* datBall_in);
+    Robot(RTDBConn DBC_in, int device_nr_in);
     ~Robot();
 
     /**
@@ -79,9 +79,15 @@ public:
 
     int spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negativ);
 
-    void move_to_pos(Position pos, int speed);
+    int update_speed_controller(Position pos);
 
-    void adjust_wheel_diff(int input);
+	int update_heading_controller(Position pos);
+
+	void set_wheelspeed(int u_speed, int u_omega);
+
+
+
+	friend Game::get_ball();
 };
 
 #endif // ROBOT_H

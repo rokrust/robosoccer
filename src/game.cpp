@@ -420,6 +420,8 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
     }
 }
 
+
+
 bool Game::get_is_team_blue()
 {
     return is_team_blue;
@@ -433,6 +435,11 @@ bool Game::get_is_left_side()
 bool Game::get_has_kick_off()
 {
     return has_kick_off;
+}
+
+Ball Game::get_ball()
+{
+	return datBall;
 }
 
 ePlayMode Game::get_phase(bool display)

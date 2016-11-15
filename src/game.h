@@ -37,9 +37,11 @@ public:
     Opponent* opponent2;
     Opponent* opponent3;
 
+	RawBall datBall;
+
     Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
          Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
-         Opponent* opponent1_in = 0, Opponent* opponent2_in = 0, Opponent* opponent3_in = 0);
+         Opponent* opponent1_in = 0, Opponent* opponent2_in = 0, 			 Opponent* opponent3_in = 0);
 
     void step(bool verbose=false);
 
@@ -53,9 +55,11 @@ public:
 
     void set_phase(ePlayMode new_phase, bool verbose);
 
+	
     bool get_is_team_blue();
     bool get_is_left_side();
     bool get_has_kick_off();
+	Ball get_ball();
     ePlayMode get_phase(bool display=false);
 };
 

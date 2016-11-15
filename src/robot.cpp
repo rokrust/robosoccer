@@ -34,12 +34,11 @@
 
 
 
-Robot::Robot(RTDBConn DBC_in, int device_nr_in, RawBall *datBall_in) : RoboControl(DBC_in, device_nr_in)
+Robot::Robot(RTDBConn DBC_in, int device_nr_in) : RoboControl(DBC_in, device_nr_in)
 {
     device_nr = device_nr_in;
     left_wheel_speed = 0;
     right_wheel_speed = 0;
-    datBall = datBall_in;
 
     //Couldn't do this in the declaration for some reason
     controller_timer = Timer((int)SAMPLING_TIME*1000);
@@ -307,53 +306,41 @@ int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negati
 }
 
 
-void Robot::move_to_pos(Position pos, int speed){
+//Set u_speed according to distance_to_pos (should be called every controller tick
+//P controller might be good enough
+int Robot::update_speed_controller() {
+        static integral_distance = 0; //Will only be set once
+		double distance_to_pos = getpos().distanceTo(target_pos);
 
-    //Set initial speed
-    left_wheel_speed = speed;
-    right_wheel_speed = speed;
-
-    //Might have to change the last two arguments. Run time is kinda random so far
-    MoveMs(left_wheel_speed, right_wheel_speed, 10, TURN_RAMP_UP);
-
-
-    /*--------------Should be called every now and then-----------*/
-    controller_timer.enable();
-    Angle ref_heading = GetPos().AngleOfLineToPos(pos);
-    Angle current_heading = GetPhi();
-    double integratedDistance = 0;
-
-    //Heading controller
-    adjust_wheel_diff(K_ph*(ref_heading - current_heading).Get());
-
-    //Translational controller. sampling_time is defined elsewhere
-    integratedDistance += GetPos().DistanceTo(pos) * SAMPLING_TIME;
-    int wheel_speed = K_pt*(GetPos().DistanceTo(pos)) +
-                      K_it*(integratedDistance);
-    left_wheel_speed += wheel_speed;
-    right_wheel_speed += wheel_speed;
-
-    //Might have to change the last two arguments
-    MoveMs(left_wheel_speed, right_wheel_speed, 10, TURN_RAMP_UP);
-    /*------------------------------------------------------------*/
-
+        integral_distance += distance_to_pos * SAMPLE_TIME; //hmm careful of overflow here, should be saturated
+        u_speed = K_pt*distance_to_pos + K_it*integral_distance;
+		u_speed *= (int)cos((ref_heading - cur_heading).Get());
+		
+		return u_speed;
 }
+ 
+ 
+//Set u_omega according to ref_heading and cur_heading (should be called every controller tick)
+int Robot::update_heading_controller(){
+		Angle ref_heading = getpos().AngleOfLineToPos(target_pos);
+		Angle cur_heading = GetPhi();
+		
+        u_omega = (int)K_ph*(ref_heading - cur_heading).Get();
 
-//adjust turning
-void Robot::adjust_wheel_diff(int input){
-    //might have to change the order of these
-    if(input > 0){
-        left_wheel_speed += input;
-        right_wheel_speed -= input;
-    }
-    else{
-        left_wheel_speed -= input;
-        right_wheel_speed += input;
-    }
-
-    //Might have to change the last two arguments
-    MoveMs(left_wheel_speed, right_wheel_speed, 10, TURN_RAMP_UP);
-
+		return u_omega;
 }
+ 
+ 
+//Set wheel speed according to u_speed and u_omega (should be called every controller tick)
+void Robot::set_wheelspeed() {
+		int u_speed = update_speed_controller();
+		int u_omega = update_heading_controller();
+		
 
-
+        //Proper conversions should be done to u_omega if actual angular velocity is needed
+        left_wheel_speed = u_speed + u_omega;
+        right_wheel_speed = u_speed - u_omega;
+ 
+        //Might have to change the last two arguments
+        MoveMs(left_wheel_speed, right_wheel_speed, 10, TURN_RAMP_UP);
+}
