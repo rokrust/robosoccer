@@ -7,10 +7,10 @@
 //============================================================================
 
 #include "soccer_tests.h"
+#include "game.h"
 
 Soccer_Tests::Soccer_Tests(Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
-                           Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in,
-                           RawBall* datBall_in)
+                           Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in)
 {
     goalie = goalie_in;
     striker1 = striker1_in;
@@ -18,7 +18,6 @@ Soccer_Tests::Soccer_Tests(Goalie* goalie_in, Striker* striker1_in, Striker* str
     opponent1 = opponent1_in;
     opponent2 = opponent2_in;
     opponent3 = opponent3_in;
-    datBall = datBall_in;
 }
 
 void Soccer_Tests::move_in_out()
@@ -232,7 +231,7 @@ int Soccer_Tests::test_goalie() {
     usleep(1.5 * pow(10,6));
 
     // Wait for a ball to appear close to the goal
-    Position r1_ball = datBall->GetPos();
+    Position r1_ball = Game::datBall->GetPos();
     Position r0_ball = r1_ball;
     Position dr_ball = goalie->calc_pos_diff(r1_ball, r0_ball);
     Position dr_ball_mean = dr_ball;
@@ -245,7 +244,7 @@ int Soccer_Tests::test_goalie() {
         usleep(100 * 1000); // x (ms) * 1000
 
         r0_ball = r1_ball;
-        r1_ball = datBall->GetPos();
+        r1_ball = Game::datBall->GetPos();
         dr_ball = goalie->calc_pos_diff(r1_ball, r0_ball);
 
         // Calculate the mean over the last 5 values

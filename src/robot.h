@@ -14,6 +14,7 @@
 #include "timer.h"
 
 
+
 //Controller parameters
 #define K_ph 0.5
 #define K_pt 0.5
@@ -21,7 +22,6 @@
 
 //Timer variables
 #define SAMPLING_TIME 0.1
-
 
 
 class Robot : public RoboControl
@@ -79,15 +79,12 @@ public:
 
     int spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negativ);
 
-    int update_speed_controller(Position pos);
+    int update_speed_controller(Angle ref_heading, Angle cur_heading);
 
-	int update_heading_controller(Position pos);
+    int update_heading_controller(Angle ref_heading, Angle cur_heading);
 
-	void set_wheelspeed(int u_speed, int u_omega);
+    void set_wheelspeed();
 
-
-
-	friend Game::get_ball();
 };
 
 #endif // ROBOT_H

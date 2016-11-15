@@ -23,6 +23,9 @@
 
 using namespace std;
 
+
+RawBall* Game::datBall = NULL;
+
 int main(void) {
 
 	//--------------------------------- Init --------------------------------------------------
@@ -32,7 +35,7 @@ int main(void) {
 	 *	This is necessary in order to assure that there are unique
 	 *	connections to the RTDB.
 	 *
-	 */
+     */
         const int client_nr = 222;
 
 
@@ -89,12 +92,12 @@ int main(void) {
             }
 
             // Create Robot objects
-            Goalie myGoalie(DBC, myGoalieDvNr, &ball);
-            Striker myStriker1(DBC, myStriker1DvNr, &ball);
-            Striker myStriker2(DBC, myStriker1DvNr+1, &ball);
-            Opponent theOpponent1(DBC, theOpponent1DvNr, &ball);
-            Opponent theOpponent2(DBC, theOpponent1DvNr+1, &ball);
-            Opponent theOpponent3(DBC, theOpponent1DvNr+2, &ball);
+            Goalie myGoalie(DBC, myGoalieDvNr);
+            Striker myStriker1(DBC, myStriker1DvNr);
+            Striker myStriker2(DBC, myStriker1DvNr+1);
+            Opponent theOpponent1(DBC, theOpponent1DvNr);
+            Opponent theOpponent2(DBC, theOpponent1DvNr+1);
+            Opponent theOpponent3(DBC, theOpponent1DvNr+2);
 
 
             // Create Game object
@@ -107,8 +110,7 @@ int main(void) {
 
             // Initialize a Test object
             Soccer_Tests Test_Obj(&myGoalie, &myStriker1, &myStriker2,
-                                  &theOpponent1, &theOpponent2, &theOpponent3,
-                                  &ball);
+                                  &theOpponent1, &theOpponent2, &theOpponent3);
 
 
             //-------------------------------------- End Init ---------------------------------
@@ -205,16 +207,15 @@ int main(void) {
 
 
 			while(1){
-				if(robot.controller_timer.timeout()){
-					robot.set_wheelspeed();
+//				if(robot.controller_timer.timeout()){
+//					robot.set_wheelspeed();
 				}
-			}
 
 	} catch (DBError err) {
 		cout << "Client died on Error: " << err.what() << endl;
 	}
         cout << "End" << endl;
-	return 0;
+    return 0;
 }
 
 

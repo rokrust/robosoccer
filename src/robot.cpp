@@ -7,6 +7,7 @@
 //============================================================================
 
 #include "robot.h"
+#include "game.h"
 
 // debug switch
 #define DEBUG 1
@@ -308,12 +309,14 @@ int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negati
 
 //Set u_speed according to distance_to_pos (should be called every controller tick
 //P controller might be good enough
-int Robot::update_speed_controller() {
-        static integral_distance = 0; //Will only be set once
-		double distance_to_pos = getpos().distanceTo(target_pos);
+int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
 
-        integral_distance += distance_to_pos * SAMPLE_TIME; //hmm careful of overflow here, should be saturated
-        u_speed = K_pt*distance_to_pos + K_it*integral_distance;
+        static double integral_distance = 0; //Will only be set once
+        double distance_to_pos = GetPos().DistanceTo(target_pos);
+
+        integral_distance += distance_to_pos * controller_timer.get_timeout_time(); //hmm careful of overflow here, should be saturated
+
+        int u_speed = K_pt*distance_to_pos + K_it*integral_distance;
 		u_speed *= (int)cos((ref_heading - cur_heading).Get());
 		
 		return u_speed;
@@ -321,11 +324,9 @@ int Robot::update_speed_controller() {
  
  
 //Set u_omega according to ref_heading and cur_heading (should be called every controller tick)
-int Robot::update_heading_controller(){
-		Angle ref_heading = getpos().AngleOfLineToPos(target_pos);
-		Angle cur_heading = GetPhi();
-		
-        u_omega = (int)K_ph*(ref_heading - cur_heading).Get();
+int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
+
+        int u_omega = (int)K_ph*(ref_heading - cur_heading).Get();
 
 		return u_omega;
 }
@@ -333,8 +334,11 @@ int Robot::update_heading_controller(){
  
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
 void Robot::set_wheelspeed() {
-		int u_speed = update_speed_controller();
-		int u_omega = update_heading_controller();
+        Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
+        Angle cur_heading = GetPhi();
+
+        int u_omega = update_heading_controller(ref_heading, cur_heading);
+        int u_speed = update_speed_controller(ref_heading, cur_heading);
 		
 
         //Proper conversions should be done to u_omega if actual angular velocity is needed
