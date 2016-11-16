@@ -14,7 +14,7 @@ Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
 {
     referee_handler = ref_in;
     is_team_blue = is_team_blue_in;
-    datBall = datBall_in;
+    set_ball(datBall_in);
 
     goalie = goalie_in;
     striker1 = striker1_in;
@@ -426,6 +426,8 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
     }
 }
 
+
+
 bool Game::get_is_team_blue()
 {
     return is_team_blue;
@@ -439,6 +441,15 @@ bool Game::get_is_left_side()
 bool Game::get_has_kick_off()
 {
     return has_kick_off;
+}
+
+RawBall* Game::get_ball()
+{
+    return datBall;
+}
+
+void Game::set_ball(RawBall* ball){
+    Game::datBall = ball;
 }
 
 void Game::print_state(ePlayMode state)

@@ -7,6 +7,7 @@
 //============================================================================
 
 #include "robot.h"
+#include "game.h"
 
 // debug switch
 #define DEBUG 1
@@ -36,10 +37,17 @@
 #define GOALIE_CONST_SPEED_120_BACKWARD 2150
 
 
-Robot::Robot(RTDBConn DBC_in, int device_nr_in, RawBall *datBall_in) : RoboControl(DBC_in, device_nr_in)
+
+
+
+Robot::Robot(RTDBConn DBC_in, int device_nr_in) : RoboControl(DBC_in, device_nr_in)
 {
     device_nr = device_nr_in;
-    datBall = datBall_in;
+    left_wheel_speed = 0;
+    right_wheel_speed = 0;
+
+    //Couldn't do this in the declaration for some reason
+    controller_timer = Timer((int)SAMPLING_TIME*1000);
 }
 
 Robot::~Robot()
@@ -315,4 +323,46 @@ void Robot::test_loop_drive_parallel()
         cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'"
              << r1.DistanceTo(r0) << "\t'" << r1.DistanceTo(r0)/diff_to_drive << endl;
     }
+}
+
+//Set u_speed according to distance_to_pos (should be called every controller tick
+//P controller might be good enough
+int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
+
+        static double integral_distance = 0; //Will only be set once
+        double distance_to_pos = GetPos().DistanceTo(target_pos);
+
+        integral_distance += distance_to_pos * controller_timer.get_timeout_time(); //hmm careful of overflow here, should be saturated
+
+        int u_speed = K_pt*distance_to_pos + K_it*integral_distance;
+		u_speed *= (int)cos((ref_heading - cur_heading).Get());
+		
+		return u_speed;
+}
+ 
+ 
+//Set u_omega according to ref_heading and cur_heading (should be called every controller tick)
+int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
+
+        int u_omega = (int)K_ph*(ref_heading - cur_heading).Get();
+
+		return u_omega;
+}
+ 
+ 
+//Set wheel speed according to u_speed and u_omega (should be called every controller tick)
+void Robot::set_wheelspeed() {
+        Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
+        Angle cur_heading = GetPhi();
+
+        int u_omega = update_heading_controller(ref_heading, cur_heading);
+        int u_speed = update_speed_controller(ref_heading, cur_heading);
+		
+
+        //Proper conversions should be done to u_omega if actual angular velocity is needed
+        left_wheel_speed = u_speed + u_omega;
+        right_wheel_speed = u_speed - u_omega;
+ 
+        //Might have to change the last two arguments
+        MoveMs(left_wheel_speed, right_wheel_speed, 10, TURN_RAMP_UP);
 }

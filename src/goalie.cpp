@@ -1,11 +1,12 @@
 #include "goalie.h"
+#include "game.h"
 
 #define GOALIE_SLEEP_TIME 0.15
 #define CALCULUS_RATE 1
 #define MAX_LOOP_COUNTDOWN -250
 #define V_X_THRESHOLD 0.01
 
-Goalie::Goalie(RTDBConn DBC_in, int device_nr_in, RawBall* datBall_in) : Robot(DBC_in, device_nr_in, datBall_in)
+Goalie::Goalie(RTDBConn DBC_in, int device_nr_in) : Robot(DBC_in, device_nr_in)
 {
 
 }
@@ -21,7 +22,7 @@ int Goalie::go_to_penalty_save_position()
     Position ball_t0;
     Position ball_t1;
     Position ball_t2;
-    Position ball_init = datBall->GetPos();
+    Position ball_init = Game::datBall->GetPos();
     double threshold_for_ball_from_init = 0.02;
 
     // initialize a ball velocity vector storing the differential position data and the components
@@ -43,7 +44,7 @@ int Goalie::go_to_penalty_save_position()
         // pass the new ball estimate through the line
         ball_t0 = ball_t1;
         ball_t1 = ball_t2;
-        ball_t2 = datBall->GetPos();
+        ball_t2 = Game::datBall->GetPos();
 
         // reduce the loop countdown to know when all ball position values are initialized
         loop_countdown--;
@@ -172,7 +173,7 @@ int Goalie::go_to_penalty_save_position()
         ball_t0 = ball_t1;
         ball_t1 = ball_t2;
         ball_t2 = ball_t3;
-        ball_t3 = datBall->GetPos();
+        ball_t3 = Game::datBall->GetPos();
 
         // reduce the loop countdown to know when all ball position values are initialized
         loop_countdown--;

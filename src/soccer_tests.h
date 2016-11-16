@@ -49,10 +49,6 @@ private:
      */
     Opponent* opponent3;
 
-    /**
-     * @brief The Ball
-     */
-    RawBall* datBall;
 
 public:
     /**
@@ -65,8 +61,7 @@ public:
      * @param red3_in
      */
     Soccer_Tests(Goalie *goalie_in, Striker *striker1_in, Striker *striker2_in,
-                 Opponent *opponent1_in, Opponent *opponent2_in, Opponent *opponent3_in,
-                 RawBall* datBall_in);
+                 Opponent *opponent1_in, Opponent *opponent2_in, Opponent *opponent3_in);
 
     /**
      * @brief Move all six robots in a loop to inner and outer positions in a rectangle
