@@ -134,7 +134,7 @@ int main(void) {
 
             if (SCENARIO == 2) {
                 game_handler.goalie->GotoPos(Position(-1.3, 0.0));
-                usleep(12000 * 1000);
+                usleep(4000 * 1000);
                 game_handler.goalie->spot_turn(90);
                 game_handler.goalie->go_to_penalty_save_position();
             }

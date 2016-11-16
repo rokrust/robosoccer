@@ -85,6 +85,7 @@ public:
 
     void set_wheelspeed();
 
+    void test_loop_drive_parallel();
 };
 
 #endif // ROBOT_H

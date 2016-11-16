@@ -31,6 +31,11 @@
 #define DIST_THRESHOLD_LINEAR 0.40
 #define DIST_THRESHOLD_STOP 0.08
 
+// goalie constants
+#define GOALIE_SPEED 120
+#define GOALIE_CONST_SPEED_120_FORWARD 2200
+#define GOALIE_CONST_SPEED_120_BACKWARD 2150
+
 
 
 
@@ -94,7 +99,7 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
 
             // calculate the speed difference that will be applied on the wheels,
             // depending on the ground speed and the difference in orientation
-            dspeed = int((float(abs(sin(ddeg*PI/180))) * float(DSPEED_GAIN)) * float(MAX_DSPEED_REL) * float(v_ground));
+            dspeed = int((float(fabs(sin(ddeg*PI/180))) * float(DSPEED_GAIN)) * float(MAX_DSPEED_REL) * float(v_ground));
             if (ddeg > 0) {
                 // robot orientation too far left of goal in driving direction
                 v_left = v_ground - dspeed;
@@ -136,73 +141,32 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
 
 int Robot::drive_parallel(float diff_to_drive, bool verbose=false)
 {
+
     // Optimized for Distances between +/- 0.25m
     int v_left, v_right;
-    int run_speed = BASE_TURN_SPEED;
+    int run_speed = GOALIE_SPEED;
 
     // calculate the difference in the current and the desired orientation
-    float run_time;
+    int run_time;
     if (diff_to_drive > 0) {
         // forward
-        run_time = 3200 * abs(diff_to_drive);
+        run_time = GOALIE_CONST_SPEED_120_FORWARD * abs(diff_to_drive);
         v_left = run_speed;
         v_right = run_speed;
     } else {
         // backward
-        run_time = 3400 * diff_to_drive;
+        run_time = GOALIE_CONST_SPEED_120_BACKWARD * diff_to_drive;
         v_left = -run_speed;
         v_right = -run_speed;
     }
 
-    cout << "Runtime: " << run_time << endl;
-    this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
+    cout << "% Runtime: " << run_time << endl;
+    this->MoveMs(v_left, v_right, abs(run_time), TURN_RAMP_UP);
 
-    int wait_time = (run_time + 200) * 1000;
+    int wait_time = (int(run_time) + 200) * 1000;
 
     return wait_time;
 }
-
-    /* // set the wheel speed for the turn time
-    Position r1 = this->GetPos();
-    Position r0 = r1;
-
-    // From three measurements:
-    // Go forward at 3076.92 ms per m
-    // Go backward at 3076.92 ms per m
-    // Formula to apply: run_time = 3076.92(ms/m) * diff_to_drive(m)
-
-    cin.get();
-    cin.get();
-
-    cout << "Sign" << "\t" << "diff_to_drive" << "\t" << "Runtime" << "\t" << "diff_driven" << endl;
-
-
-    float diff_to_drive_step = 0.05;
-
-
-
-    for (float diff_to_drive = 0.05; diff_to_drive < 0.31; diff_to_drive = diff_to_drive + diff_to_drive_step)
-    {
-        // Test forward
-        run_time = 3200 * diff_to_drive; // forward: old: 3076.92
-        this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
-        usleep((run_time+500) * 1000 + 1000000);
-
-        r0 = r1;
-        r1 = this->GetPos();
-
-        cout << "'+" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'" << r1.DistanceTo(r0) << endl;
-
-        // Test backward
-        run_time = 3400 * diff_to_drive; // backward: old: 3076.92
-        this->MoveMs(-v_left, -v_right, run_time, TURN_RAMP_UP);
-        usleep((run_time+500) * 1000 + 1000000);
-
-        r0 = r1;
-        r1 = this->GetPos();
-
-        cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'" << r1.DistanceTo(r0) << endl;
-    } */
 
 int Robot::calc_ddeg(Angle goal_phi) {
     Angle cur_phi = this->GetPhi();
@@ -306,7 +270,6 @@ int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negati
     return 0;
 }
 
-
 //Set u_speed according to distance_to_pos (should be called every controller tick
 //P controller might be good enough
 int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
@@ -347,4 +310,59 @@ void Robot::set_wheelspeed() {
  
         //Might have to change the last two arguments
         MoveMs(left_wheel_speed, right_wheel_speed, 10, TURN_RAMP_UP);
+}
+
+void Robot::test_loop_drive_parallel()
+{
+    // set the wheel speed for the turn time
+    Position r1 = this->GetPos();
+    Position r0 = r1;
+
+    // From three measurements:
+    // Go forward at 3076.92 ms per m
+    // Go backward at 3076.92 ms per m
+    // Formula to apply: run_time = 3076.92(ms/m) * diff_to_drive(m)
+
+    cin.get();
+    cin.get();
+
+    cout << "Sign" << "\t" << "diff_to_drive" << "\t" << "Runtime" << "\t" << "diff_driven\trelError" << endl;
+
+
+    float diff_to_drive_step = 0.05;
+
+    //int i;
+    int run_time;
+    int v_left = 100;
+    int v_right = 100;
+
+    cout.precision(4);
+
+    //for (i = 50; i < 900; i = i + 50)
+    for (float diff_to_drive = 0.05; diff_to_drive < 0.31; diff_to_drive = diff_to_drive + diff_to_drive_step)
+    {
+        // Test forward
+        run_time = 2500 * diff_to_drive; // forward: 3200 for speed 80 | 2200 for speed 120
+        //run_time = i;
+        this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
+        usleep((run_time+500) * 1000 + 1000000);
+
+        r0 = r1;
+        r1 = this->GetPos();
+
+        cout << "'+" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'"
+             << r1.DistanceTo(r0) << "\t'" << r1.DistanceTo(r0)/diff_to_drive << endl;
+
+        // Test backward
+        run_time = 2600 * diff_to_drive; // backward: 3400 for speed 80 | 2150 for speed 120
+        //run_time = i;
+        this->MoveMs(-v_left, -v_right, run_time, TURN_RAMP_UP);
+        usleep((run_time+500) * 1000 + 1000000);
+
+        r0 = r1;
+        r1 = this->GetPos();
+
+        cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'"
+             << r1.DistanceTo(r0) << "\t'" << r1.DistanceTo(r0)/diff_to_drive << endl;
+    }
 }
