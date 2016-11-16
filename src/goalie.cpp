@@ -97,7 +97,7 @@ int Goalie::go_to_penalty_save_position()
                     loop = false;
                     delta_y_G = y_G - GetPos().GetY();
                     cout << "delta_y_G = " << delta_y_G << "; " << endl;
-                    cout << "Moving the goalie!-------------------" << endl;
+                    cout << "% Moving the goalie!-------------------" << endl;
                     this->drive_parallel(delta_y_G, false);
                 } else {
                     cout << "y_G is not within the goal, therefore the goalie does not move." << endl;
@@ -133,6 +133,14 @@ int Goalie::go_to_penalty_save_position()
             }
         } */
     }
+
+    cout << "ball_after = [";
+    for (int i=0; i<50; i++) {
+        ball_t0 = datBall->GetPos();
+        cout << ball_t0.GetX() << ", " << ball_t0.GetY() << "; ";
+        usleep(100 * 1000);
+    }
+    cout << "]; " << endl;
 
     return 0;
 }
