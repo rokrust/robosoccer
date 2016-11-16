@@ -21,13 +21,13 @@
 // drive constants
 #define PI 3.14159265
 #define ANGLE_TURN_THRESHOLD 35
-#define DSPEED_GAIN 2.0
+#define DSPEED_GAIN 3.0
 #define V_GROUND_MAX 100
 #define V_GROUND_MIN 0
 #define MAX_DSPEED_REL 0.1
 #define DRIVE_DURATION 200
 #define WHEEL_SPEED_RAMPUP 10
-#define DRIVE_RAMP_UP_START 100
+#define DRIVE_RAMP_UP 50
 #define DIST_THRESHOLD_LINEAR 0.40
 #define DIST_THRESHOLD_STOP 0.08
 
@@ -110,30 +110,17 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
                 v_right = v_ground - dspeed;
             }
 
-            int cur_left = this->GetSpeedLeft();
-            int cur_right = this->GetSpeedRight();
-            int ramp_up;
-
-
-            if ((cur_left > WHEEL_SPEED_RAMPUP) || (cur_right > WHEEL_SPEED_RAMPUP)) {
-                ramp_up = 0;
-            } else {
-                ramp_up = DRIVE_RAMP_UP_START;
-            }
-
-            ramp_up = 50;
-
             if (verbose) {
                 cout << "Disance to goal is: " << dist << endl;
                 cout << "Ground speed is: " << v_ground << endl;
                 cout << "ddeg is: " << ddeg << endl;
                 cout << "Left speed: " << v_left << "   Right speed: " << v_right << endl;
-                cout << "RampUp is: " << ramp_up << endl;
+                cout << "RampUp is: " << DRIVE_RAMP_UP << endl;
                 cout << "---------------------" << endl;
             }
 
             // set the wheel speeds for the run time
-            this->MoveMs(v_left, v_right, DRIVE_DURATION, ramp_up);
+            this->MoveMs(v_left, v_right, DRIVE_DURATION, DRIVE_RAMP_UP);
             usleep((DRIVE_DURATION + 30)*1000);
         }
     }
