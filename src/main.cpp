@@ -161,14 +161,6 @@ int main(void) {
                 Test_Obj.move_in_out();
             }
 
-            if (SCENARIO == 200) {
-                Test_Obj.const_wheel_speed();
-            }
-
-            if (SCENARIO == 300) {
-                Test_Obj.easy_p_ctrl();
-            }
-
             if (SCENARIO == 400) {
                 Test_Obj.drive_to_pos();
             }
@@ -185,8 +177,6 @@ int main(void) {
             if (SCENARIO == 700) {
                 Test_Obj.turn_experiments();
             }
-
-
 
             if (SCENARIO == 1000) {
                 game_handler.take_kick_off_position();
