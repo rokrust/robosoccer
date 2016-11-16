@@ -69,16 +69,6 @@ public:
     void move_in_out();
 
     /**
-     * @brief Drive the first blue robot with constant wheel speed
-     */
-    void const_wheel_speed();
-
-    /**
-     * @brief Drive the first blue robot with a basic P controller on a straight line
-     */
-    void easy_p_ctrl();
-
-    /**
      * @brief Drive the first blue robot with the custom driving function
      */
     void drive_to_pos();

@@ -20,13 +20,16 @@
 class Game
 {
 private:
-    ePlayMode previous_phase;
-    ePlayMode current_phase;
+    ePlayMode previous_state;
+    ePlayMode current_state;
     Referee* referee_handler;
 
     bool is_team_blue;
     bool is_left_side;
     bool has_kick_off;
+
+    bool stay_in_state_machine;
+    bool stay_in_state;
 
 public:
     Goalie* goalie;
@@ -58,6 +61,12 @@ public:
     bool get_is_left_side();
     bool get_has_kick_off();
     RawBall* get_ball(); //Probably not needed
-    ePlayMode get_phase(bool display=false);
+
+    // state machine
+    void print_state(ePlayMode state=PAUSE);
+    void update_state();
+    void state_machine(bool verbose=false);
+
+
 };
 #endif // GAME_H

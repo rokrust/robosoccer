@@ -105,8 +105,6 @@ int main(void) {
                               &myGoalie, &myStriker1, &myStriker2,
                               &theOpponent1, &theOpponent2, &theOpponent3);
 
-            //game_handler.set_is_left_side(true);
-
 
             // Initialize a Test object
             Soccer_Tests Test_Obj(&myGoalie, &myStriker1, &myStriker2,
@@ -155,16 +153,12 @@ int main(void) {
                 }
             }
 
+            if (SCENARIO == 14) {
+                game_handler.state_machine(true);
+            }
+
             if (SCENARIO == 100) {
                 Test_Obj.move_in_out();
-            }
-
-            if (SCENARIO == 200) {
-                Test_Obj.const_wheel_speed();
-            }
-
-            if (SCENARIO == 300) {
-                Test_Obj.easy_p_ctrl();
             }
 
             if (SCENARIO == 400) {
@@ -183,8 +177,6 @@ int main(void) {
             if (SCENARIO == 700) {
                 Test_Obj.turn_experiments();
             }
-
-
 
             if (SCENARIO == 1000) {
                 game_handler.take_kick_off_position();

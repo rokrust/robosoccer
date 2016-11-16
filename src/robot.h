@@ -79,13 +79,13 @@ public:
 
     int spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negativ);
 
+    void test_loop_drive_parallel();
+
     int update_speed_controller(Angle ref_heading, Angle cur_heading);
 
     int update_heading_controller(Angle ref_heading, Angle cur_heading);
 
     void set_wheelspeed();
-
-    void test_loop_drive_parallel();
 };
 
 #endif // ROBOT_H

@@ -22,6 +22,13 @@ Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
     opponent1 = opponent1_in;
     opponent2 = opponent2_in;
     opponent3 = opponent3_in;
+
+    // initialize state machine variables
+    stay_in_state_machine = true;
+    previous_state = REFEREE_INIT;
+    current_state = REFEREE_INIT;
+
+    cout << "Game Handler initialized" << endl;
 }
 
 void Game::step(bool verbose)
@@ -30,8 +37,7 @@ void Game::step(bool verbose)
     set_phase(phase, verbose);
 
     if (verbose) {
-        bool display = true;
-        get_phase(display);
+        print_state();
         cin.get();
     }
 }
@@ -262,10 +268,10 @@ void Game::update_side()
         is_left_side = false;
     }
     if ((!is_team_blue) && (!blue_has_right)) {
-        is_left_side = true;
+        is_left_side = false;
     }
     if ((!is_team_blue) && (blue_has_right)) {
-        is_left_side = false;
+        is_left_side = true;
     }
 }
 
@@ -289,17 +295,17 @@ void Game::update_kick_off()
 
 void Game::set_phase(ePlayMode new_phase, bool verbose=true)
 {
-    previous_phase = current_phase;
-    current_phase = new_phase;
+    previous_state = current_state;
+    current_state = new_phase;
 
     // catch phase transitions
-    if (previous_phase != new_phase) {
+    if (previous_state != new_phase) {
         if (verbose) {
-            cout << "Game Phase transition" << endl;
+            cout << "State transition" << endl;
         }
 
         // REFEREE_INIT -> BEFORE_KICK_OFF
-        if ((previous_phase == 0) && (current_phase == 1)) {
+        if ((previous_state == 0) && (current_state == 1)) {
             if (verbose) {
                 cout << "Changed from REFEREE_INIT to BEFORE_KICK_OFF" << endl;
             }
@@ -309,7 +315,7 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
         }
 
         // BEFORE_KICK_OFF -> KICK_OFF
-        if ((previous_phase == 1) && (current_phase == 2)) {
+        if ((previous_state == 1) && (current_state == 2)) {
             if (verbose) {
                 cout << "Changed from BEFORE_KICK_OFF to KICK_OFF" << endl;
             }
@@ -320,14 +326,14 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
         }
 
         // KICK_OFF -> PLAY_ON
-        if ((previous_phase == 2) && (current_phase == 5)) {
+        if ((previous_state == 2) && (current_state == 5)) {
             if (verbose) {
                 cout << "Changed from KICK_OFF to PLAY_ON" << endl;
             }
         }
 
         // PLAY_ON -> BEFORE_KICK_OFF
-        if ((previous_phase == 5) && (current_phase == 1)) {
+        if ((previous_state == 5) && (current_state == 1)) {
             if (verbose) {
                 cout << "Changed from PLAY_ON to KICK_OFF" << endl;
             }
@@ -337,14 +343,14 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
         }
 
         // PLAY_ON -> REFEREE_INIT
-        if ((previous_phase == 5) && (current_phase == 0)) {
+        if ((previous_state == 5) && (current_state == 0)) {
             if (verbose) {
                 cout << "Changed from PLAY_ON to REFEREE_INIT" << endl;
             }
         }
 
         // PLAY_ON -> BEFORE_PENALTY
-        if ((previous_phase == 5) && (current_phase == 3)) {
+        if ((previous_state == 5) && (current_state == 3)) {
             if (verbose) {
                 cout << "Changed from PLAY_ON to BEFORE_PENALTY" << endl;
             }
@@ -354,7 +360,7 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
         }
 
         // BEFORE_PENALTY -> PENALTY
-        if ((previous_phase == 3) && (current_phase == 4)) {
+        if ((previous_state == 3) && (current_state == 4)) {
             if (verbose) {
                 cout << "Changed from BEFORE_PENALTY to PENALTY" << endl;
             }
@@ -369,7 +375,7 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
         }
 
         // PENALTY -> BEFORE_PENALTY
-        if ((previous_phase == 4) && (current_phase == 3)) {
+        if ((previous_state == 4) && (current_state == 3)) {
             if (verbose) {
                 cout << "Changed from PENALTY to BEFORE_PENALTY" << endl;
             }
@@ -379,7 +385,7 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
         }
 
         // PENALTY -> REFEREE_INIT
-        if ((previous_phase == 4) && (current_phase == 0)) {
+        if ((previous_state == 4) && (current_state == 0)) {
             if (verbose) {
                 cout << "Changed from PENALTY to REFEREE_INIT" << endl;
             }
@@ -387,7 +393,7 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
 
         // existing but senseless transitions
         // BEFORE_KICK_OFF -> PENALTY
-        if ((previous_phase == 1) && (current_phase == 4)) {
+        if ((previous_state == 1) && (current_state == 4)) {
             if (verbose) {
                 cout << "Changed from BEFORE_KICK_OFF to PENALTY" << endl;
                 cout << "--Exceptional Transition--" << endl;
@@ -395,7 +401,7 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
         }
 
         // REFEREE_INIT -> PENALTY
-        if ((previous_phase == 0) && (current_phase == 4)) {
+        if ((previous_state == 0) && (current_state == 4)) {
             if (verbose) {
                 cout << "Changed from REFEREE_INIT to PENALTY" << endl;
                 cout << "--Exceptional Transition--" << endl;
@@ -403,7 +409,7 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
         }
 
         // KICK_OFF -> PENALTY
-        if ((previous_phase == 2) && (current_phase == 4)) {
+        if ((previous_state == 2) && (current_state == 4)) {
             if (verbose) {
                 cout << "Changed from KICK_OFF to PENALTY" << endl;
                 cout << "--Exceptional Transition--" << endl;
@@ -411,7 +417,7 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
         }
 
         // PLAY_ON -> PENALTY
-        if ((previous_phase == 5) && (current_phase == 4)) {
+        if ((previous_state == 5) && (current_state == 4)) {
             if (verbose) {
                 cout << "Changed from PLAY_ON to PENALTY" << endl;
                 cout << "--Exceptional Transition--" << endl;
@@ -446,39 +452,289 @@ void Game::set_ball(RawBall* ball){
     Game::datBall = ball;
 }
 
-ePlayMode Game::get_phase(bool display)
+void Game::print_state(ePlayMode state)
 {
-    if (display) {
-        switch (current_phase) {
-        case 0:
-            cout << "Game Phase is REFEREE_INIT: " << current_phase << endl;
-            break;
-        case 1:
-            cout << "Game Phase is BEFORE_KICK_OFF: " << current_phase << endl;
-            break;
-        case 2:
-            cout << "Game Phase is KICK_OFF: " << current_phase << endl;
-            break;
-        case 3:
-            cout << "Game Phase is BEFORE_PENALTY: " << current_phase << endl;
-            break;
-        case 4:
-            cout << "Game Phase is PENALTY: " << current_phase << endl;
-            break;
-        case 5:
-            cout << "Game Phase is PLAY_ON: " << current_phase << endl;
-            break;
-        case 6:
-            cout << "Game Phase is PAUSE: " << current_phase << endl;
-            break;
-        case 7:
-            cout << "Game Phase is TIME_OVER: " << current_phase << endl;
-            break;
-        default:
-            cout << "Unknown Game Phase: " << current_phase << endl;
-            break;
-        }
+    ePlayMode state_to_print;
+
+    if (state == PAUSE) {
+        state_to_print = current_state;
+    } else {
+        state_to_print = state;
     }
 
-    return current_phase;
+    switch (state_to_print) {
+    case 0:
+        cout << "State is REFEREE_INIT: " << state_to_print << endl;
+        break;
+    case 1:
+        cout << "State is BEFORE_KICK_OFF: " << state_to_print << endl;
+        break;
+    case 2:
+        cout << "State is KICK_OFF: " << state_to_print << endl;
+        break;
+    case 3:
+        cout << "State is BEFORE_PENALTY: " << state_to_print << endl;
+        break;
+    case 4:
+        cout << "State is PENALTY: " << state_to_print << endl;
+        break;
+    case 5:
+        cout << "State is PLAY_ON: " << state_to_print << endl;
+        break;
+    case 6:
+        cout << "State is PAUSE: " << state_to_print << endl;
+        break;
+    case 7:
+        cout << "State is TIME_OVER: " << state_to_print << endl;
+        break;
+    default:
+        cout << "Unknown State: " << state_to_print << endl;
+        break;
+    }
 }
+
+void Game::update_state()
+{
+    ePlayMode polled_current_state = referee_handler->GetPlayMode();
+
+    // invoke state transition if the state changed
+    if (polled_current_state != current_state) {
+        previous_state = current_state;
+        current_state = polled_current_state;
+        stay_in_state = false;
+    }
+}
+
+void Game::state_machine(bool verbose)
+{
+    // include possibility to leave the state machine by changing the flag stay_in_state_machine
+    // so-far no use-case (Simon, 16.11.2016)
+    while (stay_in_state_machine) {
+
+        // reset the flag to stay in a state
+        stay_in_state = true;
+
+        // update side and kick_off information from referee
+        // update_kick_off internally calls update_side
+        // given that the referee can change the kick_off later, this has to be polled also in the loops
+        update_kick_off();
+
+        if (verbose) {
+            cout << "----------------State transition----------------" << endl;
+            cout << "is_team_blue: " << is_team_blue << endl;
+            cout << "is_left_side: " << is_left_side << endl;
+            cout << "has_kick_off: " << has_kick_off << endl;
+            cout << "Previous ";
+            print_state(previous_state);
+            cout << "Current ";
+            print_state(current_state);
+        }
+
+        // INITIALIZATION CASE
+        if ((previous_state == 0) && (current_state == 0) && stay_in_state) {
+            if (verbose) {
+                cout << "State machine initialized. Waiting for state change..." << endl;
+            }
+            while (stay_in_state) {
+                update_state();
+            }
+        }
+
+
+        // REFEREE_INIT -> BEFORE_KICK_OFF
+        if ((previous_state == 0) && (current_state == 1) && stay_in_state) {
+            if (verbose) {
+                cout << "Changed from REFEREE_INIT to BEFORE_KICK_OFF" << endl;
+            }
+
+            // side and kick_off are updated within the take_kick_off_positions
+            take_kick_off_position();
+            referee_handler->SetReady(!is_team_blue);
+
+            while (stay_in_state) {
+                // perform regular state tasks like timers
+
+                // detect state changes
+                update_state();
+            }
+        }
+
+        // BEFORE_KICK_OFF -> KICK_OFF
+        if ((previous_state == 1) && (current_state == 2) && stay_in_state) {
+            if (verbose) {
+                cout << "Changed from BEFORE_KICK_OFF to KICK_OFF" << endl;
+            }
+
+            // perform Game state initializations like creating timers
+
+            while (stay_in_state) {
+                // perform regular state tasks like timers
+
+                // detect state changes
+                update_state();
+            }
+        }
+
+        // KICK_OFF -> PLAY_ON
+        if ((previous_state == 2) && (current_state == 5) && stay_in_state) {
+            if (verbose) {
+                cout << "Changed from KICK_OFF to PLAY_ON" << endl;
+            }
+
+            // perform Game state initializations like creating timers
+
+            while (stay_in_state) {
+                // perform regular state tasks like timers
+
+                // detect state changes
+                update_state();
+            }
+        }
+
+        // PLAY_ON -> BEFORE_KICK_OFF
+        if ((previous_state == 5) && (current_state == 1) && stay_in_state) {
+            if (verbose) {
+                cout << "Changed from PLAY_ON to KICK_OFF" << endl;
+            }
+
+            // side and kick_off are updated within the take_kick_off_positions
+            take_kick_off_position();
+            referee_handler->SetReady(!is_team_blue);
+
+            while (stay_in_state) {
+                // perform regular state tasks like timers
+
+                // detect state changes
+                update_state();
+            }
+        }
+
+        // PLAY_ON -> REFEREE_INIT
+        if ((previous_state == 5) && (current_state == 0) && stay_in_state) {
+            if (verbose) {
+                cout << "Changed from PLAY_ON to REFEREE_INIT" << endl;
+            }
+
+            // perform Game state initializations like creating timers
+
+            while (stay_in_state) {
+                // perform regular state tasks like timers
+
+                // detect state changes
+                update_state();
+            }
+        }
+
+        // PLAY_ON -> BEFORE_PENALTY
+        if ((previous_state == 5) && (current_state == 3) && stay_in_state) {
+            if (verbose) {
+                cout << "Changed from PLAY_ON to BEFORE_PENALTY" << endl;
+            }
+
+            // side and kick_off are updated within the function
+            take_penalty_position();
+
+            while (stay_in_state) {
+                // perform regular state tasks like timers
+
+                // detect state changes
+                update_state();
+            }
+        }
+
+        // BEFORE_PENALTY -> PENALTY
+        if ((previous_state == 3) && (current_state == 4) && stay_in_state) {
+            if (verbose) {
+                cout << "Changed from BEFORE_PENALTY to PENALTY" << endl;
+            }
+
+            // perform Game state initializations like creating timers
+
+            while (stay_in_state) {
+                // perform regular state tasks like timers
+
+                // detect state changes
+                update_state();
+            }
+        }
+
+        // PENALTY -> BEFORE_PENALTY
+        if ((previous_state == 4) && (current_state == 3) && stay_in_state) {
+            if (verbose) {
+                cout << "Changed from PENALTY to BEFORE_PENALTY" << endl;
+            }
+
+            // side and kick_off are updated within the function
+            take_penalty_position();
+
+            while (stay_in_state) {
+                // perform regular state tasks like timers
+
+                // detect state changes
+                update_state();
+            }
+        }
+
+        // PENALTY -> REFEREE_INIT
+        if ((previous_state == 4) && (current_state == 0) && stay_in_state) {
+            if (verbose) {
+                cout << "Changed from PENALTY to REFEREE_INIT" << endl;
+            }
+
+            // perform Game state initializations like creating timers
+
+            while (stay_in_state) {
+                // perform regular state tasks like timers
+
+                // detect state changes
+                update_state();
+            }
+        }
+
+        // existing but senseless transitions
+        // BEFORE_KICK_OFF -> PENALTY
+        if ((previous_state == 1) && (current_state == 4) && stay_in_state) {
+            if (verbose) {
+                cout << "Changed from BEFORE_KICK_OFF to PENALTY" << endl;
+                cout << "--Exceptional Transition--" << endl;
+            }
+            while (stay_in_state) {
+                update_state();
+            }
+        }
+
+        // REFEREE_INIT -> PENALTY
+        if ((previous_state == 0) && (current_state == 4) && stay_in_state) {
+            if (verbose) {
+                cout << "Changed from REFEREE_INIT to PENALTY" << endl;
+                cout << "--Exceptional Transition--" << endl;
+            }
+            while (stay_in_state) {
+                update_state();
+            }
+        }
+
+        // KICK_OFF -> PENALTY
+        if ((previous_state == 2) && (current_state == 4) && stay_in_state) {
+            if (verbose) {
+                cout << "Changed from KICK_OFF to PENALTY" << endl;
+                cout << "--Exceptional Transition--" << endl;
+            }
+            while (stay_in_state) {
+                update_state();
+            }
+        }
+
+        // PLAY_ON -> PENALTY
+        if ((previous_state == 5) && (current_state == 4) && stay_in_state) {
+            if (verbose) {
+                cout << "Changed from PLAY_ON to PENALTY" << endl;
+                cout << "--Exceptional Transition--" << endl;
+            }
+            while (stay_in_state) {
+                update_state();
+            }
+        }
+    }
+}
+
