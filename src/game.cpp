@@ -35,8 +35,7 @@ void Game::step(bool verbose)
     set_phase(phase, verbose);
 
     if (verbose) {
-        bool display = true;
-        get_phase(display);
+        print_state();
         cin.get();
     }
 }
@@ -300,7 +299,7 @@ void Game::set_phase(ePlayMode new_phase, bool verbose=true)
     // catch phase transitions
     if (previous_phase != new_phase) {
         if (verbose) {
-            cout << "Game Phase transition" << endl;
+            cout << "State transition" << endl;
         }
 
         // REFEREE_INIT -> BEFORE_KICK_OFF
@@ -440,46 +439,51 @@ bool Game::get_has_kick_off()
     return has_kick_off;
 }
 
-ePlayMode Game::get_phase(bool display)
+void Game::print_state(ePlayMode state)
 {
-    if (display) {
-        switch (current_phase) {
-        case 0:
-            cout << "Game Phase is REFEREE_INIT: " << current_phase << endl;
-            break;
-        case 1:
-            cout << "Game Phase is BEFORE_KICK_OFF: " << current_phase << endl;
-            break;
-        case 2:
-            cout << "Game Phase is KICK_OFF: " << current_phase << endl;
-            break;
-        case 3:
-            cout << "Game Phase is BEFORE_PENALTY: " << current_phase << endl;
-            break;
-        case 4:
-            cout << "Game Phase is PENALTY: " << current_phase << endl;
-            break;
-        case 5:
-            cout << "Game Phase is PLAY_ON: " << current_phase << endl;
-            break;
-        case 6:
-            cout << "Game Phase is PAUSE: " << current_phase << endl;
-            break;
-        case 7:
-            cout << "Game Phase is TIME_OVER: " << current_phase << endl;
-            break;
-        default:
-            cout << "Unknown Game Phase: " << current_phase << endl;
-            break;
-        }
+    ePlayMode state_to_print;
+
+    if (state == PAUSE) {
+        state_to_print = current_phase;
+    } else {
+        state_to_print = state;
     }
 
-    return current_phase;
+
+    switch (state_to_print) {
+    case 0:
+        cout << "State is REFEREE_INIT: " << state_to_print << endl;
+        break;
+    case 1:
+        cout << "State is BEFORE_KICK_OFF: " << state_to_print << endl;
+        break;
+    case 2:
+        cout << "State is KICK_OFF: " << state_to_print << endl;
+        break;
+    case 3:
+        cout << "State is BEFORE_PENALTY: " << state_to_print << endl;
+        break;
+    case 4:
+        cout << "State is PENALTY: " << state_to_print << endl;
+        break;
+    case 5:
+        cout << "State is PLAY_ON: " << state_to_print << endl;
+        break;
+    case 6:
+        cout << "State is PAUSE: " << state_to_print << endl;
+        break;
+    case 7:
+        cout << "State is TIME_OVER: " << state_to_print << endl;
+        break;
+    default:
+        cout << "Unknown State: " << state_to_print << endl;
+        break;
+    }
 }
 
 void Game::state_machine(bool verbose)
 {
-    // include possibility to leave the state machine by changing the flag
+    // include possibility to leave the state machine by changing the flag stay_in_state_machine
     // so-far no use-case (Simon, 16.11.2016)
     while (stay_in_state_machine) {
 
@@ -487,7 +491,7 @@ void Game::state_machine(bool verbose)
         stay_in_state = true;
 
         if (verbose) {
-            cout << "Game Phase transition" << endl;
+            cout << "State transition" << endl;
             cout << "Previous state is: " << previous_phase << endl;
             cout << "Current state is: " << current_phase << endl;
         }

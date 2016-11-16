@@ -59,10 +59,11 @@ public:
     bool get_is_team_blue();
     bool get_is_left_side();
     bool get_has_kick_off();
-    ePlayMode get_phase(bool display=false);
 
-    void state_machine(bool verbose=false);
+    // state machine
+    void print_state(ePlayMode state=PAUSE);
     void update_state();
+    void state_machine(bool verbose=false);
 };
 
 #endif // GAME_H
