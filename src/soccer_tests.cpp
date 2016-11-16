@@ -19,6 +19,8 @@ Soccer_Tests::Soccer_Tests(Goalie* goalie_in, Striker* striker1_in, Striker* str
     opponent2 = opponent2_in;
     opponent3 = opponent3_in;
     datBall = datBall_in;
+
+    cout << "Soccer Tests initialized" << endl;
 }
 
 void Soccer_Tests::move_in_out()

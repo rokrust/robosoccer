@@ -27,6 +27,8 @@ Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
     stay_in_state_machine = true;
     previous_state = REFEREE_INIT;
     current_state = REFEREE_INIT;
+
+    cout << "Game Handler initialized" << endl;
 }
 
 void Game::step(bool verbose)
@@ -266,10 +268,10 @@ void Game::update_side()
         is_left_side = false;
     }
     if ((!is_team_blue) && (!blue_has_right)) {
-        is_left_side = true;
+        is_left_side = false;
     }
     if ((!is_team_blue) && (blue_has_right)) {
-        is_left_side = false;
+        is_left_side = true;
     }
 }
 
@@ -534,7 +536,9 @@ void Game::state_machine(bool verbose)
                 cout << "Changed from REFEREE_INIT to BEFORE_KICK_OFF" << endl;
             }
 
-            // perform Game state initializations like creating timers
+            // side and kick_off are updated within the take_kick_off_positions
+            take_kick_off_position();
+            referee_handler->SetReady(!is_team_blue);
 
             while (stay_in_state) {
                 // perform regular state tasks like timers
@@ -582,7 +586,9 @@ void Game::state_machine(bool verbose)
                 cout << "Changed from PLAY_ON to KICK_OFF" << endl;
             }
 
-            // perform Game state initializations like creating timers
+            // side and kick_off are updated within the take_kick_off_positions
+            take_kick_off_position();
+            referee_handler->SetReady(!is_team_blue);
 
             while (stay_in_state) {
                 // perform regular state tasks like timers
@@ -614,7 +620,8 @@ void Game::state_machine(bool verbose)
                 cout << "Changed from PLAY_ON to BEFORE_PENALTY" << endl;
             }
 
-            // perform Game state initializations like creating timers
+            // side and kick_off are updated within the function
+            take_penalty_position();
 
             while (stay_in_state) {
                 // perform regular state tasks like timers
@@ -646,7 +653,8 @@ void Game::state_machine(bool verbose)
                 cout << "Changed from PENALTY to BEFORE_PENALTY" << endl;
             }
 
-            // perform Game state initializations like creating timers
+            // side and kick_off are updated within the function
+            take_penalty_position();
 
             while (stay_in_state) {
                 // perform regular state tasks like timers

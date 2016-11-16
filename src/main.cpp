@@ -102,8 +102,6 @@ int main(void) {
                               &myGoalie, &myStriker1, &myStriker2,
                               &theOpponent1, &theOpponent2, &theOpponent3);
 
-            //game_handler.set_is_left_side(true);
-
 
             // Initialize a Test object
             Soccer_Tests Test_Obj(&myGoalie, &myStriker1, &myStriker2,
