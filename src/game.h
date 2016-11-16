@@ -29,6 +29,9 @@ private:
     bool is_left_side;
     bool has_kick_off;
 
+    bool stay_in_state_machine;
+    bool stay_in_state;
+
 public:
     Goalie* goalie;
     Striker* striker1;
@@ -57,6 +60,9 @@ public:
     bool get_is_left_side();
     bool get_has_kick_off();
     ePlayMode get_phase(bool display=false);
+
+    void state_machine(bool verbose=false);
+    void update_state();
 };
 
 #endif // GAME_H

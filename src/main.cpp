@@ -153,6 +153,10 @@ int main(void) {
                 }
             }
 
+            if (SCENARIO == 14) {
+                game_handler.state_machine(true);
+            }
+
             if (SCENARIO == 100) {
                 Test_Obj.move_in_out();
             }
