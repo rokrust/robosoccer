@@ -20,8 +20,8 @@ class Striker;
 class Game
 {
 private:
-    ePlayMode previous_phase;
-    ePlayMode current_phase;
+    ePlayMode previous_state;
+    ePlayMode current_state;
     Referee* referee_handler;
     RawBall* datBall;
 
