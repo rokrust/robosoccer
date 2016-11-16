@@ -274,96 +274,113 @@ int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negati
 //Set u_speed according to distance_to_pos (should be called every controller tick
 //P controller might be good enough
 int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
+    static double integral_distance = 0; //Will only be set once
+    double distance_to_pos = GetPos().DistanceTo(target_pos);
 
-        static double integral_distance = 0; //Will only be set once
-        double distance_to_pos = GetPos().DistanceTo(target_pos);
+    integral_distance += distance_to_pos * controller_timer.get_timeout_time(); //hmm careful of overflow here, should be saturated
 
-        integral_distance += distance_to_pos * controller_timer.get_timeout_time(); //hmm careful of overflow here, should be saturated
+    float xx = K_pt*distance_to_pos + K_it*integral_distance;
+    cout << "xx = " << xx << endl;
+    int u_speed = K_pt*distance_to_pos + K_it*integral_distance;
+    u_speed *= (int)cos((ref_heading - cur_heading).Get());
 
-        int u_speed = K_pt*distance_to_pos + K_it*integral_distance;
-		u_speed *= (int)cos((ref_heading - cur_heading).Get());
-		
-		return u_speed;
+    return u_speed;
 }
- 
  
 //Set u_omega according to ref_heading and cur_heading (should be called every controller tick)
-int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
-
-        int u_omega = (int)K_ph*(ref_heading - cur_heading).Get();
-
-		return u_omega;
+int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading) {
+    // float x = (K_ph*(ref_heading.Get() - cur_heading.Get()));
+    // cout << "x = " << x << endl;
+    int u_omega = (int)(K_ph*(ref_heading.Get() - cur_heading.Get())); // .Get());
+    return u_omega;
 }
- 
  
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
 void Robot::set_wheelspeed() {
-        Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
-        Angle cur_heading = GetPhi();
+    Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
+    Angle cur_heading = GetPhi();
 
-        int u_omega = update_heading_controller(ref_heading, cur_heading);
-        int u_speed = update_speed_controller(ref_heading, cur_heading);
-		
+    // cout << "ref_heading = " << ref_heading << endl;
+    // cout << "cur_heading = " << cur_heading << endl;
 
-        //Proper conversions should be done to u_omega if actual angular velocity is needed
-        left_wheel_speed = u_speed + u_omega;
-        right_wheel_speed = u_speed - u_omega;
- 
-        //Might have to change the last two arguments
-        MoveMs(left_wheel_speed, right_wheel_speed, 10, TURN_RAMP_UP);
+    int u_omega = update_heading_controller(ref_heading, cur_heading);
+    int u_speed = update_speed_controller(ref_heading, cur_heading);
+
+    // cout << "u_omega = " << u_omega << endl;
+    // cout << "u_speed = " << u_speed << endl;
+
+    //Proper conversions should be done to u_omega if actual angular velocity is needed
+    left_wheel_speed = u_speed + u_omega;
+    right_wheel_speed = u_speed - u_omega;
+
+    // cout << "left_wheel_speed = " << left_wheel_speed << endl;
+    // cout << "right_wheel_speed = " << right_wheel_speed << endl;
+
+    //Might have to change the last two arguments
+    MoveMs(left_wheel_speed, right_wheel_speed, 1000, TURN_RAMP_UP);
 }
 
-void Robot::test_loop_drive_parallel()
-{
+void Robot::test_loop_drive_parallel() {
     // set the wheel speed for the turn time
     Position r1 = this->GetPos();
+    Angle phi1 = this->GetPhi();
     Position r0 = r1;
-
-    // From three measurements:
-    // Go forward at 3076.92 ms per m
-    // Go backward at 3076.92 ms per m
-    // Formula to apply: run_time = 3076.92(ms/m) * diff_to_drive(m)
+    Angle phi0 = phi1;
 
     cin.get();
     cin.get();
 
-    cout << "Sign" << "\t" << "diff_to_drive" << "\t" << "Runtime" << "\t" << "diff_driven\trelError" << endl;
+    // cout << "Sign" << "\t" << "diff_to_drive" << "\t" << "Runtime" << "\t" << "diff_driven\trelError" << endl;
+    cout << "Sign\t" << "diff_to_drive\t" << "Runtime\t" << "diff_driven\t"
+         << "phi0\t" << "phi1\t" << "diff_angle\t" << endl;
 
 
     float diff_to_drive_step = 0.05;
 
     //int i;
     int run_time;
-    int v_left = 100;
-    int v_right = 100;
+    int v_left = 80;
+    int v_right = 80;
 
     cout.precision(4);
 
-    //for (i = 50; i < 900; i = i + 50)
-    for (float diff_to_drive = 0.05; diff_to_drive < 0.31; diff_to_drive = diff_to_drive + diff_to_drive_step)
+    // for (i = 50; i < 900; i = i + 50)
+    for (float diff_to_drive = 0.15; diff_to_drive < 0.61; diff_to_drive = diff_to_drive + diff_to_drive_step)
     {
         // Test forward
-        run_time = 2500 * diff_to_drive; // forward: 3200 for speed 80 | 2200 for speed 120
+        run_time = 3200 * diff_to_drive; // forward: 3200 for speed 80 | 2200 for speed 120
         //run_time = i;
         this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
         usleep((run_time+500) * 1000 + 1000000);
 
         r0 = r1;
         r1 = this->GetPos();
+        phi0 = phi1;
+        phi1 = this->GetPhi();
 
-        cout << "'+" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'"
-             << r1.DistanceTo(r0) << "\t'" << r1.DistanceTo(r0)/diff_to_drive << endl;
+        //cout << "'+" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'"
+        //     << r1.DistanceTo(r0) << "\t'" << r1.DistanceTo(r0)/diff_to_drive << endl;
+        cout << "'+" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'";
+        cout << r1.DistanceTo(r0) << "\t'" << phi0 << "\t'" << phi1 << "\t'" << phi1-phi0 << endl;
 
         // Test backward
-        run_time = 2600 * diff_to_drive; // backward: 3400 for speed 80 | 2150 for speed 120
+        run_time = 3400 * diff_to_drive; // backward: 3400 for speed 80 | 2150 for speed 120
         //run_time = i;
         this->MoveMs(-v_left, -v_right, run_time, TURN_RAMP_UP);
         usleep((run_time+500) * 1000 + 1000000);
 
+        phi0 = phi1;
+        phi1 = this->GetPhi();
         r0 = r1;
         r1 = this->GetPos();
 
-        cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'"
-             << r1.DistanceTo(r0) << "\t'" << r1.DistanceTo(r0)/diff_to_drive << endl;
+        cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'";
+        cout << r1.DistanceTo(r0) << "\t'" << phi0 << "\t'" << phi1 << "\t'" << phi1-phi0 << endl;
     }
+}
+
+void Robot::set_target_pos(Position target_pos_in) {
+    // target_pos = target_pos_in;
+    target_pos.SetX(target_pos_in.GetX());
+    target_pos.SetY(target_pos_in.GetY());
 }
