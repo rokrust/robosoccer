@@ -14,6 +14,8 @@ public:
 
     int go_to_penalty_save_position();
 
+    int do_the_goalkeepers_kick();
+
 };
 
 #endif // GOALIE_H

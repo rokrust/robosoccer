@@ -25,6 +25,13 @@ using namespace std;
 
 
 RawBall* Game::datBall = NULL;
+Goalie* Game::goalie = NULL;
+Striker* Game::striker1 = NULL;
+Striker* Game::striker2 = NULL;
+Opponent* Game::opponent1 = NULL;
+Opponent* Game::opponent2 = NULL;
+Opponent* Game::opponent3 = NULL;
+
 
 int main(void) {
 
@@ -143,6 +150,11 @@ int main(void) {
 
             if (SCENARIO == 4) {
                 game_handler.goalie->test_loop_drive_parallel();
+            }
+
+            // Goalkeepers Kick
+            if (SCENARIO == 5) {
+                game_handler.goalie->do_the_goalkeepers_kick();
             }
 
 
