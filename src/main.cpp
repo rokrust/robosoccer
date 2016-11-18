@@ -19,8 +19,6 @@
 #include <iostream>
 #include <cmath>
 
-
-
 using namespace std;
 
 
@@ -195,6 +193,17 @@ int main(void) {
             if (SCENARIO == 22) {
                 game_handler.goalie->drive_parallel(+10, false);
 
+            }
+
+            if (SCENARIO == 30){
+                //Position pos(0.0, 0.0);
+                while(1){
+                    myStriker1.set_target_pos(Game::datBall->GetPos());
+                    myStriker1.set_wheelspeed();
+                    /*Angle ang = myStriker1.GetPos().AngleOfLineToPos(Position());
+                    cout << "Angle: " << (ang - myStriker1.GetPhi()).Deg() << endl;*/
+                    usleep(10000);
+                }
             }
 
 

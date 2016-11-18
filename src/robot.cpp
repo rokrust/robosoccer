@@ -30,6 +30,8 @@
 #define DRIVE_RAMP_UP_START 100
 #define DIST_THRESHOLD_LINEAR 0.40
 #define DIST_THRESHOLD_STOP 0.08
+#define ACCEPTABLE_DISTANCE_THRESHOLD 0.08 //Might be the same as the one above
+#define ACCEPTABLE_HEADING_THRESHOLD 0.05
 
 // goalie constants
 #define GOALIE_SPEED 120
@@ -46,8 +48,12 @@ Robot::Robot(RTDBConn DBC_in, int device_nr_in) : RoboControl(DBC_in, device_nr_
     left_wheel_speed = 0;
     right_wheel_speed = 0;
 
-    //Couldn't do this in the declaration for some reason
-    controller_timer = Timer((int)SAMPLING_TIME*1000);
+    int n_samples = 6;
+    Controller_data c = {.sampling_time = 0.01,
+                         .speed_integrator = 0.0,
+                         .heading_integrator = 0.0, .buffer_size = n_samples,
+                         .sample_number = 0, .error_buffer = new double[n_samples]};
+    controller_data = c;
 }
 
 Robot::~Robot()
@@ -274,43 +280,76 @@ int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negati
 //Set u_speed according to distance_to_pos (should be called every controller tick
 //P controller might be good enough
 int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
+        //cout << "In speed controller." << endl;
 
-        static double integral_distance = 0; //Will only be set once
+       // static double integral_distance = 0; //Will only be set once
         double distance_to_pos = GetPos().DistanceTo(target_pos);
 
-        integral_distance += distance_to_pos * controller_timer.get_timeout_time(); //hmm careful of overflow here, should be saturated
+        //integral_distance += distance_to_pos * controller_timer.get_timeout_time(); //hmm careful of overflow here, should be saturated
 
-        int u_speed = K_pt*distance_to_pos + K_it*integral_distance;
-		u_speed *= (int)cos((ref_heading - cur_heading).Get());
+        int u_speed = K_pt*distance_to_pos + K_it*controller_data.sampling_time;
+        //cout << "Speed: " << u_speed << endl << endl;
+
+        //u_speed *= cos((ref_heading - cur_heading).Get() * DEG_TO_RAD)  ;
 		
-		return u_speed;
+        return (int)u_speed;
 }
  
  
 //Set u_omega according to ref_heading and cur_heading (should be called every controller tick)
 int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 
-        int u_omega = (int)K_ph*(ref_heading - cur_heading).Get();
+        double current_error = (ref_heading - cur_heading).Get();
 
-		return u_omega;
+        controller_data.error_buffer[controller_data.sample_number] = current_error;
+        controller_data.heading_integrator += current_error*controller_data.sampling_time;
+
+        for(int i = 0; i < controller_data.buffer_size)
+
+
+        int u_omega = K_ph*current_error +
+                      K_ih*controller_data.heading_integrator;
+
+        //cout << "Omega: " << u_omega << endl;
+
+
+        return u_omega;
 }
- 
+
+void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading){
+    //Acceptably close to target_pos
+    if(GetPos().DistanceTo(target_pos) < ACCEPTABLE_DISTANCE_THRESHOLD){
+        controller_data.speed_integrator = 0.0;
+    }
+
+    //Acceptably close to target_pos
+    if((ref_heading - cur_heading).Abs() < ACCEPTABLE_HEADING_THRESHOLD){
+        controller_data.heading_integrator = 0.0;
+        cout << "Heading integrator reset." << endl;
+    }
+
+}
  
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
 void Robot::set_wheelspeed() {
         Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
         Angle cur_heading = GetPhi();
 
+        reset_integrators_if_necessary(ref_heading, cur_heading);
+
         int u_omega = update_heading_controller(ref_heading, cur_heading);
-        int u_speed = update_speed_controller(ref_heading, cur_heading);
+        int u_speed = 0;//update_speed_controller(ref_heading, cur_heading);
 		
 
-        //Proper conversions should be done to u_omega if actual angular velocity is needed
-        left_wheel_speed = u_speed + u_omega;
-        right_wheel_speed = u_speed - u_omega;
- 
+        right_wheel_speed = u_speed + u_omega;
+        left_wheel_speed = u_speed - u_omega;
+
+
+        cout << "Right: " << right_wheel_speed << endl
+             << "Left: " << left_wheel_speed << endl << endl;
+
         //Might have to change the last two arguments
-        MoveMs(left_wheel_speed, right_wheel_speed, 10, TURN_RAMP_UP);
+        MoveMs(left_wheel_speed, right_wheel_speed, 10, 100);
 }
 
 void Robot::test_loop_drive_parallel()
