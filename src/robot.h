@@ -20,6 +20,7 @@
 enum Parameters
      {K_ph = 20,
       K_ih = 25,
+      K_dh = 5,
       K_pt = 170,
       K_it = 100 };
 
@@ -53,6 +54,7 @@ private:
 
 
     void reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading);
+    double error_buffer_mean();
 
 public:
 

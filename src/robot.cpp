@@ -52,7 +52,7 @@ Robot::Robot(RTDBConn DBC_in, int device_nr_in) : RoboControl(DBC_in, device_nr_
     Controller_data c = {.sampling_time = 0.01,
                          .speed_integrator = 0.0,
                          .heading_integrator = 0.0, .buffer_size = n_samples,
-                         .sample_number = 0, .error_buffer = new double[n_samples]};
+                         .current_sample = 0, .error_buffer = new double[n_samples]};
     controller_data = c;
 }
 
@@ -280,19 +280,16 @@ int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negati
 //Set u_speed according to distance_to_pos (should be called every controller tick
 //P controller might be good enough
 int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
-        //cout << "In speed controller." << endl;
 
-       // static double integral_distance = 0; //Will only be set once
         double distance_to_pos = GetPos().DistanceTo(target_pos);
 
-        //integral_distance += distance_to_pos * controller_timer.get_timeout_time(); //hmm careful of overflow here, should be saturated
+        controller_data.speed_integrator += distance_to_pos * controller_data.sampling_time;
 
-        int u_speed = K_pt*distance_to_pos + K_it*controller_data.sampling_time;
-        //cout << "Speed: " << u_speed << endl << endl;
+        int u_speed = K_pt*distance_to_pos + K_it*controller_data.speed_integrator;
 
         //u_speed *= cos((ref_heading - cur_heading).Get() * DEG_TO_RAD)  ;
 		
-        return (int)u_speed;
+        return u_speed;
 }
  
  
@@ -301,20 +298,31 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 
         double current_error = (ref_heading - cur_heading).Get();
 
-        controller_data.error_buffer[controller_data.sample_number] = current_error;
+        controller_data.error_buffer[controller_data.current_sample] = current_error;
         controller_data.heading_integrator += current_error*controller_data.sampling_time;
 
-        for(int i = 0; i < controller_data.buffer_size)
+        double int_error = controller_data.heading_integrator;
+        double diff_error = (current_error - error_buffer_mean())/controller_data.buffer_size;
+        controller_data.current_sample = (controller_data.current_sample + 1) % controller_data.buffer_size;
 
-
-        int u_omega = K_ph*current_error +
-                      K_ih*controller_data.heading_integrator;
+        int u_omega = K_ph*current_error + K_ih*int_error + K_dh*diff_error;
 
         //cout << "Omega: " << u_omega << endl;
 
 
         return u_omega;
 }
+
+double Robot::error_buffer_mean(){
+    double average_error = 0;
+
+    for(int i = 0; i < controller_data.buffer_size; i++){
+        average_error += controller_data.error_buffer[i];
+    }
+
+    return average_error/controller_data.buffer_size;
+}
+
 
 void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading){
     //Acceptably close to target_pos
@@ -338,7 +346,7 @@ void Robot::set_wheelspeed() {
         reset_integrators_if_necessary(ref_heading, cur_heading);
 
         int u_omega = update_heading_controller(ref_heading, cur_heading);
-        int u_speed = 0;//update_speed_controller(ref_heading, cur_heading);
+        int u_speed = update_speed_controller(ref_heading, cur_heading);
 		
 
         right_wheel_speed = u_speed + u_omega;
