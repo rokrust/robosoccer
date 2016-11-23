@@ -162,6 +162,9 @@ int main(void) {
         }
 
         if (SCENARIO == 5) {
+            Position pos2print(1, 0);
+            cout << "pos2print = " << game_handler.matlsynt(pos2print) << endl;
+
             Test_Obj.test_command_driving();
         }
 
@@ -244,11 +247,13 @@ int main(void) {
             int timer_duration = 250;
             Timer datTimer(timer_duration);
 
-            while(1){
+            while(1) {
                 if (datTimer.timeout()) {
                     myStriker1.set_target_pos(Game::datBall->GetPos());
                     myStriker1.set_wheelspeed(timer_duration);
                 }
+            }
+        }
                 /*
                     //Angle ang = myStriker1.GetPos().AngleOfLineToPos(Position());
 
@@ -256,8 +261,7 @@ int main(void) {
                     //				if(robot.controller_timer.timeout()){
                     //					robot.set_wheelspeed();
                 } */
-            }
-        }
+
 
         if (SCENARIO == 123456) {
             int timer_duration;

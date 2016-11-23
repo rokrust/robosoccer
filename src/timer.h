@@ -99,31 +99,5 @@ public:
         }
 
     }
-
-
-
-    //translate from micro to nano
-    // Timer(int time, void (*action)() = NULL): utimeout_time(time*1000), timeout_action(action){}
-
-    /*    //The case where the current_time is on another second than start_time
-        if (current_time.tv_nsec - start_time_ms.tv_nsec < 0) {
-            return true;
-        }
-
-        else {
-            return current_time.tv_nsec - start_time_ms.tv_nsec >= utimeout_time;
-        }
-    }
-
-    int get_timeout_time()
-    {
-        return utimeout_time;
-    }
-
-    void set_timeout_time(int timeout_time) {
-        utimeout_time = timeout_time*1000;
-    } */
-
-
 };
 #endif // TIMER_H

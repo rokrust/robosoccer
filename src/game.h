@@ -88,6 +88,8 @@ public:
     void update_state();
     void state_machine(bool verbose=false);
 
+    // build string of Position in matlab syntax
+    std::string matlsynt(Position pos);
 
 };
 #endif // GAME_H

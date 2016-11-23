@@ -16,6 +16,7 @@ public:
     Striker(RTDBConn DBC_in, int device_nr_in);
 
     int shoot_penalty();
+
     void shoot_ball_at_goal(bool is_left_side);
 };
 
