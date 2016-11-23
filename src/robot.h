@@ -1,3 +1,4 @@
+
 //============================================================================
 // Name        : robot.h
 // Author      :
@@ -13,15 +14,29 @@
 #include "robo_control.h"
 #include "timer.h"
 
+#include <math.h>
+#include <boost/circular_buffer.hpp>
 
+enum Parameters
+     {K_ph = 20,
+      K_ih = 25,
+      K_dh = 5,
+      K_pt = 170,
+      K_it = 100 };
 
-//Controller parameters
-#define K_ph 0.5
-#define K_pt 0.5
-#define K_it 0.5
+struct Controller_data{
+    //General
+    double sampling_time;
 
-//Timer variables
-#define SAMPLING_TIME 0.1
+    //Speed controller
+    double speed_integrator;
+
+    //Heading controller
+    double heading_integrator;
+    int buffer_size;
+    int current_sample;
+    double* error_buffer;
+};
 
 
 class Robot : public RoboControl
@@ -35,7 +50,11 @@ private:
     int right_wheel_speed;
 	Position target_pos;
 
-    Timer controller_timer;
+    Controller_data controller_data;
+
+
+    void reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading);
+    double error_buffer_mean();
 
 public:
 
@@ -87,7 +106,7 @@ public:
 
     void set_wheelspeed();
 
-    void set_target_pos(Position target_pos_in);
+    void set_target_pos(Position pos){target_pos = pos;}
 };
 
 #endif // ROBOT_H
