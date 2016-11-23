@@ -502,16 +502,17 @@ void Game::update_estimation_and_prediction(double ms_between_positions)
         // velocity estimation
         dist_x = 0.0;
         dist_y = 0.0;
-        for (history_index = 0; history_index <= POSITION_HISTORY_LENGTH - 2; history_index++) {
+        // POSITION_HISTORY_LENGTH - 1 because of index shift internally
+        for (history_index = 0; history_index < POSITION_HISTORY_LENGTH - 1; history_index++) {
             dist_x = dist_x + robot_position_history[robot_index][history_index].GetX()
                     - robot_position_history[robot_index][history_index+1].GetX();
             dist_y = dist_y + robot_position_history[robot_index][history_index].GetY()
                     - robot_position_history[robot_index][history_index+1].GetY();
         }
         robot_velocity_estimation[robot_index].SetX(dist_x /
-                                                    (ms_between_positions * (POSITION_HISTORY_LENGTH - 1)));
+                                                    ((ms_between_positions / 1000)* (double)(POSITION_HISTORY_LENGTH - 1)));
         robot_velocity_estimation[robot_index].SetY(dist_y /
-                                                    (ms_between_positions * (POSITION_HISTORY_LENGTH - 1)));
+                                                    ((ms_between_positions / 1000) * (double)(POSITION_HISTORY_LENGTH - 1)));
 
         // position prediction
         robot_position_prediction[robot_index].SetX(robot_position_history[robot_index][0].GetX()
