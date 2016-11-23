@@ -197,23 +197,23 @@ int main(void) {
             Timer test_timer(time_step_size);
             while(1) {
                 if(test_timer.timeout()) {
-                    game_handler.update_position_history();
-                    game_handler.update_estimation_and_prediction(time_step_size);
+                    //game_handler.update_position_history();
+                    //game_handler.update_estimation_and_prediction(time_step_size);
                     //game_handler.print_robot_position_history(0);
                     //game_handler.print_robot_position_history(1);
                     //game_handler.print_robot_position_history(2);
                     //game_handler.print_robot_position_history(3);
                     //game_handler.print_robot_position_history(4);
                     //game_handler.print_robot_position_history(5);
-                    game_handler.print_robot_velocity_estimation();
-                    game_handler.print_robot_position_prediction();
+                    //game_handler.print_robot_velocity_estimation();
+                    //game_handler.print_robot_position_prediction();
                 }
             }
         }
 
-        if (SCENARIO == 99) {
-            game_handler.update_position_history();
-        }
+        //if (SCENARIO == 99) {
+        //    game_handler.update_position_history();
+        //}
 
         if (SCENARIO == 100) {
             Test_Obj.move_in_out();
