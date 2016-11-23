@@ -36,15 +36,7 @@ Robot* Game::robots[6] = {0};
 int main(void) {
 
     //--------------------------------- Init --------------------------------------------------
-
-    /** Use client number according to your account number!
-     *
-     *	This is necessary in order to assure that there are unique
-     *	connections to the RTDB.
-     *
-     */
     const int client_nr = 222;
-
 
     try {
         // Establish connection to the RTDB
@@ -54,23 +46,12 @@ int main(void) {
         client_name.push_back((char) (client_nr + '0'));
         RTDBConn DBC(client_name.data(), 0.1, "");
 
-        // Create Referee Object
-        /* Referee ref_handler(DBC);
-        ref_handler.Init(); */
-
         // Get Robot Colour
         bool is_team_blue = true;
         cout << "Which Team? (0: red - 1: blue) ";
         cin >> is_team_blue;
 
         Game game_handler(DBC, is_team_blue);
-
-
-
-        // Initialize a Test object
-        /* Soccer_Tests Test_Obj(&myGoalie, &myStriker1, &myStriker2,
-                              &theOpponent1, &theOpponent2, &theOpponent3); */
-
 
         //-------------------------------------- End Init ---------------------------------
 
@@ -85,6 +66,7 @@ int main(void) {
         cout << "6: Run the goalie drive parallel test loop" << endl;
         cout << "7: Run the goalkeepers kick scenario" << endl;
         cout << "8: Run the side and kick-off check function" << endl;
+        cout << "9: Run the prediction and velocity estimation scenario" << endl;
         cout << "...or enter another scenario number known to you" << endl;
         cout << "SCENARIO = ";
         cin >> SCENARIO;
@@ -105,7 +87,6 @@ int main(void) {
         if (SCENARIO == 3){
             Game::striker1->shoot_ball_at_goal(game_handler.get_is_left_side());
         }
-
 
         if (SCENARIO == 5) {
             game_handler.strategy_modul->command_drive();
@@ -167,7 +148,7 @@ int main(void) {
             game_handler.goalie->drive_parallel(+10, false);
         }
 
-        /* if (SCENARIO == 30){
+        if (SCENARIO == 30){
             //Position pos(0.0, 0.0);
 
             int timer_duration = 250;
@@ -175,11 +156,11 @@ int main(void) {
 
             while(1) {
                 if (datTimer.timeout()) {
-                    myStriker1.set_target_pos(Game::datBall->GetPos());
-                    myStriker1.set_wheelspeed(timer_duration);
+                    Game::striker1->set_target_pos(Game::datBall->GetPos());
+                    Game::striker1->set_wheelspeed(timer_duration);
                 }
             }
-        }*/
+        }
 
         if (SCENARIO == 123456) {
             int timer_duration;

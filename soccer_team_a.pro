@@ -16,7 +16,6 @@ CONFIG +=  debug
 
 # Input
 HEADERS += \ 
-    src/soccer_tests.h \
     src/robot.h \
     src/timer.h \
     src/game.h \
@@ -25,7 +24,6 @@ HEADERS += \
     src/opponent.h \
     src/strategy.h
 SOURCES += \
-    src/soccer_tests.cpp \
     src/main.cpp \
     src/robot.cpp \
     src/game.cpp \

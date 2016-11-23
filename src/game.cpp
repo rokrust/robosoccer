@@ -333,30 +333,6 @@ bool Game::get_has_kick_off()
     return has_kick_off;
 }
 
-/* RawBall* Game::get_ball()
-{
-    return datBall;
-} */
-
-/* void Game::set_ball(RawBall* ball)
-{
-    Game::datBall = ball;
-} */
-
-/* void set_own_team(Goalie* myGoalie, Striker* myStriker1, Striker* myStriker2)
-{
-    Game::goalie = myGoalie;
-    Game::striker1 = myStriker1;
-    Game::striker2 = myStriker2;
-} */
-
-/* void set_opponent_team(Opponent* anOpponent1, Opponent* anOpponent2, Opponent* anOpponent3)
-{
-    Game::opponent1 = anOpponent1;
-    Game::opponent2 = anOpponent2;
-    Game::opponent3 = anOpponent3;
-} */
-
 void Game::print_state(ePlayMode state)
 {
     ePlayMode state_to_print;

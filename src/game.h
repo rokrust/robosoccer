@@ -59,10 +59,6 @@ public:
 
     void update_side();
     void update_kick_off();
-
-    /* void set_ball(RawBall* ball);
-    void set_own_team(Goalie* myGoalie, Striker* myStriker1, Striker* myStriker2);
-    void set_opponent_team(Opponent* anOpponent1, Opponent* anOpponent2, Opponent* anOpponent3); */
 	
     bool get_is_team_blue();
     bool get_is_left_side();
