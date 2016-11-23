@@ -17,6 +17,12 @@ Strategy::Strategy()
     }
 }
 
+Position Strategy::calculate_alternative_position(const Position &robot_pos, const Position &obstacle_pos)
+{
+    // TODO: Actually calculate alternative positions
+    Position pos_dummy(0.0, 0.0);
+    return pos_dummy;
+}
 
 void Strategy::update_estimation_and_prediction(const double ms_between_positions)
 {
@@ -139,11 +145,53 @@ bool Strategy::position_within_field(const Position &pos_in)
 
 void Strategy::check_and_handle_collisions()
 {
-    // First check whether a robot would be in a forbidden zone,
-    // such as the wall or the penalty zone
+    bool collisions[3] = {true, true, true};
+    int collision_with[3] = {-1, -1, -1};
+    int robot_index;
+    int obstacle_index;
 
-    // Second check the distances among the robots and if there is a collision propability
-    // above a certain threshold
+    while(collisions[0] || collisions[1] || collisions[2]) {
+        collisions[0] = false;
+        collisions[1] = false;
+        collisions[2] = false;
+        // First check whether a robot would be in a forbidden zone,
+        // such as the wall or the penalty zone
+        for (robot_index = 0; robot_index <= 2; robot_index++) {
+            // iterate over our own robots, we cannot handle collisions among the others
+            collisions[robot_index] = !position_within_field(robot_position_prediction[robot_index]);
+            collision_with[robot_index] = -2; // wall collision
+
+            // Second check the distances among the robots and if there is a collision propability
+            // above a certain threshold, if so, calculate alternative positions until there are
+            // no collisions
+            for (obstacle_index = 0; obstacle_index < 6; obstacle_index++) {
+                // prevent to check self-collision
+                if (obstacle_index != robot_index) {
+                    double col_prob = collision_propability(robot_position_prediction[robot_index],
+                                                            robot_position_prediction[obstacle_index]);
+                    if (col_prob > COLLISION_CONSIDERATION_THESHOLD) {
+                        collisions[robot_index] = true;
+                        collision_with[robot_index] = obstacle_index;
+                    }
+                }
+            }
+        }
+
+        for (robot_index = 0; robot_index <= 2; robot_index++) {
+            // handle collisions
+            Position obstacle_pos;
+            Position robot_pos_cur = robot_position_history[robot_index][0];
+            if (collision_with[robot_index] == -2) {
+                obstacle_pos = robot_position_prediction[robot_index];
+            } else {
+                obstacle_pos = robot_position_prediction[collision_with[robot_index]];
+            }
+            Position alternative_pos = calculate_alternative_position(robot_pos_cur, obstacle_pos);
+            robot_position_prediction[robot_index] = alternative_pos;
+        }
+    }
+
+    // TODO: Assign alternative positions
 }
 
 void Strategy::command_drive()

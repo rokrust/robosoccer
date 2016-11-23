@@ -5,6 +5,7 @@
 
 #define POSITION_HISTORY_LENGTH 3
 #define COLLISION_DISTANCE_THRESHOLD 0.3
+#define COLLISION_CONSIDERATION_THESHOLD 0.8
 
 // set rectangular field limits that are easy to check
 #define FIELD_RECT_MAX_X 1.15
@@ -21,6 +22,8 @@ private:
     Position robot_velocity_estimation[6];
     Position robot_position_prediction[6];
     Position robot_last_prediction[6];
+
+    Position calculate_alternative_position(const Position& robot_pos, const Position& obstacle_pos);
 
 public:
     Strategy();
