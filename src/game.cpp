@@ -514,11 +514,15 @@ void Game::update_estimation_and_prediction(double ms_between_positions)
         robot_velocity_estimation[robot_index].SetY(dist_y /
                                                     ((ms_between_positions / 1000) * (double)(POSITION_HISTORY_LENGTH - 1)));
 
-        // position prediction
+        // save old prediction
+        robot_last_prediction[robot_index].SetX(robot_position_prediction[robot_index].GetX());
+        robot_last_prediction[robot_index].SetY(robot_position_prediction[robot_index].GetY());
+
+        // calculate new prediction
         robot_position_prediction[robot_index].SetX(robot_position_history[robot_index][0].GetX()
-                + ms_between_positions*robot_velocity_estimation[robot_index].GetX());
+                + (ms_between_positions / 1000)*robot_velocity_estimation[robot_index].GetX());
         robot_position_prediction[robot_index].SetY(robot_position_history[robot_index][0].GetY()
-                + ms_between_positions*robot_velocity_estimation[robot_index].GetY());
+                + (ms_between_positions / 1000)*robot_velocity_estimation[robot_index].GetY());
     }
 }
 
@@ -537,32 +541,49 @@ void Game::update_position_history()
 
 void Game::print_robot_position_history(const int robot_nr)
 {
-    int precision = 9;
+    int precision = 3;
     cout << "Robot position history for robot" << robot_nr << endl;
     int history_index;
     for (history_index = 0; history_index < POSITION_HISTORY_LENGTH; history_index++) {
-        cout << "Position at t-" << history_index << " x: " << setprecision(precision)
+        cout << "Position at t-" << history_index << " x: " << setprecision(precision) << fixed
              << robot_position_history[robot_nr][history_index].GetX() << " y: "
-             << setprecision(precision) << robot_position_history[robot_nr][history_index].GetY() << endl;
+             << robot_position_history[robot_nr][history_index].GetY() << endl;
     }
 }
 
 void Game::print_robot_velocity_estimation()
 {
-    int precision = 9;
-    cout << "Robot velocity estimation in m/ms" << endl;
-    cout << "Goalie    x: " << setprecision(precision) << robot_velocity_estimation[0].GetX()
-         << " y: " << setprecision(precision) << robot_velocity_estimation[0].GetY() << endl;
-    cout << "Striker1  x: " << setprecision(precision) << robot_velocity_estimation[1].GetX()
-         << " y: " << setprecision(precision) << robot_velocity_estimation[1].GetY() << endl;
-    cout << "Striker2  x: " << setprecision(precision) << robot_velocity_estimation[2].GetX()
-         << " y: " << setprecision(precision) << robot_velocity_estimation[2].GetY() << endl;
-    cout << "Opponent1 x: " << setprecision(precision) << robot_velocity_estimation[3].GetX()
-         << " y: " << setprecision(precision) << robot_velocity_estimation[3].GetY() << endl;
-    cout << "Opponent2 x: " << setprecision(precision) << robot_velocity_estimation[4].GetX()
-         << " y: " << setprecision(precision) << robot_velocity_estimation[4].GetY() << endl;
-    cout << "Opponent3 x: " << setprecision(precision) << robot_velocity_estimation[5].GetX()
-         << " y: " << setprecision(precision) << robot_velocity_estimation[5].GetY() << endl;
+    int precision = 3;
+    cout << "Robot velocity estimation in m/s" << endl;
+    cout << "Goalie    x: " << setprecision(precision) << fixed
+         << robot_velocity_estimation[0].GetX() << " y: " << robot_velocity_estimation[0].GetY() << endl;
+    cout << "Striker1  x: " << setprecision(precision) << fixed
+         << robot_velocity_estimation[1].GetX() << " y: " << robot_velocity_estimation[1].GetY() << endl;
+    cout << "Striker2  x: " << setprecision(precision) << fixed
+         << robot_velocity_estimation[2].GetX() << " y: " << robot_velocity_estimation[2].GetY() << endl;
+    cout << "Opponent1 x: " << setprecision(precision) << fixed
+         << robot_velocity_estimation[3].GetX() << " y: " << robot_velocity_estimation[3].GetY() << endl;
+    cout << "Opponent2 x: " << setprecision(precision) << fixed
+         << robot_velocity_estimation[4].GetX() << " y: " << robot_velocity_estimation[4].GetY() << endl;
+    cout << "Opponent3 x: " << setprecision(precision) << fixed
+         << robot_velocity_estimation[5].GetX() << " y: " << robot_velocity_estimation[5].GetY() << endl;
+}
+
+void Game::print_robot_position_prediction()
+{
+    cout << "Robot position prediction" << endl;
+    int robot_index;
+    for (robot_index = 0; robot_index <= 5; robot_index++) {
+        cout << "Robot" << robot_index << " predicted x: " << robot_last_prediction[robot_index].GetX()
+                << " y: " << robot_last_prediction[robot_index].GetY() << endl;
+        cout << "Robot" << robot_index << " current   x: " << robot_position_history[robot_index][0].GetX()
+                << " y: " << robot_position_history[robot_index][0].GetY() << endl;
+        cout << "Robot" << robot_index << " error     x: "
+             << robot_position_history[robot_index][0].GetX() - robot_last_prediction[robot_index].GetX()
+             << " y: "
+             << robot_position_history[robot_index][0].GetY() - robot_last_prediction[robot_index].GetY()
+             << endl;
+    }
 }
 
 void Game::print_state(ePlayMode state)
