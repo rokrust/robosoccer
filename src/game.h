@@ -33,6 +33,12 @@ private:
     bool stay_in_state_machine;
     bool stay_in_state;
 
+    // first index is goalie, striker1, striker2, opponent1, opponent2, opponent3
+    // second index is how many time steps we go backward
+    Position robot_position_history[6][POSITION_HISTORY_LENGTH];
+    Position robot_velocity_estimation[6];
+    Position robot_position_prediction[6];
+
 public:
     static Goalie* goalie;
     static Striker* striker1;
@@ -41,12 +47,6 @@ public:
     static Opponent* opponent2;
     static Opponent* opponent3;
     static RawBall* datBall;
-
-    // first index is goalie, striker1, striker2, opponent1, opponent2, opponent3
-    // second index is how many time steps we go backward
-    Position robot_position_history[6][POSITION_HISTORY_LENGTH];
-    Position robot_velocity_estimation[6];
-    Position robot_position_prediction[6];
 
     static Robot* robots[6];
 
@@ -77,6 +77,8 @@ public:
     // movement prediction and velocity estimation
     void update_position_history();
     void update_estimation_and_prediction(double ms_between_positions);
+    void print_robot_position_history(const int robot_nr);
+    void print_robot_velocity_estimation();
 
     // state machine
     void print_state(ePlayMode state=PAUSE);

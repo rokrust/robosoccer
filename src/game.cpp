@@ -503,15 +503,21 @@ void Game::update_estimation_and_prediction(double ms_between_positions)
         dist_x = 0.0;
         dist_y = 0.0;
         for (history_index = 0; history_index <= POSITION_HISTORY_LENGTH - 1; history_index++) {
-            dist_x = dist_x + robot_position_history[robot_index][history_index].GetX() - robot_position_history[robot_index][history_index+1].GetX();
-            dist_y = dist_y + robot_position_history[robot_index][history_index].GetY() - robot_position_history[robot_index][history_index+1].GetY();
+            dist_x = dist_x + robot_position_history[robot_index][history_index].GetX()
+                    - robot_position_history[robot_index][history_index+1].GetX();
+            dist_y = dist_y + robot_position_history[robot_index][history_index].GetY()
+                    - robot_position_history[robot_index][history_index+1].GetY();
         }
-        robot_velocity_estimation[robot_index].SetX(dist_x / (ms_between_positions * (POSITION_HISTORY_LENGTH - 1)));
-        robot_velocity_estimation[robot_index].SetY(dist_y / (ms_between_positions * (POSITION_HISTORY_LENGTH - 1)));
+        robot_velocity_estimation[robot_index].SetX(dist_x /
+                                                    (ms_between_positions * (POSITION_HISTORY_LENGTH - 1)));
+        robot_velocity_estimation[robot_index].SetY(dist_y /
+                                                    (ms_between_positions * (POSITION_HISTORY_LENGTH - 1)));
 
         // position prediction
-        robot_position_prediction[robot_index].SetX(robot_position_history[robot_index][0].GetX() + ms_between_positions*robot_velocity_estimation[robot_index].GetX());
-        robot_position_prediction[robot_index].SetY(robot_position_history[robot_index][0].GetY() + ms_between_positions*robot_velocity_estimation[robot_index].GetY());
+        robot_position_prediction[robot_index].SetX(robot_position_history[robot_index][0].GetX()
+                + ms_between_positions*robot_velocity_estimation[robot_index].GetX());
+        robot_position_prediction[robot_index].SetY(robot_position_history[robot_index][0].GetY()
+                + ms_between_positions*robot_velocity_estimation[robot_index].GetY());
     }
 }
 
@@ -526,6 +532,34 @@ void Game::update_position_history()
         }
         robot_position_history[robot_index][0] = robots[robot_index]->GetPos();
     }
+}
+
+void Game::print_robot_position_history(const int robot_nr)
+{
+    cout << "Robot position history for robot" << robot_nr << endl;
+    int history_index;
+    for (history_index = 0; history_index <= POSITION_HISTORY_LENGTH; history_index++) {
+        cout << "Position at t - " << history_index << " x: " << setprecision(3)
+             << robot_position_history[robot_nr][history_index].GetX() << " y: "
+             << setprecision(3) << robot_position_history[robot_nr][history_index].GetY() << endl;
+    }
+}
+
+void Game::print_robot_velocity_estimation()
+{
+    cout << "Robot velocity estimation in m/ms" << endl;
+    cout << "Goalie    x: " << setprecision(3) << robot_velocity_estimation[0].GetX()
+         << " y: " << setprecision(3) << robot_velocity_estimation[0].GetY() << endl;
+    cout << "Striker1  x: " << setprecision(3) << robot_velocity_estimation[1].GetX()
+         << " y: " << setprecision(3) << robot_velocity_estimation[1].GetY() << endl;
+    cout << "Striker2  x: " << setprecision(3) << robot_velocity_estimation[2].GetX()
+         << " y: " << setprecision(3) << robot_velocity_estimation[2].GetY() << endl;
+    cout << "Opponent1 x: " << setprecision(3) << robot_velocity_estimation[3].GetX()
+         << " y: " << setprecision(3) << robot_velocity_estimation[3].GetY() << endl;
+    cout << "Opponent2 x: " << setprecision(3) << robot_velocity_estimation[4].GetX()
+         << " y: " << setprecision(3) << robot_velocity_estimation[4].GetY() << endl;
+    cout << "Opponent3 x: " << setprecision(3) << robot_velocity_estimation[5].GetX()
+         << " y: " << setprecision(3) << robot_velocity_estimation[5].GetY() << endl;
 }
 
 void Game::print_state(ePlayMode state)
