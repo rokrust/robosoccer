@@ -25,6 +25,13 @@ using namespace std;
 
 
 RawBall* Game::datBall = NULL;
+Goalie* Game::goalie = NULL;
+Striker* Game::striker1 = NULL;
+Striker* Game::striker2 = NULL;
+Opponent* Game::opponent1 = NULL;
+Opponent* Game::opponent2 = NULL;
+Opponent* Game::opponent3 = NULL;
+
 
 int main(void) {
 
@@ -141,6 +148,15 @@ int main(void) {
                 myStriker1.shoot_ball_at_goal(game_handler.get_is_left_side());
             }
 
+            if (SCENARIO == 4) {
+                game_handler.goalie->test_loop_drive_parallel();
+            }
+
+            // Goalkeepers Kick
+            if (SCENARIO == 5) {
+                game_handler.goalie->do_the_goalkeepers_kick();
+            }
+
 
             if (SCENARIO == 13) {
                 while(1) {
@@ -194,8 +210,18 @@ int main(void) {
 
             if (SCENARIO == 22) {
                 game_handler.goalie->drive_parallel(+10, false);
-
             }
+
+            if (SCENARIO == 90) {
+                game_handler.goalie->set_target_pos(Position(0.0, 0.0));
+                game_handler.goalie->set_wheelspeed();
+
+                usleep(5000 * 1000);
+            }
+
+            return 0;
+
+
 
 
 			while(1){

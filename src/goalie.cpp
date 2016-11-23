@@ -146,6 +146,121 @@ int Goalie::go_to_penalty_save_position()
     return 0;
 }
 
+int Goalie::do_the_goalkeepers_kick()
+{
+    cout << "Called the Function: do_the_goalkeepers_kick! " << endl;
+
+    // Bring the blue robots in the line up position
+    Position line_y_plus(-0.2, 0.6);
+    Position line_y_zero(-0.2, 0.0);
+    Position line_y_minus(-0.2, -0.6);
+
+    Game::opponent1->GotoPos(line_y_plus);
+    Game::opponent2->GotoPos(line_y_zero);
+    Game::opponent3->GotoPos(line_y_minus);
+
+    cout << "Press Enter, if ready! ... ";
+    cin.get();
+    cin.get();
+
+    Position goalie_pos(-1.2, 0.0);
+    GotoPos(goalie_pos);
+
+    cout << "Press Enter, if ready! ..." << endl;
+    cin.get();
+
+    // Get Position for all dat Calculations needed
+    Position ball_pos = Game::datBall->GetPos();
+    goalie_pos = GetPos();
+    Position opp1_pos = Game::opponent1->GetPos();
+    Position opp2_pos = Game::opponent2->GetPos();
+    Position opp3_pos = Game::opponent3->GetPos();
+
+    // Decide if shooting through the y_plus or y_minus gap between the opponents
+    Position shoot_target_pos; // Position where to shoot the ball through the gap
+    shoot_target_pos.SetX(opp2_pos.GetX());
+    if (ball_pos.GetY() >= 0.0) { // shoot through y_plus_gap
+        shoot_target_pos.SetY(opp2_pos.GetY() + 0.5*(opp1_pos.GetY() - opp2_pos.GetY()));
+    } else { // shoot through y_minus_gap
+        shoot_target_pos.SetY(opp2_pos.GetY() + 0.5*(opp3_pos.GetY() - opp2_pos.GetY()));
+    }
+
+
+    // Get direction from the gap between the opponents to the ball
+    Position shoot_target_to_ball_direction;
+    shoot_target_to_ball_direction.SetX(ball_pos.GetX() - shoot_target_pos.GetX());
+    shoot_target_to_ball_direction.SetY(ball_pos.GetY() - shoot_target_pos.GetY());
+
+
+    // Norm the shoot_target_to_ball_direction
+    float norm_of_shoot_target_to_ball_direction =
+            shoot_target_to_ball_direction.GetX()*shoot_target_to_ball_direction.GetX() +
+            shoot_target_to_ball_direction.GetY()*shoot_target_to_ball_direction.GetY();
+    norm_of_shoot_target_to_ball_direction = sqrt(norm_of_shoot_target_to_ball_direction);
+
+    shoot_target_to_ball_direction.SetX(shoot_target_to_ball_direction.GetX() / norm_of_shoot_target_to_ball_direction);
+    shoot_target_to_ball_direction.SetY(shoot_target_to_ball_direction.GetY() / norm_of_shoot_target_to_ball_direction);
+
+
+    // Calculate position for Goalie to drive behind the ball
+    float dist_for_goalie_behind_ball = 0.15;
+    Position goalie_pos_behind_ball;
+    goalie_pos_behind_ball.SetX(ball_pos.GetX() +
+                                dist_for_goalie_behind_ball * shoot_target_to_ball_direction.GetX());
+    goalie_pos_behind_ball.SetY(ball_pos.GetY() +
+                                dist_for_goalie_behind_ball * shoot_target_to_ball_direction.GetY());
+
+
+    // Move Goalie behind the Ball
+    int wait_time = spot_turn(180); // Turn Back
+    usleep(wait_time + 500*1000);
+
+    // Go back
+    wait_time = drive_parallel(abs(goalie_pos_behind_ball.GetX() - goalie_pos.GetX()) - 0.02, false); // Drive parallel along x axis
+    usleep(abs(wait_time) + 500*1000);
+
+    if (ball_pos.GetY() >= 0.0) {
+        wait_time = spot_turn(90); // Turn Sideways, either y plus
+    } else {
+        wait_time = spot_turn(-90); // or y minus
+    }
+    usleep(wait_time + 500*1000);
+
+    // Go sideways
+    wait_time = drive_parallel(abs(goalie_pos_behind_ball.GetY()-GetPos().GetY()) - 0.02, false); // Drive parallel along y axis
+    usleep(wait_time + 500*1000);
+
+
+    // Turn to the ball
+    float angle_to_shoot_from = atan2(shoot_target_to_ball_direction.GetY(), shoot_target_to_ball_direction.GetX());
+    angle_to_shoot_from = angle_to_shoot_from*360 / (2*3.1415) + 180;
+    angle_to_shoot_from = abs(angle_to_shoot_from - 360);
+    int angle_int = (int) angle_to_shoot_from;
+    wait_time = spot_turn(angle_int);
+    usleep(wait_time + 500*1000);
+
+
+    // Shoot it
+    MoveMs(180, 180, 700, 0);
+// 0    drive_parallel(0.3, false);
+
+
+    Position r_goalie_before_kick = GetPos();
+
+
+    cout << "r_ball = [" << ball_pos.GetX() << "," << ball_pos.GetY() << "]; ";
+    cout << "r_goalie = [" << goalie_pos.GetX() << "," << goalie_pos.GetY() << "]; ";
+    cout << "r_opp1 = [" << opp1_pos.GetX() << "," << opp1_pos.GetY() << "]; " << endl;
+    cout << "r_opp2 = [" << opp2_pos.GetX() << "," << opp2_pos.GetY() << "]; ";
+    cout << "r_opp3 = [" << opp3_pos.GetX() << "," << opp3_pos.GetY() << "]; ";
+    cout << "r_ball_target = [" << shoot_target_pos.GetX() << "," << shoot_target_pos.GetY() << "]; " << endl;
+    cout << "r_goalie_target = [" << goalie_pos_behind_ball.GetX() << "," << goalie_pos_behind_ball.GetY() << "]; ";
+    cout << "r_goalie_before_kick = [" << r_goalie_before_kick.GetX() << "," << r_goalie_before_kick.GetY() << "]; " << endl;
+
+    cout << endl;
+    return 0;
+}
+
 /*
 // COPY FOR LATER: constant goal keeping, to be added: drive to goalie init position after some driving for goal keeping
 int Goalie::go_to_penalty_save_position()

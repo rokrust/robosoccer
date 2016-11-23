@@ -86,6 +86,8 @@ public:
     int update_heading_controller(Angle ref_heading, Angle cur_heading);
 
     void set_wheelspeed();
+
+    void set_target_pos(Position target_pos_in);
 };
 
 #endif // ROBOT_H

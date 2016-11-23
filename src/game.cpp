@@ -14,14 +14,24 @@ Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
 {
     referee_handler = ref_in;
     is_team_blue = is_team_blue_in;
-    set_ball(datBall_in);
+    // set_ball(datBall_in);
 
-    goalie = goalie_in;
+    Game::datBall = datBall_in;
+
+    Game::goalie = goalie_in;
+    Game::striker1 = striker1_in;
+    Game::striker2 = striker2_in;
+
+    Game::opponent1 = opponent1_in;
+    Game::opponent2 = opponent2_in;
+    Game::opponent3 = opponent3_in;
+
+    /* goalie = goalie_in;
     striker1 = striker1_in;
     striker2 = striker2_in;
     opponent1 = opponent1_in;
     opponent2 = opponent2_in;
-    opponent3 = opponent3_in;
+    opponent3 = opponent3_in; */
 
     // initialize state machine variables
     stay_in_state_machine = true;
@@ -173,7 +183,7 @@ int Game::take_kick_off_position()
 
 void Game::perform_kick_off()
 {
-    striker1->GotoXY(datBall->GetX(), datBall->GetY(), 160, true);
+    Game::striker1->GotoXY(datBall->GetX(), datBall->GetY(), 160, true);
 }
 
 int Game::take_penalty_position()
@@ -443,14 +453,29 @@ bool Game::get_has_kick_off()
     return has_kick_off;
 }
 
-RawBall* Game::get_ball()
+/* RawBall* Game::get_ball()
 {
     return datBall;
-}
+} */
 
-void Game::set_ball(RawBall* ball){
+/* void Game::set_ball(RawBall* ball)
+{
     Game::datBall = ball;
-}
+} */
+
+/* void set_own_team(Goalie* myGoalie, Striker* myStriker1, Striker* myStriker2)
+{
+    Game::goalie = myGoalie;
+    Game::striker1 = myStriker1;
+    Game::striker2 = myStriker2;
+} */
+
+/* void set_opponent_team(Opponent* anOpponent1, Opponent* anOpponent2, Opponent* anOpponent3)
+{
+    Game::opponent1 = anOpponent1;
+    Game::opponent2 = anOpponent2;
+    Game::opponent3 = anOpponent3;
+} */
 
 void Game::print_state(ePlayMode state)
 {

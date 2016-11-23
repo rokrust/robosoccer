@@ -32,17 +32,17 @@ private:
     bool stay_in_state;
 
 public:
-    Goalie* goalie;
-    Striker* striker1;
-    Striker* striker2;
-    Opponent* opponent1;
-    Opponent* opponent2;
-    Opponent* opponent3;
+    static Goalie* goalie;
+    static Striker* striker1;
+    static Striker* striker2;
+    static Opponent* opponent1;
+    static Opponent* opponent2;
+    static Opponent* opponent3;
     static RawBall* datBall;
 
     Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
          Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
-         Opponent* opponent1_in = 0, Opponent* opponent2_in = 0, Opponent* opponent3_in = 0);
+         Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in);
 
     void step(bool verbose=false);
 
@@ -55,12 +55,15 @@ public:
     void update_kick_off();
 
     void set_phase(ePlayMode new_phase, bool verbose);
-    void set_ball(RawBall* ball);
+    /* void set_ball(RawBall* ball);
+    void set_own_team(Goalie* myGoalie, Striker* myStriker1, Striker* myStriker2);
+    void set_opponent_team(Opponent* anOpponent1, Opponent* anOpponent2, Opponent* anOpponent3); */
 	
     bool get_is_team_blue();
     bool get_is_left_side();
     bool get_has_kick_off();
-    RawBall* get_ball(); //Probably not needed
+    // RawBall* get_ball(); //Probably not needed
+
 
     // state machine
     void print_state(ePlayMode state=PAUSE);
