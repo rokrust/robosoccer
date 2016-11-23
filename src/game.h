@@ -38,13 +38,15 @@ public:
     static Opponent* opponent1;
     static Opponent* opponent2;
     static Opponent* opponent3;
+
     static RawBall* datBall;
 
     static Robot* robots[6];
 
-    Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
+    /* Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
          Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
-         Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in);
+         Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in); */
+    Game(RTDBConn DBC, bool is_team_blue_in);
 
     void step(bool verbose=false);
 

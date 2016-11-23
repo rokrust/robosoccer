@@ -86,7 +86,7 @@ void Soccer_Tests::test_command_driving()
     int robot_choice_in;
 
     while(true) {
-        Robot* my_robot;
+        // Robot* my_robot;
         cout << "Select robot to control:" << endl;
         cout << "1: Goalie" << endl;
         cout << "2: Striker1" << endl;
@@ -96,14 +96,14 @@ void Soccer_Tests::test_command_driving()
         cout << "6: Opponent3" << endl;
         cin >> robot_choice_in;
         switch (robot_choice_in) {
-        case 1: my_robot = Game::goalie; break;
-        case 2: my_robot = Game::striker1; break;
-        case 3: my_robot = Game::striker2; break;
-        case 4: my_robot = Game::opponent1; break;
-        case 5: my_robot = Game::opponent2; break;
-        case 6: my_robot = Game::opponent3; break;
+        // case 1: my_robot = Game::goalie; break;
+        // case 2: my_robot = Game::striker1; break;
+        // case 3: my_robot = Game::striker2; break;
+        // case 4: my_robot = Game::opponent1; break;
+        // case 5: my_robot = Game::opponent2; break;
+        // case 6: my_robot = Game::opponent3; break;
         default: cout << "Wrong input. Setting default to goalie" << endl;
-            my_robot = Game::goalie; break;
+           // my_robot = Game::goalie; break;
         }
 
         cout << "X: " << endl;
@@ -112,7 +112,7 @@ void Soccer_Tests::test_command_driving()
         cin >> y_in;
         Position goal_pos(x_in, y_in);
         cout << "Going to position x:" << x_in << " y:" << y_in << endl;
-        my_robot->drive_to_pos(goal_pos, true);
+        // my_robot->drive_to_pos(goal_pos, true);
         cin.get();
     }
 }

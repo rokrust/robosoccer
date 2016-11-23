@@ -55,68 +55,21 @@ int main(void) {
         RTDBConn DBC(client_name.data(), 0.1, "");
 
         // Create Referee Object
-        Referee ref_handler(DBC);
-        ref_handler.Init();
+        /* Referee ref_handler(DBC);
+        ref_handler.Init(); */
 
         // Get Robot Colour
         bool is_team_blue = true;
         cout << "Which Team? (0: red - 1: blue) ";
         cin >> is_team_blue;
 
-        // Get Side
-        // bool is_left_side = ref_handler.GetSide(); // 0: left side (Opp. PCs) - 1: right side (PCs)
-
-        // cout << "My Team is blue: " << is_team_blue << " - Playing on the side Opp. PCs: " << is_left_side << endl;
-
-        /** Create a ball object
-             *
-             *  This ball abject gives you access to all information about the ball
-             *  which is extracted from the cam.
-             *
-             */
-        RawBall ball(DBC);
-        cout << "Ball informations:" << endl;
-        cout << "\t initial position: " << ball.GetPos() << endl;
-        /** Notice that the rotation here refers to the moving direction of the ball.
-             *  Therefore if the ball does not move the rotation is not defined.
-             */
-        cout << "\t initial direction: " << ball.GetPhi() << endl;
-        cout << "\t initial velocity: " << ball.GetVelocity() << endl;
-
-        // derive bot numbers from the team color
-        int myGoalieDvNr;
-        int myStriker1DvNr;
-        int theOpponent1DvNr;
-        if (is_team_blue) {
-            myGoalieDvNr = 0;
-            myStriker1DvNr = 1;
-            theOpponent1DvNr = 3;
-        }
-        else {
-            myGoalieDvNr = 3;
-            myStriker1DvNr = 4;
-            theOpponent1DvNr = 0;
-        }
-
-        // Create Robot objects
-        Goalie myGoalie(DBC, myGoalieDvNr);
-        Striker myStriker1(DBC, myStriker1DvNr);
-        Striker myStriker2(DBC, myStriker1DvNr+1);
-        Opponent theOpponent1(DBC, theOpponent1DvNr);
-        Opponent theOpponent2(DBC, theOpponent1DvNr+1);
-        Opponent theOpponent3(DBC, theOpponent1DvNr+2);
-
-
-        // Create Game object
-        Game game_handler(&ref_handler, is_team_blue, &ball,
-                          &myGoalie, &myStriker1, &myStriker2,
-                          &theOpponent1, &theOpponent2, &theOpponent3);
+        Game game_handler(DBC, is_team_blue);
 
 
 
         // Initialize a Test object
-        Soccer_Tests Test_Obj(&myGoalie, &myStriker1, &myStriker2,
-                              &theOpponent1, &theOpponent2, &theOpponent3);
+        /* Soccer_Tests Test_Obj(&myGoalie, &myStriker1, &myStriker2,
+                              &theOpponent1, &theOpponent2, &theOpponent3); */
 
 
         //-------------------------------------- End Init ---------------------------------
@@ -150,9 +103,9 @@ int main(void) {
             game_handler.goalie->go_to_penalty_save_position();
         }
 
-        if (SCENARIO == 3){
+        /* if (SCENARIO == 3){
             myStriker1.shoot_ball_at_goal(game_handler.get_is_left_side());
-        }
+        } */
 
         if (SCENARIO == 4) {
             bool keep_running = 1;
@@ -161,12 +114,12 @@ int main(void) {
             }
         }
 
-        if (SCENARIO == 5) {
+        /* if (SCENARIO == 5) {
             Position pos2print(1, 0);
             cout << "pos2print = " << game_handler.matlsynt(pos2print) << endl;
 
             Test_Obj.test_command_driving();
-        }
+        } */
 
         if (SCENARIO == 6) {
             game_handler.goalie->test_loop_drive_parallel();
@@ -205,17 +158,19 @@ int main(void) {
                     //game_handler.print_robot_position_history(3);
                     //game_handler.print_robot_position_history(4);
                     //game_handler.print_robot_position_history(5);
-                    //game_handler.print_robot_velocity_estimation();
-                    //game_handler.print_robot_position_prediction();
+                    // game_handler.print_robot_velocity_estimation();
+                    // game_handler.print_robot_position_prediction();
                 }
             }
         }
 
-        //if (SCENARIO == 99) {
-        //    game_handler.update_position_history();
-        //}
 
-        if (SCENARIO == 100) {
+        if (SCENARIO == 99) {
+            // game_handler.update_position_history();
+        }
+
+
+        /* if (SCENARIO == 100) {
             Test_Obj.move_in_out();
         }
 
@@ -225,7 +180,7 @@ int main(void) {
 
         if (SCENARIO == 700) {
             Test_Obj.turn_experiments();
-        }
+        } */
 
         if (SCENARIO == 1000) {
             game_handler.take_kick_off_position();
@@ -241,7 +196,7 @@ int main(void) {
             game_handler.goalie->drive_parallel(+10, false);
         }
 
-        if (SCENARIO == 30){
+        /* if (SCENARIO == 30){
             //Position pos(0.0, 0.0);
 
             int timer_duration = 250;
@@ -253,7 +208,7 @@ int main(void) {
                     myStriker1.set_wheelspeed(timer_duration);
                 }
             }
-        }
+        }*/
                 /*
                     //Angle ang = myStriker1.GetPos().AngleOfLineToPos(Position());
 

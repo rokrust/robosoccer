@@ -10,30 +10,45 @@
 
 #define ROBOT_ARRIVED_THRESHOLD 0.2
 
-Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
+/* Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
            Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
-           Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in)
+           Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in) */
+Game::Game(RTDBConn DBC, bool is_team_blue_in)
 {
-    referee_handler = ref_in;
+    // Initialize Referee
+    // Referee ref_in(DBC);
+    // ref_in.Init();
+    referee_handler = new Referee(DBC);
+    referee_handler->Init();
+
+    // Initialize datBall
+    datBall = new RawBall(DBC);
+
+    // Set Team Colour
     is_team_blue = is_team_blue_in;
-    // set_ball(datBall_in);
 
-    Game::datBall = datBall_in;
+    // Get device Numbers for drobots depending on which colour
+    int myGoalieDvNr;
+    int myStriker1DvNr;
+    int theOpponent1DvNr;
+    if (is_team_blue) {
+        myGoalieDvNr = 0;
+        myStriker1DvNr = 1;
+        theOpponent1DvNr = 3;
+    }
+    else {
+        myGoalieDvNr = 3;
+        myStriker1DvNr = 4;
+        theOpponent1DvNr = 0;
+    }
 
-    Game::goalie = goalie_in;
-    Game::striker1 = striker1_in;
-    Game::striker2 = striker2_in;
-
-    Game::opponent1 = opponent1_in;
-    Game::opponent2 = opponent2_in;
-    Game::opponent3 = opponent3_in;
-
-    /* goalie = goalie_in;
-    striker1 = striker1_in;
-    striker2 = striker2_in;
-    opponent1 = opponent1_in;
-    opponent2 = opponent2_in;
-    opponent3 = opponent3_in; */
+    // Initialize Robot Objects
+    goalie = new Goalie(DBC, myGoalieDvNr);
+    striker1 = new Striker(DBC, myStriker1DvNr);
+    striker2 = new Striker(DBC, myStriker1DvNr+1);
+    opponent1 = new Opponent(DBC, theOpponent1DvNr);
+    opponent2 = new Opponent(DBC, theOpponent1DvNr+1);
+    opponent3 = new Opponent(DBC, theOpponent1DvNr+2);
 
     // initialize state machine variables
     stay_in_state_machine = true;
@@ -485,8 +500,6 @@ bool Game::get_has_kick_off()
     Game::opponent2 = anOpponent2;
     Game::opponent3 = anOpponent3;
 } */
-
-
 
 void Game::print_state(ePlayMode state)
 {
