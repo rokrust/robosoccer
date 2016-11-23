@@ -30,6 +30,8 @@
 #define DRIVE_RAMP_UP 50
 #define DIST_THRESHOLD_LINEAR 0.40
 #define DIST_THRESHOLD_STOP 0.08
+#define ACCEPTABLE_DISTANCE_THRESHOLD 0.08 //Might be the same as the one above
+#define ACCEPTABLE_HEADING_THRESHOLD 0.05
 
 // goalie constants
 #define GOALIE_SPEED 120
@@ -46,8 +48,12 @@ Robot::Robot(RTDBConn DBC_in, int device_nr_in) : RoboControl(DBC_in, device_nr_
     left_wheel_speed = 0;
     right_wheel_speed = 0;
 
-    //Couldn't do this in the declaration for some reason
-    controller_timer = Timer((int)SAMPLING_TIME*1000);
+    int n_samples = 6;
+    Controller_data c = {.sampling_time = 0.01,
+                         .speed_integrator = 0.0,
+                         .heading_integrator = 0.0, .buffer_size = n_samples,
+                         .current_sample = 0, .error_buffer = new double[n_samples]};
+    controller_data = c;
 }
 
 Robot::~Robot()
@@ -261,25 +267,60 @@ int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negati
 //Set u_speed according to distance_to_pos (should be called every controller tick
 //P controller might be good enough
 int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
-    static double integral_distance = 0; //Will only be set once
     double distance_to_pos = GetPos().DistanceTo(target_pos);
 
-    integral_distance += distance_to_pos * controller_timer.get_timeout_time(); //hmm careful of overflow here, should be saturated
+    controller_data.speed_integrator += distance_to_pos * controller_data.sampling_time;
 
-    float xx = K_pt*distance_to_pos + K_it*integral_distance;
-    cout << "xx = " << xx << endl;
-    int u_speed = K_pt*distance_to_pos + K_it*integral_distance;
-    u_speed *= (int)cos((ref_heading - cur_heading).Get());
+    int u_speed = K_pt*distance_to_pos + K_it*controller_data.speed_integrator;
+
+    //u_speed *= cos((ref_heading - cur_heading).Get() * DEG_TO_RAD)  ;
 
     return u_speed;
 }
- 
+
 //Set u_omega according to ref_heading and cur_heading (should be called every controller tick)
-int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading) {
-    // float x = (K_ph*(ref_heading.Get() - cur_heading.Get()));
-    // cout << "x = " << x << endl;
-    int u_omega = (int)(K_ph*(ref_heading.Get() - cur_heading.Get())); // .Get());
+int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
+
+    double current_error = (ref_heading - cur_heading).Get();
+
+    controller_data.error_buffer[controller_data.current_sample] = current_error;
+    controller_data.heading_integrator += current_error*controller_data.sampling_time;
+
+    double int_error = controller_data.heading_integrator;
+    double diff_error = (current_error - error_buffer_mean())/controller_data.buffer_size;
+    controller_data.current_sample = (controller_data.current_sample + 1) % controller_data.buffer_size;
+
+    int u_omega = K_ph*current_error + K_ih*int_error + K_dh*diff_error;
+
+    //cout << "Omega: " << u_omega << endl;
+
+
     return u_omega;
+}
+
+double Robot::error_buffer_mean(){
+    double average_error = 0;
+
+    for(int i = 0; i < controller_data.buffer_size; i++){
+        average_error += controller_data.error_buffer[i];
+    }
+
+    return average_error/controller_data.buffer_size;
+}
+
+
+void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading){
+    //Acceptably close to target_pos
+    if(GetPos().DistanceTo(target_pos) < ACCEPTABLE_DISTANCE_THRESHOLD){
+        controller_data.speed_integrator = 0.0;
+    }
+
+    //Acceptably close to target_pos
+    if((ref_heading - cur_heading).Abs() < ACCEPTABLE_HEADING_THRESHOLD){
+        controller_data.heading_integrator = 0.0;
+        cout << "Heading integrator reset." << endl;
+    }
+
 }
  
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
@@ -287,24 +328,22 @@ void Robot::set_wheelspeed() {
     Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
     Angle cur_heading = GetPhi();
 
-    // cout << "ref_heading = " << ref_heading << endl;
-    // cout << "cur_heading = " << cur_heading << endl;
+    reset_integrators_if_necessary(ref_heading, cur_heading);
 
     int u_omega = update_heading_controller(ref_heading, cur_heading);
     int u_speed = update_speed_controller(ref_heading, cur_heading);
 
-    // cout << "u_omega = " << u_omega << endl;
-    // cout << "u_speed = " << u_speed << endl;
 
-    //Proper conversions should be done to u_omega if actual angular velocity is needed
-    left_wheel_speed = u_speed + u_omega;
-    right_wheel_speed = u_speed - u_omega;
+    right_wheel_speed = u_speed + u_omega;
+    left_wheel_speed = u_speed - u_omega;
 
-    // cout << "left_wheel_speed = " << left_wheel_speed << endl;
-    // cout << "right_wheel_speed = " << right_wheel_speed << endl;
+
+    cout << "Right: " << right_wheel_speed << endl
+         << "Left: " << left_wheel_speed << endl << endl;
 
     //Might have to change the last two arguments
-    MoveMs(left_wheel_speed, right_wheel_speed, 1000, TURN_RAMP_UP);
+    MoveMs(left_wheel_speed, right_wheel_speed, 10, 100);
+
 }
 
 void Robot::test_loop_drive_parallel() {
@@ -364,10 +403,4 @@ void Robot::test_loop_drive_parallel() {
         cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'";
         cout << r1.DistanceTo(r0) << "\t'" << phi0 << "\t'" << phi1 << "\t'" << phi1-phi0 << endl;
     }
-}
-
-void Robot::set_target_pos(Position target_pos_in) {
-    // target_pos = target_pos_in;
-    target_pos.SetX(target_pos_in.GetX());
-    target_pos.SetY(target_pos_in.GetY());
 }

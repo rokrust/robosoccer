@@ -19,8 +19,6 @@
 #include <iostream>
 #include <cmath>
 
-
-
 using namespace std;
 
 
@@ -219,15 +217,22 @@ int main(void) {
                 usleep(5000 * 1000);
             }
 
-            return 0;
+            if (SCENARIO == 30){
+                //Position pos(0.0, 0.0);
+                while(1){
+                    myStriker1.set_target_pos(Game::datBall->GetPos());
+                    myStriker1.set_wheelspeed();
+                    /*Angle ang = myStriker1.GetPos().AngleOfLineToPos(Position());
+                    cout << "Angle: " << (ang - myStriker1.GetPhi()).Deg() << endl;*/
+                    usleep(10000);
+                }
+            }
 
 
-
-
-			while(1){
-//				if(robot.controller_timer.timeout()){
-//					robot.set_wheelspeed();
-				}
+            while(1){
+                //				if(robot.controller_timer.timeout()){
+                //					robot.set_wheelspeed();
+            }
 
 	} catch (DBError err) {
 		cout << "Client died on Error: " << err.what() << endl;
