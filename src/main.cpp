@@ -119,20 +119,25 @@ int main(void) {
             //-------------------------------------- End Init ---------------------------------
 
             int SCENARIO;
-            cout << "Select Scenario to play: " << endl;
+            cout << "Select scenario..." << endl;
+            cout << "Play scenarios:" << endl;
             cout << "1: Run the state machine" << endl;
             cout << "2: Run the goalie ball stopping scenario" << endl;
             cout << "3: Run the striker penalty shooting scenario" << endl;
+            cout << "Development and debug scenarios:" << endl;
+            cout << "4: Run the old state machine" << endl;
+            cout << "5: Run the manual robot to position drive function" << endl;
+            cout << "6: Run the goalie drive parallel test loop" << endl;
+            cout << "7: Run the goalkeepers kick scenario" << endl;
+            cout << "8: Run the side and kick-off check function" << endl;
             cout << "...or enter another scenario number known to you" << endl;
             cout << "SCENARIO = ";
             cin >> SCENARIO;
 
             // select scenario
+
             if (SCENARIO == 1) {
-                bool keep_running = 1;
-                while (keep_running) {
-                    game_handler.step();
-                }
+                game_handler.state_machine(true);
             }
 
             if (SCENARIO == 2) {
@@ -147,16 +152,27 @@ int main(void) {
             }
 
             if (SCENARIO == 4) {
+                bool keep_running = 1;
+                while (keep_running) {
+                    game_handler.step();
+                }
+            }
+
+            if (SCENARIO == 5) {
+                Test_Obj.test_command_driving();
+            }
+
+            if (SCENARIO == 6) {
                 game_handler.goalie->test_loop_drive_parallel();
             }
 
             // Goalkeepers Kick
-            if (SCENARIO == 5) {
+            if (SCENARIO == 7) {
                 game_handler.goalie->do_the_goalkeepers_kick();
             }
 
 
-            if (SCENARIO == 13) {
+            if (SCENARIO == 8) {
                 while(1) {
                     game_handler.update_side();
                     game_handler.update_kick_off();
@@ -167,9 +183,7 @@ int main(void) {
                 }
             }
 
-            if (SCENARIO == 14) {
-                game_handler.state_machine(true);
-            }
+
 
             if (SCENARIO == 100) {
                 Test_Obj.move_in_out();
@@ -194,10 +208,6 @@ int main(void) {
 
             if (SCENARIO == 1000) {
                 game_handler.take_kick_off_position();
-            }
-
-            if (SCENARIO == 1100) {
-                Test_Obj.test_command_driving();
             }
 
             if (SCENARIO == 21) {
