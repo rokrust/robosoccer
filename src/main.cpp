@@ -162,7 +162,7 @@ int main(void) {
         }
 
         if (SCENARIO == 5) {
-            Position pos2print(1.0, 0.0);
+            Position pos2print(1, 0);
             cout << "pos2print = " << game_handler.matlsynt(pos2print) << endl;
 
             Test_Obj.test_command_driving();

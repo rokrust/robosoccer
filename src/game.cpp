@@ -858,7 +858,9 @@ void Game::state_machine(bool verbose)
 
 std::string Game::matlsynt(Position pos)
 {
+    int precision = 3; // after decimal point
+
     std::ostringstream stream_for_matlab_syntax;
-    stream_for_matlab_syntax << "[" << pos.GetX() << ", " << pos.GetY() << "]; ";
+    stream_for_matlab_syntax << "[" << setprecision(precision) << fixed << pos.GetX() << ", " << (double) pos.GetY() << "]; ";
     return stream_for_matlab_syntax.str();
 }
