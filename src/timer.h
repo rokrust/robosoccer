@@ -34,25 +34,21 @@ private:
         cout << " ";
         if(h<10)
             cout << "0" << h << ":";
-        else
-            cout << h << ":";
+        cout << h << ":";
 
         if(m<10)
-            cout << "0" << m << ":";
-        else
-            cout << m << ":";
+            cout << "0";
+        cout << m << ":";
 
         if (s<10)
-            cout << "0" << s << ",";
-        else
-            cout << s << ",";
+            cout << "0";
+        cout << s << ",";
 
+        if (ms < 100)
+            cout << "0";
         if (ms < 10)
-            cout << "00" << ms << " ";
-        else if (ms < 100 && ms >= 10)
-            cout << "0" << ms << " ";
-        else
-            cout << ms << " ";
+            cout << "0";
+        cout << ms << " ";
     }
 
     // timespec start_time, current_time; // , temp;
