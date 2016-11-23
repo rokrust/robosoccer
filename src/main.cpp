@@ -186,6 +186,22 @@ int main(void) {
             }
         }
 
+        if (SCENARIO == 9) {
+            cout << "Prediction and estimation testing" << endl;
+            int time_step_size;
+            cout << "Type desired time step size in ms: ";
+            cin >> time_step_size;
+            Timer test_timer(time_step_size);
+            while(1) {
+                if(test_timer.timeout()) {
+                    game_handler.update_position_history();
+                    game_handler.update_estimation_and_prediction(time_step_size);
+                    game_handler.print_robot_position_history(3);
+                    //game_handler.print_robot_velocity_estimation();
+                }
+            }
+        }
+
         if (SCENARIO == 99) {
             game_handler.update_position_history();
         }
