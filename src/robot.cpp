@@ -323,7 +323,7 @@ void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading)
 }
  
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
-void Robot::set_wheelspeed()
+void Robot::set_wheelspeed(int timer_duration)
 {
     Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
     Angle cur_heading = GetPhi();
@@ -342,7 +342,7 @@ void Robot::set_wheelspeed()
          << "Left: " << left_wheel_speed << endl << endl;
 
     //Might have to change the last two arguments
-    MoveMs(left_wheel_speed, right_wheel_speed, 10, 100);
+    MoveMs(left_wheel_speed, right_wheel_speed, timer_duration+10, 100);
 
 }
 

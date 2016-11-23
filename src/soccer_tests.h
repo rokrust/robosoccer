@@ -75,17 +75,7 @@ public:
 
     void test_command_driving();
 
-    /**
-     * @brief Test the custom turning function with two turns
-     */
-    void test_turns();
-
     void turn_experiments();
-
-    /**
-     * @brief Do some stuff with the goalie
-     */
-    int test_goalie();
 
 };
 

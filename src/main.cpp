@@ -198,15 +198,6 @@ int main(void) {
             Test_Obj.drive_to_pos();
         }
 
-        if (SCENARIO == 500) {
-            Test_Obj.test_turns();
-        }
-
-        // Goalie testing
-        if (SCENARIO == 600) {
-            Test_Obj.test_goalie();
-        }
-
         if (SCENARIO == 700) {
             Test_Obj.turn_experiments();
         }
@@ -225,24 +216,24 @@ int main(void) {
             game_handler.goalie->drive_parallel(+10, false);
         }
 
-        if (SCENARIO == 90) {
-            game_handler.goalie->set_target_pos(Position(0.0, 0.0));
-            game_handler.goalie->set_wheelspeed();
-
-            usleep(5000 * 1000);
-        }
-
         if (SCENARIO == 30){
             //Position pos(0.0, 0.0);
+
+            int timer_duration = 250;
+            Timer datTimer(timer_duration);
+
             while(1){
-                myStriker1.set_target_pos(Game::datBall->GetPos());
-                myStriker1.set_wheelspeed();
-                //Angle ang = myStriker1.GetPos().AngleOfLineToPos(Position());
+                if (datTimer.timeout()) {
+                    myStriker1.set_target_pos(Game::datBall->GetPos());
+                    myStriker1.set_wheelspeed(timer_duration);
+                }
+                /*
+                    //Angle ang = myStriker1.GetPos().AngleOfLineToPos(Position());
 
                 while(1){
                     //				if(robot.controller_timer.timeout()){
                     //					robot.set_wheelspeed();
-                }
+                } */
             }
         }
 

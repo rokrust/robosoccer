@@ -104,7 +104,7 @@ public:
 
     int update_heading_controller(Angle ref_heading, Angle cur_heading);
 
-    void set_wheelspeed();
+    void set_wheelspeed(int timer_duration);
 
     void set_target_pos(Position pos){target_pos = pos;}
 
