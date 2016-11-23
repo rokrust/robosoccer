@@ -856,3 +856,9 @@ void Game::state_machine(bool verbose)
     }
 }
 
+std::string Game::matlsynt(Position pos)
+{
+    std::ostringstream stream_for_matlab_syntax;
+    stream_for_matlab_syntax << "[" << pos.GetX() << ", " << pos.GetY() << "]; ";
+    return stream_for_matlab_syntax.str();
+}
