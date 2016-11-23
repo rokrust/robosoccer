@@ -127,7 +127,7 @@ int main(void) {
         cout << "SCENARIO = ";
         cin >> SCENARIO;
 
-        // select scenario
+        // select scenario - OLD
         if (SCENARIO == 1) {
             bool keep_running = 1;
             while (keep_running) {
@@ -142,7 +142,7 @@ int main(void) {
             game_handler.goalie->go_to_penalty_save_position();
         }
 
-        if (SCENARIO == 3){
+        if (SCENARIO == 3) {
             myStriker1.shoot_ball_at_goal(game_handler.get_is_left_side());
         }
 
@@ -224,6 +224,17 @@ int main(void) {
                 /*Angle ang = myStriker1.GetPos().AngleOfLineToPos(Position());
                     cout << "Angle: " << (ang - myStriker1.GetPhi()).Deg() << endl;*/
                 usleep(10000);
+            }
+        }
+
+        if (SCENARIO == 123456) {
+            int timer_duration;
+            cout << "Type desired timer_duration in ms: ";
+            cin >> timer_duration;
+            Timer test_timer(timer_duration);
+            while(1) {
+                if(test_timer.timeout())
+                    cout << "timed out" << endl;
             }
         }
 
