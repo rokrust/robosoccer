@@ -6,6 +6,12 @@
 #define POSITION_HISTORY_LENGTH 3
 #define COLLISION_DISTANCE_THRESHOLD 0.3
 
+// set rectangular field limits that are easy to check
+#define FIELD_RECT_MAX_X 1.15
+#define FIELD_RECT_MIN_X -1.15
+#define FIELD_RECT_MAX_Y 0.9
+#define FIELD_RECT_MIN_Y -0.9
+
 class Strategy
 {
 private:
@@ -27,6 +33,7 @@ public:
     void print_robot_position_prediction();
 
     double collision_propability(const Position& pos_robot, const Position& pos_obstacle);
+    bool position_within_field(const Position& pos_in);
     void check_and_handle_collisions();
 
     void command_drive();

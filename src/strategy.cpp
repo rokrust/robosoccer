@@ -123,9 +123,27 @@ double Strategy::collision_propability(const Position &pos_robot, const Position
     }
 }
 
+bool Strategy::position_within_field(const Position &pos_in)
+{
+    // quick check if position is within the rectangular field
+    if ((pos_in.GetX() < FIELD_RECT_MAX_X)
+            && (pos_in.GetX() > FIELD_RECT_MIN_X)
+            && (pos_in.GetY() < FIELD_RECT_MAX_Y)
+            && (pos_in.GetY() > FIELD_RECT_MIN_Y)) {
+        return true;
+    } else {
+        // TODO: sophisticated check
+        return false;
+    }
+}
+
 void Strategy::check_and_handle_collisions()
 {
+    // First check whether a robot would be in a forbidden zone,
+    // such as the wall or the penalty zone
 
+    // Second check the distances among the robots and if there is a collision propability
+    // above a certain threshold
 }
 
 void Strategy::command_drive()
