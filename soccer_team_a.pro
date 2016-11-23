@@ -27,7 +27,6 @@ SOURCES += \
     src/soccer_tests.cpp \
     src/main.cpp \
     src/robot.cpp \
-    src/timer.cpp \
     src/game.cpp \
     src/goalie.cpp \
     src/striker.cpp \

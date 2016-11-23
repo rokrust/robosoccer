@@ -273,7 +273,7 @@ int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
 
     int u_speed = K_pt*distance_to_pos + K_it*controller_data.speed_integrator;
 
-    //u_speed *= cos((ref_heading - cur_heading).Get() * DEG_TO_RAD)  ;
+    u_speed *= cos((ref_heading - cur_heading).Get() * DEG_TO_RAD)  ;
 
     return u_speed;
 }
@@ -306,7 +306,6 @@ double Robot::error_buffer_mean(){
 
     return average_error/controller_data.buffer_size;
 }
-
 
 void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading){
     //Acceptably close to target_pos
