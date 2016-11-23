@@ -81,7 +81,6 @@ int main(void) {
         cout << "2: Run the goalie ball stopping scenario" << endl;
         cout << "3: Run the striker penalty shooting scenario" << endl;
         cout << "Development and debug scenarios:" << endl;
-        cout << "4: Run the old state machine" << endl;
         cout << "5: Run the manual robot to position drive function" << endl;
         cout << "6: Run the goalie drive parallel test loop" << endl;
         cout << "7: Run the goalkeepers kick scenario" << endl;
@@ -103,23 +102,14 @@ int main(void) {
             game_handler.goalie->go_to_penalty_save_position();
         }
 
-        /* if (SCENARIO == 3){
-            myStriker1.shoot_ball_at_goal(game_handler.get_is_left_side());
-        } */
-
-        if (SCENARIO == 4) {
-            bool keep_running = 1;
-            while (keep_running) {
-                game_handler.step();
-            }
+        if (SCENARIO == 3){
+            Game::striker1->shoot_ball_at_goal(game_handler.get_is_left_side());
         }
 
-        /* if (SCENARIO == 5) {
-            Position pos2print(1, 0);
-            cout << "pos2print = " << game_handler.matlsynt(pos2print) << endl;
 
-            Test_Obj.test_command_driving();
-        } */
+        if (SCENARIO == 5) {
+            game_handler.strategy_modul->command_drive();
+        }
 
         if (SCENARIO == 6) {
             game_handler.goalie->test_loop_drive_parallel();
@@ -150,37 +140,19 @@ int main(void) {
             Timer test_timer(time_step_size);
             while(1) {
                 if(test_timer.timeout()) {
-                    //game_handler.update_position_history();
-                    //game_handler.update_estimation_and_prediction(time_step_size);
-                    //game_handler.print_robot_position_history(0);
-                    //game_handler.print_robot_position_history(1);
-                    //game_handler.print_robot_position_history(2);
-                    //game_handler.print_robot_position_history(3);
-                    //game_handler.print_robot_position_history(4);
-                    //game_handler.print_robot_position_history(5);
-                    // game_handler.print_robot_velocity_estimation();
-                    // game_handler.print_robot_position_prediction();
+                    game_handler.strategy_modul->update_position_history();
+                    game_handler.strategy_modul->update_estimation_and_prediction(time_step_size);
+                    game_handler.strategy_modul->print_robot_position_history(0);
+                    game_handler.strategy_modul->print_robot_position_history(1);
+                    game_handler.strategy_modul->print_robot_position_history(2);
+                    game_handler.strategy_modul->print_robot_position_history(3);
+                    game_handler.strategy_modul->print_robot_position_history(4);
+                    game_handler.strategy_modul->print_robot_position_history(5);
+                    game_handler.strategy_modul->print_robot_velocity_estimation();
+                    game_handler.strategy_modul->print_robot_position_prediction();
                 }
             }
         }
-
-
-        if (SCENARIO == 99) {
-            // game_handler.update_position_history();
-        }
-
-
-        /* if (SCENARIO == 100) {
-            Test_Obj.move_in_out();
-        }
-
-        if (SCENARIO == 400) {
-            Test_Obj.drive_to_pos();
-        }
-
-        if (SCENARIO == 700) {
-            Test_Obj.turn_experiments();
-        } */
 
         if (SCENARIO == 1000) {
             game_handler.take_kick_off_position();
@@ -190,7 +162,6 @@ int main(void) {
             game_handler.take_penalty_position();
             usleep(1000 * 1000);
         }
-
 
         if (SCENARIO == 22) {
             game_handler.goalie->drive_parallel(+10, false);
@@ -209,14 +180,6 @@ int main(void) {
                 }
             }
         }*/
-                /*
-                    //Angle ang = myStriker1.GetPos().AngleOfLineToPos(Position());
-
-                while(1){
-                    //				if(robot.controller_timer.timeout()){
-                    //					robot.set_wheelspeed();
-                } */
-
 
         if (SCENARIO == 123456) {
             int timer_duration;

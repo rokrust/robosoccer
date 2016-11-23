@@ -1,6 +1,8 @@
-#pragma once
+//#pragma once
 #ifndef GAME_H
 #define GAME_H
+
+class Strategy;
 
 #include "share.h"
 #include "kogmo_rtdb.hxx"
@@ -10,12 +12,12 @@
 #include "striker.h"
 #include "opponent.h"
 #include "referee.h"
+#include "strategy.h"
 
 #define GOAL_MAX_YPOS 0.13
 #define GOAL_MIN_YPOS -0.13
 #define GOAL_LEFT_XPOS -1.48
 #define GOAL_RIGHT_XPOS 1.48
-
 
 class Game
 {
@@ -43,12 +45,12 @@ public:
 
     static Robot* robots[6];
 
+    Strategy* strategy_modul;
+
     /* Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
          Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
          Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in); */
     Game(RTDBConn DBC, bool is_team_blue_in);
-
-    void step(bool verbose=false);
 
     int take_kick_off_position();
     void perform_kick_off();
@@ -58,7 +60,6 @@ public:
     void update_side();
     void update_kick_off();
 
-    void set_phase(ePlayMode new_phase, bool verbose);
     /* void set_ball(RawBall* ball);
     void set_own_team(Goalie* myGoalie, Striker* myStriker1, Striker* myStriker2);
     void set_opponent_team(Opponent* anOpponent1, Opponent* anOpponent2, Opponent* anOpponent3); */

@@ -24,6 +24,8 @@ public:
     void print_robot_position_history(const int robot_nr);
     void print_robot_velocity_estimation();
     void print_robot_position_prediction();
+
+    void command_drive();
 };
 
 #endif // STRATEGY_H
