@@ -6,6 +6,8 @@
 #define WAIT_FOR_PENALTY_POS 12000000
 #define WAIT_TIME_POSITION_CORRECTING 2000000
 
+#define TIME_STEP_SIZE_GOALIE 5000
+
 #define ROBOT_ARRIVED_THRESHOLD 0.2
 
 Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
@@ -656,13 +658,21 @@ void Game::state_machine(bool verbose)
             }
 
             // perform Game state initializations like creating timers
+            Timer goalie_timer(TIME_STEP_SIZE_GOALIE);
+            goalie_timer.enable();
 
             while (stay_in_state) {
                 // perform regular state tasks like timers
+                if (goalie_timer.timeout()) {
+                    cout << "Goalie timer has timed out" << endl;
+                    goalie_timer.enable();
+                }
 
                 // detect state changes
                 update_state();
             }
+
+            goalie_timer.~Timer();
         }
 
         // PLAY_ON -> BEFORE_KICK_OFF

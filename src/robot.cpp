@@ -280,8 +280,8 @@ int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
 
 //Set u_omega according to ref_heading and cur_heading (should be called every controller tick)
 int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
-
     double current_error = (ref_heading - cur_heading).Get();
+
 
     controller_data.error_buffer[controller_data.current_sample] = current_error;
     controller_data.heading_integrator += current_error*controller_data.sampling_time;
@@ -293,7 +293,6 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
     int u_omega = K_ph*current_error + K_ih*int_error + K_dh*diff_error;
 
     //cout << "Omega: " << u_omega << endl;
-
 
     return u_omega;
 }
@@ -324,7 +323,8 @@ void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading)
 }
  
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
-void Robot::set_wheelspeed() {
+void Robot::set_wheelspeed()
+{
     Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
     Angle cur_heading = GetPhi();
 
@@ -346,7 +346,8 @@ void Robot::set_wheelspeed() {
 
 }
 
-void Robot::test_loop_drive_parallel() {
+void Robot::test_loop_drive_parallel()
+{
     // set the wheel speed for the turn time
     Position r1 = this->GetPos();
     Angle phi1 = this->GetPhi();
