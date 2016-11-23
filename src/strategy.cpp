@@ -159,7 +159,8 @@ void Strategy::check_and_handle_collisions()
         for (robot_index = 0; robot_index <= 2; robot_index++) {
             // iterate over our own robots, we cannot handle collisions among the others
             collisions[robot_index] = !position_within_field(robot_position_prediction[robot_index]);
-            collision_with[robot_index] = -2; // wall collision
+            // TODO: IF->
+            // collision_with[robot_index] = -2; // wall collision
 
             // Second check the distances among the robots and if there is a collision propability
             // above a certain threshold, if so, calculate alternative positions until there are
@@ -191,7 +192,7 @@ void Strategy::check_and_handle_collisions()
         }
     }
 
-    // TODO: Assign alternative positions
+    // TODO: Assign alternative positions OR DO NOTHING
 }
 
 void Strategy::command_drive()
