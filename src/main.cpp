@@ -9,7 +9,6 @@
 
 #include "game.h"
 #include "robot.h"
-#include "soccer_tests.h"
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
 #include "referee.h"

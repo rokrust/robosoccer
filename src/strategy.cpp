@@ -111,6 +111,23 @@ void Strategy::print_robot_position_prediction()
     }
 }
 
+double Strategy::collision_propability(const Position &pos_robot, const Position &pos_obstacle)
+{
+    double dist = pos_robot.DistanceTo(pos_obstacle);
+    if (dist > COLLISION_DISTANCE_THRESHOLD) {
+        return 0.0;
+    } else {
+        // COLLISION_DISTANCE_THRESHOLD -> 1.0
+        // 0.0 -> 1.0
+        return (1.0 - (dist / COLLISION_DISTANCE_THRESHOLD));
+    }
+}
+
+void Strategy::check_and_handle_collisions()
+{
+
+}
+
 void Strategy::command_drive()
 {
     double x_in, y_in;

@@ -4,6 +4,7 @@
 #include "game.h"
 
 #define POSITION_HISTORY_LENGTH 3
+#define COLLISION_DISTANCE_THRESHOLD 0.3
 
 class Strategy
 {
@@ -24,6 +25,9 @@ public:
     void print_robot_position_history(const int robot_nr);
     void print_robot_velocity_estimation();
     void print_robot_position_prediction();
+
+    double collision_propability(const Position& pos_robot, const Position& pos_obstacle);
+    void check_and_handle_collisions();
 
     void command_drive();
 };

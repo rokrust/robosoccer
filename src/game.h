@@ -1,10 +1,8 @@
-//#pragma once
 #ifndef GAME_H
 #define GAME_H
 
 class Strategy;
 
-#include "share.h"
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
 #include "robot.h"
