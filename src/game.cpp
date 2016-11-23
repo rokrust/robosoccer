@@ -38,6 +38,20 @@ Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
     previous_state = REFEREE_INIT;
     current_state = REFEREE_INIT;
 
+    robots[0] = goalie;
+    robots[1] = striker1;
+    robots[2] = striker2;
+    robots[3] = opponent1;
+    robots[4] = opponent2;
+    robots[5] = opponent3;
+
+    int robot_index, history_index;
+    for (robot_index = 0; robot_index <= 5; robot_index++) {
+        for (history_index = 0; history_index < POSITION_HISTORY_LENGTH; history_index++) {
+            robot_position_history[robot_index][history_index] = robots[robot_index]->GetPos();
+        }
+    }
+
     cout << "Game Handler initialized" << endl;
 }
 
@@ -476,6 +490,41 @@ bool Game::get_has_kick_off()
     Game::opponent2 = anOpponent2;
     Game::opponent3 = anOpponent3;
 } */
+
+void Game::update_estimation_and_prediction(double ms_between_positions)
+{
+    int robot_index, history_index;
+    double dist_x, dist_y;
+
+    for (robot_index = 0; robot_index <= 5; robot_index++) {
+        // velocity estimation
+        dist_x = 0.0;
+        dist_y = 0.0;
+        for (history_index = 0; history_index <= POSITION_HISTORY_LENGTH - 1; history_index++) {
+            dist_x = dist_x + robot_position_history[robot_index][history_index].GetX() - robot_position_history[robot_index][history_index+1].GetX();
+            dist_y = dist_y + robot_position_history[robot_index][history_index].GetY() - robot_position_history[robot_index][history_index+1].GetY();
+        }
+        robot_velocity_estimation[robot_index].SetX(dist_x / (ms_between_positions * (POSITION_HISTORY_LENGTH - 1)));
+        robot_velocity_estimation[robot_index].SetY(dist_y / (ms_between_positions * (POSITION_HISTORY_LENGTH - 1)));
+
+        // position prediction
+        robot_position_prediction[robot_index].SetX(robot_position_history[robot_index][0].GetX() + ms_between_positions*robot_velocity_estimation[robot_index].GetX());
+        robot_position_prediction[robot_index].SetY(robot_position_history[robot_index][0].GetY() + ms_between_positions*robot_velocity_estimation[robot_index].GetY());
+    }
+}
+
+void Game::update_position_history()
+{
+    int robot_index, history_index;
+
+    for (robot_index = 0; robot_index <= 5; robot_index++) {
+        for (history_index = POSITION_HISTORY_LENGTH - 1; history_index >= 1; history_index--) {
+            //cout << "robot_index: " << robot_index << " history_index: " << history_index << endl;
+            robot_position_history[robot_index][history_index] = robot_position_history[robot_index][history_index-1];
+        }
+        robot_position_history[robot_index][0] = robots[robot_index]->GetPos();
+    }
+}
 
 void Game::print_state(ePlayMode state)
 {

@@ -30,6 +30,8 @@ Opponent* Game::opponent1 = NULL;
 Opponent* Game::opponent2 = NULL;
 Opponent* Game::opponent3 = NULL;
 
+Robot* Game::robots[6] = {0};
+
 
 int main(void) {
 
@@ -183,7 +185,9 @@ int main(void) {
                 }
             }
 
-
+            if (SCENARIO == 99) {
+                game_handler.update_position_history();
+            }
 
             if (SCENARIO == 100) {
                 Test_Obj.move_in_out();
