@@ -26,7 +26,7 @@ private:
     Position robot_last_prediction[6];
 
     Position robot_goal_positions[6];
-    Position robot_via_positions[6];
+    Position robot_extrapol_goal_positions[6];
 
     Position calculate_alternative_position(const Position& robot_pos, const Position& obstacle_pos);
 
@@ -46,9 +46,9 @@ public:
     void check_and_handle_collisions();
 
     // driving
-    void update_via_position();
-    void update_via_position_per_robot(const int robot_nr);
-    Position calculate_via_position(const Position &cur_pos, const Position &goal_pos);
+    void update_extrapol_goal_position();
+    void update_extrapol_goal_position_per_robot(const int robot_nr);
+    Position extrapol_goal_position(const Position &cur_pos, const Position &goal_pos);
     void set_goal_pos(const Position& goal_pos, const int robot_nr);
 
     // development functions

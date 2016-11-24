@@ -242,7 +242,7 @@ int main(void) {
                 if (datTimer.timeout()) {
                     Position cur_pos = Game::striker1->GetPos();
                     Position goal_pos = Game::datBall->GetPos();
-                    Position via_pos = game_handler.strategy_modul->calculate_via_position(cur_pos, goal_pos);
+                    Position via_pos = game_handler.strategy_modul->extrapol_goal_position(cur_pos, goal_pos);
 
                     Game::striker1->set_target_pos(via_pos);
                     Game::striker1->set_wheelspeed(timer_duration);
@@ -257,7 +257,6 @@ int main(void) {
             while(1) {
                 if (datTimer.timeout()) {
                     game_handler.strategy_modul->set_goal_pos(Game::datBall->GetPos(), 1);
-                    //game_handler.strategy_modul->update_via_position();
                     Game::striker1->set_wheelspeed(timer_duration);
                 }
             }

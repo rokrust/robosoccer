@@ -12,8 +12,8 @@ Strategy::Strategy()
         robot_velocity_estimation[robot_index].SetY(0.0);
         robot_goal_positions[robot_index].SetX(0.0);
         robot_goal_positions[robot_index].SetY(0.0);
-        robot_via_positions[robot_index].SetX(0.0);
-        robot_via_positions[robot_index].SetY(0.0);
+        robot_extrapol_goal_positions[robot_index].SetX(0.0);
+        robot_extrapol_goal_positions[robot_index].SetY(0.0);
         for (history_index = 0; history_index < POSITION_HISTORY_LENGTH; history_index++) {
             robot_position_history[robot_index][history_index].SetX(0.0);
             robot_position_history[robot_index][history_index].SetY(0.0);
@@ -211,7 +211,7 @@ void Strategy::check_and_handle_collisions()
     // TODO: Assign alternative positions OR DO NOTHING
 }
 
-void Strategy::update_via_position()
+void Strategy::update_extrapol_goal_position()
 {
     int robot_index;
     for (robot_index = 0; robot_index < 3; robot_index++) {
@@ -219,7 +219,7 @@ void Strategy::update_via_position()
         Position goal_pos = robot_goal_positions[robot_index];
 
         if ((cur_pos.DistanceTo(goal_pos) > VIA_POSITION_MAX_DIST)) {
-            Position via_pos = calculate_via_position(cur_pos, goal_pos);
+            Position via_pos = extrapol_goal_position(cur_pos, goal_pos);
             Game::robots[robot_index]->set_target_pos(via_pos);
         } else {
             Game::robots[robot_index]->set_target_pos(goal_pos);
@@ -227,20 +227,20 @@ void Strategy::update_via_position()
     }
 }
 
-void Strategy::update_via_position_per_robot(const int robot_nr)
+void Strategy::update_extrapol_goal_position_per_robot(const int robot_nr)
 {
     Position cur_pos = Game::robots[robot_nr]->GetPos();
     Position goal_pos = robot_goal_positions[robot_nr];
 
     if ((cur_pos.DistanceTo(goal_pos) > VIA_POSITION_MAX_DIST)) {
-        Position via_pos = calculate_via_position(cur_pos, goal_pos);
-        Game::robots[robot_nr]->set_target_pos(via_pos);
+        Position extrapol_goal_pos = extrapol_goal_position(cur_pos, goal_pos);
+        Game::robots[robot_nr]->set_target_pos(extrapol_goal_pos);
     } else {
         Game::robots[robot_nr]->set_target_pos(goal_pos);
     }
 }
 
-Position Strategy::calculate_via_position(const Position& cur_pos, const Position& goal_pos)
+Position Strategy::extrapol_goal_position(const Position& cur_pos, const Position& goal_pos)
 {
     double length = goal_pos.DistanceTo(cur_pos);
     Position direction_to_goal_pos((goal_pos.GetX() - cur_pos.GetX()) / length, (goal_pos.GetY() - cur_pos.GetY()) / length);
@@ -254,7 +254,7 @@ Position Strategy::calculate_via_position(const Position& cur_pos, const Positio
 void Strategy::set_goal_pos(const Position &goal_pos, const int robot_nr)
 {
     robot_goal_positions[robot_nr] = goal_pos;
-    update_via_position_per_robot(robot_nr);
+    update_extrapol_goal_position_per_robot(robot_nr);
 }
 
 void Strategy::command_drive()
