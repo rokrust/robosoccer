@@ -134,6 +134,57 @@ int main(void) {
             }
         }
 
+        // bigger collision avoidance debugging scenario
+        if (SCENARIO == 10) {
+            Position goal_left(-1.3, 0.0);
+            Position goal_right(1.3, 0.0);
+            Position left_middle(0.0, 0.4);
+            bool is_left = true;
+
+            Game::striker2->set_target_pos(left_middle);
+
+            cout << "Collision Avoidance Scenario" << endl;
+            int time_step_strategy, time_step_driving;
+            cout << "Please enter the time step size for the strategy, including estimation, prediction and collision avoidance" << endl;
+            cout << "time_step_strategy = ";
+            cin >> time_step_strategy;
+            cout << "Please enter the time step size for the robot driving" << endl;
+            cout << "time_step_driving = ";
+            cin >> time_step_driving;
+            Timer strategy_timer(time_step_strategy);
+            Timer driving_timer(time_step_driving);
+            Timer goalie_switch_timer(10000);
+            while(1) {
+                // Strategy tasks
+                if (strategy_timer.timeout()) {
+                    game_handler.strategy_modul->update_position_history();
+                    game_handler.strategy_modul->update_estimation_and_prediction(time_step_strategy);
+                }
+
+                // Driving
+                if (driving_timer.timeout()) {
+                    // goalie alternates between the two goals in a ten seconds pace
+                    if (goalie_switch_timer.timeout()) {
+                        if (is_left) {
+                            Game::goalie->set_target_pos(goal_left);
+                            is_left = false;
+                        } else {
+                            Game::goalie->set_target_pos(goal_right);
+                            is_left = true;
+                        }
+                    }
+
+                    // striker1 follows the ball, striker2 does nothing
+                    Game::striker1->set_target_pos(Game::datBall->GetPos());
+
+                    Game::goalie->set_wheelspeed(time_step_driving);
+                    Game::striker1->set_wheelspeed(time_step_driving);
+                    Game::striker2->set_wheelspeed(time_step_driving);
+                }
+            }
+        }
+
+
         if (SCENARIO == 1000) {
             game_handler.take_kick_off_position();
         }
