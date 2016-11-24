@@ -216,7 +216,7 @@ int Robot::spot_turn(Angle phi_in)
 
     // calculate the time that the turn will take in micro seconds
     // there is 30ms delay due to the bluetooth system
-    int wait_time = (turn_time + 30) * 1000;
+    int wait_time = (turn_time + 30);
     if (DEBUG) {
         cout << "Wait time in ms: " << wait_time << endl;
     }
@@ -275,7 +275,7 @@ int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
 
     u_speed *= cos((ref_heading - cur_heading).Get());
 
-    if(u_speed > 255 || u_speed < -255){
+    if(u_speed > 160 || u_speed < -160){
         controller_data.speed_integrator = 0;
     }
 

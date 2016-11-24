@@ -464,13 +464,13 @@ void Game::state_machine(bool verbose)
 
             // perform Game state initializations like creating timers
             Timer goalie_timer(TIME_STEP_SIZE_GOALIE);
-            goalie_timer.enable();
+            goalie_timer.enable_periodically();
 
             while (stay_in_state) {
                 // perform regular state tasks like timers
                 if (goalie_timer.timeout()) {
                     cout << "Goalie timer has timed out" << endl;
-                    goalie_timer.enable();
+                    goalie_timer.enable_periodically();
                 }
 
                 // detect state changes

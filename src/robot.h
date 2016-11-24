@@ -21,8 +21,8 @@ enum Parameters
      {K_ph = 20,
       K_ih = 25,
       K_dh = 5,
-      K_pt = 170,
-      K_it = 100 };
+      K_pt = 80, // old: 170
+      K_it = 50 }; // old: 100
 
 struct Controller_data{
     //General
@@ -107,6 +107,8 @@ public:
     void set_wheelspeed(int timer_duration);
 
     void set_target_pos(Position pos){target_pos = pos;}
+
+    const Position get_target_pos(){return target_pos;}
 
 };
 

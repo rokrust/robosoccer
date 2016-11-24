@@ -16,6 +16,7 @@ private:
     struct timeval current_time;
     long long start_time_ms, current_time_ms, end_time_ms;
     int timeout_duration_ms;
+    int ID;
 
     // Converts the given timeval to the ms passed since some date back in 1970
     long long time_in_ms(timeval time_to_conv) {
@@ -54,25 +55,28 @@ private:
     // timespec start_time, current_time; // , temp;
     // void (*timeout_action)();
 
+    // TODO: Set endtime
+
 public:
     Timer(){;}
 
     ~Timer(){;}
 
-    Timer(int timer_duration)
+    Timer(int timer_duration, int ID_in=0)
     {
+        ID = ID_in;
         timeout_duration_ms = timer_duration;
-        enable();
+        enable_periodically();
 
         if (0) // set 1 if you want to print,
         {
-            cout << "Timer initialised: ";
+            cout << "Initialised timer " << ID << " ";
             cout << "st and ct is "; print_time_ms_readable(start_time_ms); //cout << endl;
             cout << "; et is "; print_time_ms_readable(end_time_ms); cout << endl;
         }
     }
 
-    void enable() {
+    void enable_periodically() {
         gettimeofday(&current_time, NULL);
         current_time_ms = time_in_ms(current_time);
 
@@ -81,7 +85,22 @@ public:
 
         if (1) // set 1 if you want to print,
         {
-            cout << "Timer enabled: ";
+            cout << "Enabled timer " << ID << " ";
+            cout << "st and ct is "; print_time_ms_readable(start_time_ms); // cout << endl;
+            cout << "; et is "; print_time_ms_readable(end_time_ms); cout << endl;
+        }
+    }
+
+    void enable_manually(const int manual_duration_ms) {
+        gettimeofday(&current_time, NULL);
+        current_time_ms = time_in_ms(current_time);
+
+        start_time_ms = current_time_ms;
+        end_time_ms = current_time_ms + manual_duration_ms;
+
+        if (1) // set 1 if you want to print,
+        {
+            cout << "Manual enabled timer " << ID << " ";
             cout << "st and ct is "; print_time_ms_readable(start_time_ms); // cout << endl;
             cout << "; et is "; print_time_ms_readable(end_time_ms); cout << endl;
         }
@@ -92,7 +111,7 @@ public:
         current_time_ms = time_in_ms(current_time);
 
         if (current_time_ms >= end_time_ms) {
-            enable();
+            enable_periodically();
             return true;
         } else {
             return false;
