@@ -275,7 +275,7 @@ int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
 
     u_speed *= cos((ref_heading - cur_heading).Get());
 
-    if(u_speed > 160 || u_speed < -160){
+    if(u_speed > MAX_WHEELSPEED || u_speed < -MAX_WHEELSPEED){
         controller_data.speed_integrator = 0;
     }
 

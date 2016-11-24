@@ -13,6 +13,8 @@
 #define FIELD_RECT_MAX_Y 0.9
 #define FIELD_RECT_MIN_Y -0.9
 
+#define VIA_POSITION_MAX_DIST 1.0
+
 class Strategy
 {
 private:
@@ -22,6 +24,9 @@ private:
     Position robot_velocity_estimation[6];
     Position robot_position_prediction[6];
     Position robot_last_prediction[6];
+
+    Position robot_goal_positions[6];
+    Position robot_via_positions[6];
 
     Position calculate_alternative_position(const Position& robot_pos, const Position& obstacle_pos);
 
@@ -35,10 +40,16 @@ public:
     void print_robot_velocity_estimation();
     void print_robot_position_prediction();
 
+    // collision detection and handling
     double collision_propability(const Position& pos_robot, const Position& pos_obstacle);
     bool position_within_field(const Position& pos_in);
     void check_and_handle_collisions();
 
+    // driving
+    void update_via_position();
+    Position calculate_via_position(const Position &cur_pos, const Position &goal_pos);
+
+    // development functions
     void command_drive();
 };
 

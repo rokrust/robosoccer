@@ -10,6 +10,10 @@ Strategy::Strategy()
         robot_position_prediction[robot_index].SetY(0.0);
         robot_velocity_estimation[robot_index].SetX(0.0);
         robot_velocity_estimation[robot_index].SetY(0.0);
+        robot_goal_positions[robot_index].SetX(0.0);
+        robot_goal_positions[robot_index].SetY(0.0);
+        robot_via_positions[robot_index].SetX(0.0);
+        robot_via_positions[robot_index].SetY(0.0);
         for (history_index = 0; history_index < POSITION_HISTORY_LENGTH; history_index++) {
             robot_position_history[robot_index][history_index].SetX(0.0);
             robot_position_history[robot_index][history_index].SetY(0.0);
@@ -205,6 +209,22 @@ void Strategy::check_and_handle_collisions()
     }
 
     // TODO: Assign alternative positions OR DO NOTHING
+}
+
+void Strategy::update_via_position()
+{
+
+}
+
+Position Strategy::calculate_via_position(const Position& cur_pos, const Position& goal_pos)
+{
+    double length = goal_pos.DistanceTo(cur_pos);
+    Position direction_to_goal_pos((goal_pos.GetX() - cur_pos.GetX()) / length, (goal_pos.GetY() - cur_pos.GetY()) / length);
+
+    Position via_pos((cur_pos.GetX() + VIA_POSITION_MAX_DIST * direction_to_goal_pos.GetX()),
+                     (cur_pos.GetY() + VIA_POSITION_MAX_DIST * direction_to_goal_pos.GetY()));
+
+    return via_pos;
 }
 
 void Strategy::command_drive()

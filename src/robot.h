@@ -17,6 +17,8 @@
 #include <math.h>
 #include <boost/circular_buffer.hpp>
 
+#define MAX_WHEELSPEED 200
+
 enum Parameters
      {K_ph = 20,
       K_ih = 25,

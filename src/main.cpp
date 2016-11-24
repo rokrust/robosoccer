@@ -234,6 +234,22 @@ int main(void) {
             }
         }
 
+        if (SCENARIO == 31){
+            int timer_duration = 250;
+            Timer datTimer(timer_duration);
+
+            while(1) {
+                if (datTimer.timeout()) {
+                    Position cur_pos = Game::striker1->GetPos();
+                    Position goal_pos = Game::datBall->GetPos();
+                    Position via_pos = game_handler.strategy_modul->calculate_via_position(cur_pos, goal_pos);
+
+                    Game::striker1->set_target_pos(via_pos);
+                    Game::striker1->set_wheelspeed(timer_duration);
+                }
+            }
+        }
+
         if (SCENARIO == 123456) {
             int timer_duration;
             cout << "Type desired timer_duration in ms: ";
