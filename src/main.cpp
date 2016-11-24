@@ -250,6 +250,19 @@ int main(void) {
             }
         }
 
+        if (SCENARIO == 32){
+            int timer_duration = 250;
+            Timer datTimer(timer_duration);
+
+            while(1) {
+                if (datTimer.timeout()) {
+                    game_handler.strategy_modul->set_goal_pos(Game::datBall->GetPos(), 1);
+                    //game_handler.strategy_modul->update_via_position();
+                    Game::striker1->set_wheelspeed(timer_duration);
+                }
+            }
+        }
+
         if (SCENARIO == 123456) {
             int timer_duration;
             cout << "Type desired timer_duration in ms: ";

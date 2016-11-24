@@ -47,7 +47,9 @@ public:
 
     // driving
     void update_via_position();
+    void update_via_position_per_robot(const int robot_nr);
     Position calculate_via_position(const Position &cur_pos, const Position &goal_pos);
+    void set_goal_pos(const Position& goal_pos, const int robot_nr);
 
     // development functions
     void command_drive();
