@@ -314,8 +314,8 @@ void Robot::set_wheelspeed(int timer_duration) {
     left_wheel_speed = u_speed - u_omega;
 
 
-    cout << "Right: " << right_wheel_speed << endl
-         << "Left: " << left_wheel_speed << endl << endl;
+    /* cout << "Right: " << right_wheel_speed << endl
+         << "Left: " << left_wheel_speed << endl << endl; */
 
     //Might have to change the last two arguments
     MoveMs(left_wheel_speed, right_wheel_speed, timer_duration+10, 100);
@@ -340,7 +340,7 @@ void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading)
     //Acceptably close to target_pos
     if((ref_heading - cur_heading).Abs() < ACCEPTABLE_HEADING_THRESHOLD){
         controller_data.heading_integrator = 0;
-        cout << "Heading integrator reset." << endl;
+        // cout << "Heading integrator reset." << endl;
     }
 
 }

@@ -4,8 +4,8 @@
 #include "game.h"
 
 #define POSITION_HISTORY_LENGTH 3
-#define COLLISION_DISTANCE_THRESHOLD 0.3
-#define COLLISION_CONSIDERATION_THESHOLD 0.8
+#define COLLISION_DISTANCE_THRESHOLD 0.2
+#define COLLISION_CONSIDERATION_THESHOLD 0.2
 
 // set rectangular field limits that are easy to check
 #define FIELD_RECT_MAX_X 1.15

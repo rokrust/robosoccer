@@ -152,47 +152,57 @@ int main(void) {
             cout << "Please enter the time step size for the robot driving" << endl;
             cout << "time_step_driving = ";
             cin >> time_step_driving;
-            Timer strategy_timer(time_step_strategy, 0);
-            Timer driving_timer(time_step_driving, 1);
+            Timer strategy_timer(time_step_strategy, 10);
+            Timer goalie_timer(time_step_driving, 0);
+            Timer striker1_timer(time_step_driving, 1);
+            Timer striker2_timer(time_step_driving, 2);
             Timer goalie_switch_timer(8000, 2);
             while(1) {
                 // Strategy tasks
                 if (strategy_timer.timeout()) {
                     game_handler.strategy_modul->update_position_history();
                     game_handler.strategy_modul->update_estimation_and_prediction(time_step_strategy);
+                    game_handler.strategy_modul->check_and_handle_collisions();
+                }
+
+                // Goal position switching
+                // goalie alternates between the two goals in a ten seconds pace
+                if (goalie_switch_timer.timeout()) {
+                    if (is_left) {
+                        Game::goalie->set_target_pos(goal_left);
+                        can_turn = true;
+                        is_left = false;
+                    } else {
+                        Game::goalie->set_target_pos(goal_right);
+                        can_turn = true;
+                        is_left = true;
+                    }
                 }
 
                 // Driving
-                if (driving_timer.timeout()) {
-                    // goalie alternates between the two goals in a ten seconds pace
-                    if (goalie_switch_timer.timeout()) {
-                        if (is_left) {
-                            Game::goalie->set_target_pos(goal_left);
-                            can_turn = true;
-                            is_left = false;
-                        } else {
-                            Game::goalie->set_target_pos(goal_right);
-                            can_turn = true;
-                            is_left = true;
-                        }
-                    }
-
-                    // striker1 follows the ball, striker2 does nothing
-                    Game::striker1->set_target_pos(Game::datBall->GetPos());
-
+                if (goalie_timer.timeout()) {
                     Angle goal_phi = Game::goalie->GetPos().AngleOfLineToPos(Game::goalie->get_target_pos());
                     int ddeg = Game::goalie->calc_ddeg(goal_phi);
                     if (abs(ddeg) > 60 && can_turn) {
                         int wait_time = Game::goalie->spot_turn(goal_phi);
-                        driving_timer.enable_manually(wait_time);
+                        goalie_timer.enable_manually(wait_time);
                         can_turn = false;
 
-                        cout << "turned spot" << endl;
+                        cout << "Goalie turned on the spot" << endl;
                     } else {
                         Game::goalie->set_wheelspeed(time_step_driving);
                     }
+                }
 
+                if (striker1_timer.timeout()) {
+                    // striker1 follows the ball
+                    Game::striker1->set_target_pos(Game::datBall->GetPos());
                     Game::striker1->set_wheelspeed(time_step_driving);
+
+                }
+
+                if (striker2_timer.timeout()) {
+                    // striker2 stays on one spot
                     Game::striker2->set_wheelspeed(time_step_driving);
                 }
             }

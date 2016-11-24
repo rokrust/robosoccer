@@ -179,18 +179,29 @@ void Strategy::check_and_handle_collisions()
             }
         }
 
+
         for (robot_index = 0; robot_index <= 2; robot_index++) {
-            // handle collisions
-            Position obstacle_pos;
-            Position robot_pos_cur = robot_position_history[robot_index][0];
-            if (collision_with[robot_index] == -2) {
-                obstacle_pos = robot_position_prediction[robot_index];
-            } else {
-                obstacle_pos = robot_position_prediction[collision_with[robot_index]];
+            if (collisions[robot_index]) {
+                // handle collisions
+                Position obstacle_pos;
+                //Position robot_pos_cur = robot_position_history[robot_index][0];
+                if (collision_with[robot_index] == -2) {
+                    obstacle_pos = robot_position_prediction[robot_index];
+                } else {
+                    obstacle_pos = robot_position_prediction[collision_with[robot_index]];
+                }
+                cout << "Collision danger detected for robot " << robot_index << " with robot " << collision_with[robot_index] << endl;
+
+
+                /*
+                Position alternative_pos = calculate_alternative_position(robot_pos_cur, obstacle_pos);
+                robot_position_prediction[robot_index] = alternative_pos;
+                */
             }
-            Position alternative_pos = calculate_alternative_position(robot_pos_cur, obstacle_pos);
-            robot_position_prediction[robot_index] = alternative_pos;
         }
+
+        // Breakout
+        break;
     }
 
     // TODO: Assign alternative positions OR DO NOTHING

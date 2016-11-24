@@ -83,7 +83,7 @@ public:
         start_time_ms = current_time_ms;
         end_time_ms = current_time_ms + timeout_duration_ms;
 
-        if (1) // set 1 if you want to print,
+        if (0) // set 1 if you want to print,
         {
             cout << "Enabled timer " << ID << " ";
             cout << "st and ct is "; print_time_ms_readable(start_time_ms); // cout << endl;
@@ -98,7 +98,7 @@ public:
         start_time_ms = current_time_ms;
         end_time_ms = current_time_ms + manual_duration_ms;
 
-        if (1) // set 1 if you want to print,
+        if (0) // set 1 if you want to print,
         {
             cout << "Manual enabled timer " << ID << " ";
             cout << "st and ct is "; print_time_ms_readable(start_time_ms); // cout << endl;

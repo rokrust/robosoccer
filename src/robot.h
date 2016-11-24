@@ -21,8 +21,8 @@ enum Parameters
      {K_ph = 20,
       K_ih = 25,
       K_dh = 5,
-      K_pt = 80, // old: 170
-      K_it = 50 }; // old: 100
+      K_pt = 170, // old: 170
+      K_it = 100 }; // old: 100
 
 struct Controller_data{
     //General
