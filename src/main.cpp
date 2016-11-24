@@ -199,8 +199,6 @@ int main(void) {
         }
 
         if (SCENARIO == 30){
-            //Position pos(0.0, 0.0);
-
             int timer_duration = 250;
             Timer datTimer(timer_duration);
 
