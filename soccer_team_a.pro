@@ -22,7 +22,8 @@ HEADERS += \
     src/goalie.h \
     src/striker.h \
     src/opponent.h \
-    src/strategy.h
+    src/strategy.h \
+	src/vectorfield.h
 SOURCES += \
     src/main.cpp \
     src/robot.cpp \
@@ -30,7 +31,8 @@ SOURCES += \
     src/goalie.cpp \
     src/striker.cpp \
     src/opponent.cpp \
-    src/strategy.cpp
+    src/strategy.cpp \
+	src/vectorfield.cpp
 		
 		
 ##############
