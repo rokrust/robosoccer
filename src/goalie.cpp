@@ -203,7 +203,7 @@ int Goalie::do_the_goalkeepers_kick()
 
 
     // Calculate position for Goalie to drive behind the ball
-    float dist_for_goalie_behind_ball = 0.15;
+    float dist_for_goalie_behind_ball = 0.12;
     Position goalie_pos_behind_ball;
     goalie_pos_behind_ball.SetX(ball_pos.GetX() +
                                 dist_for_goalie_behind_ball * shoot_target_to_ball_direction.GetX());
@@ -211,41 +211,51 @@ int Goalie::do_the_goalkeepers_kick()
                                 dist_for_goalie_behind_ball * shoot_target_to_ball_direction.GetY());
 
 
-    // Move Goalie behind the Ball
+    // MOVING THE GOALIE BEHIND THE BALL (1. - 5.)
+    // 1. Turn back
     int wait_time = spot_turn(180); // Turn Back
-    usleep(wait_time + 500*1000);
+    usleep(wait_time + 1000*1000);
+    wait_time = spot_turn(180); // Turn Back
+    usleep(wait_time + 1000*1000);
+    wait_time = spot_turn(180); // Turn Back
+    usleep(wait_time + 1000*1000);
 
-    // Go back
-    wait_time = drive_parallel(abs(goalie_pos_behind_ball.GetX() - goalie_pos.GetX()) - 0.02, false); // Drive parallel along x axis
-    usleep(abs(wait_time) + 500*1000);
+    // 2. Go back
+    Position goalie_via_pos(goalie_pos_behind_ball.GetX(),0.0);
+    this->GotoPos(goalie_via_pos);
+    usleep(3000*1000);
+    this->GotoPos(goalie_via_pos);
+    usleep(2000*1000);
+    this->GotoPos(goalie_via_pos);
+    usleep(1000*1000);
 
+    // 3. Turn sideways
+    int angle_to_turn;
     if (ball_pos.GetY() >= 0.0) {
-        wait_time = spot_turn(90); // Turn Sideways, either y plus
+        angle_to_turn = 90; // Turn Sideways, either y plus
     } else {
-        wait_time = spot_turn(-90); // or y minus
+        angle_to_turn = -90; // or y minus
     }
-    usleep(wait_time + 500*1000);
+    usleep(spot_turn(angle_to_turn) + 500*1000);
+    usleep(spot_turn(angle_to_turn) + 500*1000);
 
-    // Go sideways
-    wait_time = drive_parallel(abs(goalie_pos_behind_ball.GetY()-GetPos().GetY()) - 0.02, false); // Drive parallel along y axis
-    usleep(wait_time + 500*1000);
+    // 4. Go sideways
+    GotoPos(goalie_pos_behind_ball);
+    usleep(3000 * 1000);
+    this->GotoPos(goalie_pos_behind_ball);
+    usleep(2000 * 1000);
+    this->GotoPos(goalie_pos_behind_ball);
+    usleep(1000 * 1000);
 
-
-    // Turn to the ball
-    float angle_to_shoot_from = atan2(shoot_target_to_ball_direction.GetY(), shoot_target_to_ball_direction.GetX());
-    angle_to_shoot_from = angle_to_shoot_from*360 / (2*3.1415) + 180;
-    angle_to_shoot_from = abs(angle_to_shoot_from - 360);
-    int angle_int = (int) angle_to_shoot_from;
-    wait_time = spot_turn(angle_int);
-    usleep(wait_time + 500*1000);
-
-
-    // Shoot it
-    MoveMs(180, 180, 700, 0);
-// 0    drive_parallel(0.3, false);
-
+    // 5. Turn to the ball
+    Angle angle_to_ball = GetPos().AngleOfLineToPos(Game::datBall->GetPos());
+    usleep(spot_turn(angle_to_ball) + 500*1000);
+    usleep(spot_turn(angle_to_ball) + 500*1000);
 
     Position r_goalie_before_kick = GetPos();
+
+    // SHOOT THE BALL
+    MoveMs(180, 180, 700, 0);
 
 
     cout << "r_ball = [" << ball_pos.GetX() << "," << ball_pos.GetY() << "]; ";
@@ -256,6 +266,7 @@ int Goalie::do_the_goalkeepers_kick()
     cout << "r_ball_target = [" << shoot_target_pos.GetX() << "," << shoot_target_pos.GetY() << "]; " << endl;
     cout << "r_goalie_target = [" << goalie_pos_behind_ball.GetX() << "," << goalie_pos_behind_ball.GetY() << "]; ";
     cout << "r_goalie_before_kick = [" << r_goalie_before_kick.GetX() << "," << r_goalie_before_kick.GetY() << "]; " << endl;
+    cout << "shoot_angle = " << angle_to_ball << endl;
 
     cout << endl;
     return 0;

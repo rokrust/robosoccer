@@ -188,9 +188,9 @@ int Robot::spot_turn(Angle phi_in)
     int v_left, v_right;
 
     // calculate the difference in the current and the desired orientation
-    Angle cur_phi = this->GetPhi();
+    // Angle cur_phi = this->GetPhi();
     Angle goal_phi = phi_in;
-    int ddeg = goal_phi.Deg() - cur_phi.Deg();
+    int ddeg = calc_ddeg(goal_phi);  // goal_phi.Deg() - cur_phi.Deg();
     if (DEBUG) {
         cout << "Angle difference before turn: " << ddeg << endl;
     }
