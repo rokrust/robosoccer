@@ -2,58 +2,53 @@
 #define VECTORFIELD_H
 
 #include "position.h"
+#include "angle.h"
 
 
 #include <math.h>
 #include <vector>
 #include <cstdlib>
 
+//Probably redundant
+#define X_MIN_COOR -1.15
+#define Y_MIN_COOR -0.9
+#define X_MAX_COOR 1.15
+#define Y_MAX_COOR 0.9
+
+namespace ateam{
+
 class Vector{
 private:
-	double x, y;
+    double x, y;
 
 public:
-	Vector(){;}
-	Vector(double x_in = 0.0, double y_in = 0.0): x(x_in), y(y_in)
-	
+    Vector():x(0), y(0){;}
+    Vector(double x_in, double y_in): x(x_in), y(y_in){}
 
-	double get_x(){return x;}
-	double get_y(){return y;}
-	void set_x(double x){this->x = x;}
-	void set_y(double y){this->y = y;}
-	
-	//Might use some built-in Angle and Position functions instead
-	//This will be directly piped in to the reference_angle
-	//of the controller
-	//
-	Angle vector_angle{
-		if(x == 0.0){ //crap preventative measures
-			return 0.0;
-		}
+    double get_x() const {return x;}
+    double get_y() const {return y;}
+    void set_x(double x){this->x = x;}
+    void set_y(double y){this->y = y;}
 
-		return Angle(atan(y/x)-180);
-	}
-	
+    //Might use some built-in Angle and Position functions instead
+    //This will be directly piped in to the reference_angle
+    //of the controller
+    //
+    Angle vector_angle();
 
-	//Operators
-	Vector operator+(const Vector& vec){
-		return Vector(x+vec.get_x(), y+vec.get_y());
-	}
-	
-	Vector operator*(const double& scale){
-		return Vector(scale*x, scale*y);
-	}
-	
-	Vector operator*=(const double& scale){
-		x *= scale;
-		y *= scale;
 
-		return *this;
-	}
+    //Operators
+    Vector operator+(const Vector& vec);
 
-	double operator*(const Vector& vec){
-		return x*vec.get_x() + y*vec.get_y();
-	}
+    Vector operator*(const double& scale);
+
+    double operator*(const Vector& vec);
+
+    Vector operator*=(const double& scale);
+
+    Vector operator=(const Vector& vec);
+
+    Vector operator+=(const Vector& vec);
 
 };
 
@@ -66,35 +61,30 @@ private:
 
 
 public:
-	Vector_field(double x, double y): origo(x, y){}
-	Vector_field(Position pos = Position(0,0)): origo(pos){}
-	
-	//Maybe make this virtual and create subclasses for robots, walls 
-	//and tarGet position
-	virtual Vector vector_at_pos(Position pos) = 0;
-	
+    Vector_field(double x, double y): origo(x, y){}
+    Vector_field(Position pos = Position(0,0)): origo(pos){}
+
+    //Maybe make this virtual and create subclasses for robots, walls
+    //and target position
+    virtual Vector vector_at_pos(Position pos) = 0;
+
+    void set_origo(Position pos){origo = pos;}
+    void set_origo(double x, double y){origo.SetX(x); origo.SetY(y);}
 
 protected:
-	Position origo;
+    Position origo;
 
 };
 
 
 class Robot_vector_field: public Vector_field{
 private:
-	
+
 
 public:
-	Robot_vector_field(Position pos = Position(0,0)): origo(pos){}
-	
-	Vector vector_at_pos(Position pos){
-		double x = (pos.GetX()-origo.GetX()) / 
-				   (pow(fabs(origo.GetX()+pos.GetX()), 3));
-		double y = (pos.GetY()-origo.GetY()) / 
-				   (pow(fabs(origo.GetY()+pos.GetY()), 3));
+    Robot_vector_field(Position pos = Position(0,0)){origo = pos;}
 
-		return Vector(x, y);
-	}
+    Vector vector_at_pos(Position pos);
 };
 
 class Wall_vector_field: public Vector_field{
@@ -102,45 +92,22 @@ private:
 
 
 public:	
-	Wall_vector_field(Position pos = Position(0,0)): origo(pos){}
+    Wall_vector_field(Position pos = Position(0,0)) {origo = pos;}
 
-	Vector vector_at_pos(Position pos){
-		//Effect of the field shrinks with the higher the power.
-		double x = (pos.GetX() - X_MIN_COOR)/
-					pow(fabs(pos.GetX() - X_MIN_COOR), 3) +
- 					(pos.GetX() - X_MIN_COOR)/
-					pow(fabs(pos.GetX() - X_MIN_COOR), 3);
-
-		double y = (pos.GetY() - Y_MIN_COOR)/
-					pow(fabs(pos.GetY() - Y_MIN_COOR), 3) +
- 					(pos.GetY() - Y_MIN_COOR)/
-					pow(fabs(pos.GetY() - Y_MIN_COOR), 3);
-		
-		return Vector(x, y);
-	}
+    Vector vector_at_pos(Position pos);
 };
 
 
-class Target_vector_field{
+class Target_vector_field: public Vector_field{
 
 private:
-	double scale;
+    double scale;
 
 public:
-	Target_vector_field(Position pos = Position(0,0)): origo(pos){}
+    Target_vector_field(){}
+    Target_vector_field(Position pos){origo = pos;}
 
-	Vector vector_at_pos(Position pos){
-		//Effect of the field shrinks with the higher the power.
-		double x = scale*(origo.GetX() - pos.GetX())/
-					pow(fabs(pos.GetX() - X_MIN_COOR), 3);
-
-		double y = (pos.GetY() - Y_MIN_COOR)/
-					pow(fabs(pos.GetY() - Y_MIN_COOR), 3) +
- 					(pos.GetY() - Y_MIN_COOR)/
-					pow(fabs(pos.GetY() - Y_MIN_COOR), 3);
-		
-		return Vector(x, y);
-	}
+    Vector vector_at_pos(Position pos);
 };
-
+}
 #endif

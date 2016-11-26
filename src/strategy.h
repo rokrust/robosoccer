@@ -3,6 +3,8 @@
 
 #include "game.h"
 
+
+
 #define POSITION_HISTORY_LENGTH 3
 #define COLLISION_DISTANCE_THRESHOLD 0.2
 #define COLLISION_CONSIDERATION_THESHOLD 0.2
@@ -15,6 +17,25 @@
 
 #define VIA_POSITION_MAX_DIST 1.0
 
+//Vector field indices
+#define WALL_FIELD 6
+#define TARGET_FIELD 7
+#define N_ROBOTS 6
+
+class Strategy{
+
+private:
+
+
+public:
+    Strategy();
+
+
+};
+
+
+
+/*
 class Strategy
 {
 private:
@@ -54,5 +75,5 @@ public:
     // development functions
     void command_drive();
 };
-
+*/
 #endif // STRATEGY_H

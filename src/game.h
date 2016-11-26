@@ -1,7 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-class Strategy;
+//class Strategy;
 
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
@@ -10,7 +10,7 @@ class Strategy;
 #include "striker.h"
 #include "opponent.h"
 #include "referee.h"
-#include "strategy.h"
+//#include "strategy.h"
 
 #define GOAL_MAX_YPOS 0.13
 #define GOAL_MIN_YPOS -0.13
@@ -43,7 +43,7 @@ public:
 
     static Robot* robots[6];
 
-    Strategy* strategy_modul;
+//    Strategy* strategy_modul;
 
     Game(RTDBConn DBC, bool is_team_blue_in);
 

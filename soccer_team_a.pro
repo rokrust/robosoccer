@@ -23,7 +23,8 @@ HEADERS += \
     src/striker.h \
     src/opponent.h \
     src/strategy.h \
-	src/vectorfield.h
+	src/vectorfield.h \
+    src/pathfinder.h
 SOURCES += \
     src/main.cpp \
     src/robot.cpp \
@@ -32,7 +33,8 @@ SOURCES += \
     src/striker.cpp \
     src/opponent.cpp \
     src/strategy.cpp \
-	src/vectorfield.cpp
+	src/vectorfield.cpp \
+    src/pathfinder.cpp
 		
 		
 ##############

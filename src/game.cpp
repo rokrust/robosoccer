@@ -43,12 +43,12 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
     }
 
     // Initialize Robot Objects
-    goalie = new Goalie(DBC, myGoalieDvNr);
-    striker1 = new Striker(DBC, myStriker1DvNr);
-    striker2 = new Striker(DBC, myStriker1DvNr+1);
-    opponent1 = new Opponent(DBC, theOpponent1DvNr);
-    opponent2 = new Opponent(DBC, theOpponent1DvNr+1);
-    opponent3 = new Opponent(DBC, theOpponent1DvNr+2);
+    goalie = new Goalie(DBC, myGoalieDvNr, 0);
+    striker1 = new Striker(DBC, myStriker1DvNr, 1);
+    striker2 = new Striker(DBC, myStriker1DvNr+1, 2);
+    opponent1 = new Opponent(DBC, theOpponent1DvNr, 3);
+    opponent2 = new Opponent(DBC, theOpponent1DvNr+1, 4);
+    opponent3 = new Opponent(DBC, theOpponent1DvNr+2, 5);
 
     // initialize state machine variables
     stay_in_state_machine = true;
@@ -62,7 +62,7 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
     robots[4] = opponent2;
     robots[5] = opponent3;
 
-    strategy_modul = new Strategy();
+    //strategy_modul = new Strategy();
 
     cout << "Game Handler initialized" << endl;
 }

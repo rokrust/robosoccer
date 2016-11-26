@@ -42,7 +42,7 @@
 
 
 
-Robot::Robot(RTDBConn DBC_in, int device_nr_in) : RoboControl(DBC_in, device_nr_in)
+Robot::Robot(RTDBConn DBC_in, int device_nr_in, int index) : RoboControl(DBC_in, device_nr_in)
 {
     device_nr = device_nr_in;
     left_wheel_speed = 0;
@@ -54,6 +54,7 @@ Robot::Robot(RTDBConn DBC_in, int device_nr_in) : RoboControl(DBC_in, device_nr_
                          .heading_integrator = 0.0, .buffer_size = n_samples,
                          .current_sample = 0, .error_buffer = new double[n_samples]};
     controller_data = c;
+    array_index = index;
 }
 
 Robot::~Robot()
@@ -266,7 +267,7 @@ int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negati
 //Set u_speed according to distance_to_pos (should be called every controller tick
 //P controller might be good enough
 int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
-    double distance_to_pos = GetPos().DistanceTo(target_pos);
+    double distance_to_pos = GetPos().DistanceTo(path_finder.get_target_pos());
 
     controller_data.speed_integrator += distance_to_pos * controller_data.sampling_time;
 
@@ -301,7 +302,7 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
 void Robot::set_wheelspeed(int timer_duration) {
-    Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
+    Angle ref_heading = GetPos().AngleOfLineToPos(path_finder.get_target_pos());
     Angle cur_heading = GetPhi();
 
     reset_integrators_if_necessary(ref_heading, cur_heading);
@@ -333,7 +334,7 @@ double Robot::error_buffer_mean(){
 
 void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading){
     //Acceptably close to target_pos
-    if(GetPos().DistanceTo(target_pos) < ACCEPTABLE_DISTANCE_THRESHOLD){
+    if(GetPos().DistanceTo(path_finder.get_target_pos()) < ACCEPTABLE_DISTANCE_THRESHOLD){
         controller_data.speed_integrator = 0;
     }
 
