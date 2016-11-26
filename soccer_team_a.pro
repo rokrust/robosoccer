@@ -16,22 +16,21 @@ CONFIG +=  debug
 
 # Input
 HEADERS += \ 
-    src/soccer_tests.h \
     src/robot.h \
     src/timer.h \
     src/game.h \
     src/goalie.h \
     src/striker.h \
-    src/opponent.h
+    src/opponent.h \
+    src/strategy.h
 SOURCES += \
-    src/soccer_tests.cpp \
     src/main.cpp \
     src/robot.cpp \
-    src/timer.cpp \
     src/game.cpp \
     src/goalie.cpp \
     src/striker.cpp \
-    src/opponent.cpp
+    src/opponent.cpp \
+    src/strategy.cpp
 		
 		
 ##############

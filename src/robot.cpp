@@ -21,13 +21,13 @@
 // drive constants
 #define PI 3.14159265
 #define ANGLE_TURN_THRESHOLD 35
-#define DSPEED_GAIN 2.0
+#define DSPEED_GAIN 3.0
 #define V_GROUND_MAX 100
 #define V_GROUND_MIN 0
 #define MAX_DSPEED_REL 0.1
 #define DRIVE_DURATION 200
 #define WHEEL_SPEED_RAMPUP 10
-#define DRIVE_RAMP_UP_START 100
+#define DRIVE_RAMP_UP 50
 #define DIST_THRESHOLD_LINEAR 0.40
 #define DIST_THRESHOLD_STOP 0.08
 #define ACCEPTABLE_DISTANCE_THRESHOLD 0.08 //Might be the same as the one above
@@ -116,30 +116,17 @@ void Robot::drive_to_pos(Position pos_in, bool verbose=false)
                 v_right = v_ground - dspeed;
             }
 
-            int cur_left = this->GetSpeedLeft();
-            int cur_right = this->GetSpeedRight();
-            int ramp_up;
-
-
-            if ((cur_left > WHEEL_SPEED_RAMPUP) || (cur_right > WHEEL_SPEED_RAMPUP)) {
-                ramp_up = 0;
-            } else {
-                ramp_up = DRIVE_RAMP_UP_START;
-            }
-
-            ramp_up = 50;
-
             if (verbose) {
                 cout << "Disance to goal is: " << dist << endl;
                 cout << "Ground speed is: " << v_ground << endl;
                 cout << "ddeg is: " << ddeg << endl;
                 cout << "Left speed: " << v_left << "   Right speed: " << v_right << endl;
-                cout << "RampUp is: " << ramp_up << endl;
+                cout << "RampUp is: " << DRIVE_RAMP_UP << endl;
                 cout << "---------------------" << endl;
             }
 
             // set the wheel speeds for the run time
-            this->MoveMs(v_left, v_right, DRIVE_DURATION, ramp_up);
+            this->MoveMs(v_left, v_right, DRIVE_DURATION, DRIVE_RAMP_UP);
             usleep((DRIVE_DURATION + 30)*1000);
         }
     }
@@ -201,9 +188,9 @@ int Robot::spot_turn(Angle phi_in)
     int v_left, v_right;
 
     // calculate the difference in the current and the desired orientation
-    Angle cur_phi = this->GetPhi();
+    // Angle cur_phi = this->GetPhi();
     Angle goal_phi = phi_in;
-    int ddeg = goal_phi.Deg() - cur_phi.Deg();
+    int ddeg = calc_ddeg(goal_phi);  // goal_phi.Deg() - cur_phi.Deg();
     if (DEBUG) {
         cout << "Angle difference before turn: " << ddeg << endl;
     }
@@ -229,7 +216,7 @@ int Robot::spot_turn(Angle phi_in)
 
     // calculate the time that the turn will take in micro seconds
     // there is 30ms delay due to the bluetooth system
-    int wait_time = (turn_time + 30) * 1000;
+    int wait_time = (turn_time + 30);
     if (DEBUG) {
         cout << "Wait time in ms: " << wait_time << endl;
     }
@@ -276,41 +263,62 @@ int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negati
     return 0;
 }
 
-
 //Set u_speed according to distance_to_pos (should be called every controller tick
 //P controller might be good enough
 int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
+    double distance_to_pos = GetPos().DistanceTo(target_pos);
 
-        double distance_to_pos = GetPos().DistanceTo(target_pos);
+    controller_data.speed_integrator += distance_to_pos * controller_data.sampling_time;
 
-        controller_data.speed_integrator += distance_to_pos * controller_data.sampling_time;
+    int u_speed = K_pt*distance_to_pos + K_it*controller_data.speed_integrator;
 
-        int u_speed = K_pt*distance_to_pos + K_it*controller_data.speed_integrator;
 
-        //u_speed *= cos((ref_heading - cur_heading).Get() * DEG_TO_RAD)  ;
-		
-        return u_speed;
+    u_speed *= cos((ref_heading - cur_heading).Get());
+
+    if(u_speed > MAX_WHEELSPEED || u_speed < -MAX_WHEELSPEED){
+        controller_data.speed_integrator = 0;
+    }
+
+    return u_speed;
+
 }
- 
- 
+
 //Set u_omega according to ref_heading and cur_heading (should be called every controller tick)
 int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
+    double current_error = (ref_heading - cur_heading).Get();
 
-        double current_error = (ref_heading - cur_heading).Get();
+    controller_data.error_buffer[controller_data.current_sample] = current_error;
+    //controller_data.heading_integrator += current_error*controller_data.sampling_time;
 
-        controller_data.error_buffer[controller_data.current_sample] = current_error;
-        controller_data.heading_integrator += current_error*controller_data.sampling_time;
+    //double int_error = controller_data.heading_integrator;
+    //double diff_error = (current_error - error_buffer_mean())/controller_data.buffer_size;
+    controller_data.current_sample = (controller_data.current_sample + 1) % controller_data.buffer_size;
 
-        double int_error = controller_data.heading_integrator;
-        double diff_error = (current_error - error_buffer_mean())/controller_data.buffer_size;
-        controller_data.current_sample = (controller_data.current_sample + 1) % controller_data.buffer_size;
+    int u_omega = K_ph*current_error;//K_dh*diff_error;// + K_ih*int_error;
 
-        int u_omega = K_ph*current_error + K_ih*int_error + K_dh*diff_error;
+    return u_omega;
+}
 
-        //cout << "Omega: " << u_omega << endl;
+//Set wheel speed according to u_speed and u_omega (should be called every controller tick)
+void Robot::set_wheelspeed(int timer_duration) {
+    Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
+    Angle cur_heading = GetPhi();
+
+    reset_integrators_if_necessary(ref_heading, cur_heading);
+
+    int u_omega = update_heading_controller(ref_heading, cur_heading);
+    int u_speed = update_speed_controller(ref_heading, cur_heading);
 
 
-        return u_omega;
+    right_wheel_speed = u_speed + u_omega;
+    left_wheel_speed = u_speed - u_omega;
+
+
+    /* cout << "Right: " << right_wheel_speed << endl
+         << "Left: " << left_wheel_speed << endl << endl; */
+
+    //Might have to change the last two arguments
+    MoveMs(left_wheel_speed, right_wheel_speed, timer_duration+10, 100);
 }
 
 double Robot::error_buffer_mean(){
@@ -320,97 +328,79 @@ double Robot::error_buffer_mean(){
         average_error += controller_data.error_buffer[i];
     }
 
-    return average_error/controller_data.buffer_size;
+    return average_error/= controller_data.buffer_size;
 }
-
 
 void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading){
     //Acceptably close to target_pos
     if(GetPos().DistanceTo(target_pos) < ACCEPTABLE_DISTANCE_THRESHOLD){
-        controller_data.speed_integrator = 0.0;
+        controller_data.speed_integrator = 0;
     }
 
     //Acceptably close to target_pos
     if((ref_heading - cur_heading).Abs() < ACCEPTABLE_HEADING_THRESHOLD){
-        controller_data.heading_integrator = 0.0;
-        cout << "Heading integrator reset." << endl;
+        controller_data.heading_integrator = 0;
+        // cout << "Heading integrator reset." << endl;
     }
 
 }
  
-//Set wheel speed according to u_speed and u_omega (should be called every controller tick)
-void Robot::set_wheelspeed() {
-        Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
-        Angle cur_heading = GetPhi();
-
-        reset_integrators_if_necessary(ref_heading, cur_heading);
-
-        int u_omega = update_heading_controller(ref_heading, cur_heading);
-        int u_speed = update_speed_controller(ref_heading, cur_heading);
-		
-
-        right_wheel_speed = u_speed + u_omega;
-        left_wheel_speed = u_speed - u_omega;
-
-
-        cout << "Right: " << right_wheel_speed << endl
-             << "Left: " << left_wheel_speed << endl << endl;
-
-        //Might have to change the last two arguments
-        MoveMs(left_wheel_speed, right_wheel_speed, 10, 100);
-}
-
 void Robot::test_loop_drive_parallel()
 {
     // set the wheel speed for the turn time
     Position r1 = this->GetPos();
+    Angle phi1 = this->GetPhi();
     Position r0 = r1;
-
-    // From three measurements:
-    // Go forward at 3076.92 ms per m
-    // Go backward at 3076.92 ms per m
-    // Formula to apply: run_time = 3076.92(ms/m) * diff_to_drive(m)
+    Angle phi0 = phi1;
 
     cin.get();
     cin.get();
 
-    cout << "Sign" << "\t" << "diff_to_drive" << "\t" << "Runtime" << "\t" << "diff_driven\trelError" << endl;
+    // cout << "Sign" << "\t" << "diff_to_drive" << "\t" << "Runtime" << "\t" << "diff_driven\trelError" << endl;
+    cout << "Sign\t" << "diff_to_drive\t" << "Runtime\t" << "diff_driven\t"
+         << "phi0\t" << "phi1\t" << "diff_angle\t" << endl;
 
 
     float diff_to_drive_step = 0.05;
 
     //int i;
     int run_time;
-    int v_left = 100;
-    int v_right = 100;
+    int v_left = 80;
+    int v_right = 80;
 
     cout.precision(4);
 
-    //for (i = 50; i < 900; i = i + 50)
-    for (float diff_to_drive = 0.05; diff_to_drive < 0.31; diff_to_drive = diff_to_drive + diff_to_drive_step)
+    // for (i = 50; i < 900; i = i + 50)
+    for (float diff_to_drive = 0.15; diff_to_drive < 0.61; diff_to_drive = diff_to_drive + diff_to_drive_step)
     {
         // Test forward
-        run_time = 2500 * diff_to_drive; // forward: 3200 for speed 80 | 2200 for speed 120
+        run_time = 3200 * diff_to_drive; // forward: 3200 for speed 80 | 2200 for speed 120
         //run_time = i;
         this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
         usleep((run_time+500) * 1000 + 1000000);
 
         r0 = r1;
         r1 = this->GetPos();
+        phi0 = phi1;
+        phi1 = this->GetPhi();
 
-        cout << "'+" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'"
-             << r1.DistanceTo(r0) << "\t'" << r1.DistanceTo(r0)/diff_to_drive << endl;
+        //cout << "'+" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'"
+        //     << r1.DistanceTo(r0) << "\t'" << r1.DistanceTo(r0)/diff_to_drive << endl;
+        cout << "'+" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'";
+        cout << r1.DistanceTo(r0) << "\t'" << phi0 << "\t'" << phi1 << "\t'" << phi1-phi0 << endl;
 
         // Test backward
-        run_time = 2600 * diff_to_drive; // backward: 3400 for speed 80 | 2150 for speed 120
+        run_time = 3400 * diff_to_drive; // backward: 3400 for speed 80 | 2150 for speed 120
         //run_time = i;
         this->MoveMs(-v_left, -v_right, run_time, TURN_RAMP_UP);
         usleep((run_time+500) * 1000 + 1000000);
 
+        phi0 = phi1;
+        phi1 = this->GetPhi();
         r0 = r1;
         r1 = this->GetPos();
 
-        cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'"
-             << r1.DistanceTo(r0) << "\t'" << r1.DistanceTo(r0)/diff_to_drive << endl;
+        cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'";
+        cout << r1.DistanceTo(r0) << "\t'" << phi0 << "\t'" << phi1 << "\t'" << phi1-phi0 << endl;
     }
 }

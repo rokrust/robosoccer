@@ -64,7 +64,7 @@ void Striker::shoot_ball_at_goal(bool is_left_side){
     //while(this->GetMovingStatus() == STATUS_MOVING){ cout << "In while\n";}
 
     //Turn towards the ball and kick
-    Angle angle_to_ball = this->GetPos().AngleOfLineToPos(Game::datBall->GetPos());
+    Angle angle_to_ball = GetPos().AngleOfLineToPos(Game::datBall->GetPos());
 
     usleep(spot_turn(angle_to_ball));
     usleep(1000000);

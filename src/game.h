@@ -1,8 +1,8 @@
-#pragma once
 #ifndef GAME_H
 #define GAME_H
 
-#include "share.h"
+class Strategy;
+
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
 #include "robot.h"
@@ -10,12 +10,12 @@
 #include "striker.h"
 #include "opponent.h"
 #include "referee.h"
+#include "strategy.h"
 
 #define GOAL_MAX_YPOS 0.13
 #define GOAL_MIN_YPOS -0.13
 #define GOAL_LEFT_XPOS -1.48
 #define GOAL_RIGHT_XPOS 1.48
-
 
 class Game
 {
@@ -32,19 +32,20 @@ private:
     bool stay_in_state;
 
 public:
-    Goalie* goalie;
-    Striker* striker1;
-    Striker* striker2;
-    Opponent* opponent1;
-    Opponent* opponent2;
-    Opponent* opponent3;
+    static Goalie* goalie;
+    static Striker* striker1;
+    static Striker* striker2;
+    static Opponent* opponent1;
+    static Opponent* opponent2;
+    static Opponent* opponent3;
+
     static RawBall* datBall;
 
-    Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
-         Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
-         Opponent* opponent1_in = 0, Opponent* opponent2_in = 0, Opponent* opponent3_in = 0);
+    static Robot* robots[6];
 
-    void step(bool verbose=false);
+    Strategy* strategy_modul;
+
+    Game(RTDBConn DBC, bool is_team_blue_in);
 
     int take_kick_off_position();
     void perform_kick_off();
@@ -53,20 +54,18 @@ public:
 
     void update_side();
     void update_kick_off();
-
-    void set_phase(ePlayMode new_phase, bool verbose);
-    void set_ball(RawBall* ball);
 	
     bool get_is_team_blue();
     bool get_is_left_side();
     bool get_has_kick_off();
-    RawBall* get_ball(); //Probably not needed
 
     // state machine
     void print_state(ePlayMode state=PAUSE);
     void update_state();
     void state_machine(bool verbose=false);
 
+    // build string of Position in matlab syntax
+    std::string matlsynt(Position pos);
 
 };
 #endif // GAME_H

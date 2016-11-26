@@ -17,12 +17,14 @@
 #include <math.h>
 #include <boost/circular_buffer.hpp>
 
+#define MAX_WHEELSPEED 200
+
 enum Parameters
      {K_ph = 20,
       K_ih = 25,
       K_dh = 5,
-      K_pt = 170,
-      K_it = 100 };
+      K_pt = 170, // old: 170
+      K_it = 100 }; // old: 100
 
 struct Controller_data{
     //General
@@ -104,9 +106,12 @@ public:
 
     int update_heading_controller(Angle ref_heading, Angle cur_heading);
 
-    void set_wheelspeed();
+    void set_wheelspeed(int timer_duration);
 
     void set_target_pos(Position pos){target_pos = pos;}
+
+    const Position get_target_pos(){return target_pos;}
+
 };
 
 #endif // ROBOT_H

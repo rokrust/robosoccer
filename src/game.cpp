@@ -6,40 +6,65 @@
 #define WAIT_FOR_PENALTY_POS 12000000
 #define WAIT_TIME_POSITION_CORRECTING 2000000
 
+#define TIME_STEP_SIZE_GOALIE 5000
+
 #define ROBOT_ARRIVED_THRESHOLD 0.2
 
-Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
+/* Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
            Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
-           Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in)
+           Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in) */
+Game::Game(RTDBConn DBC, bool is_team_blue_in)
 {
-    referee_handler = ref_in;
-    is_team_blue = is_team_blue_in;
-    set_ball(datBall_in);
+    // Initialize Referee
+    // Referee ref_in(DBC);
+    // ref_in.Init();
+    referee_handler = new Referee(DBC);
+    referee_handler->Init();
 
-    goalie = goalie_in;
-    striker1 = striker1_in;
-    striker2 = striker2_in;
-    opponent1 = opponent1_in;
-    opponent2 = opponent2_in;
-    opponent3 = opponent3_in;
+    // Initialize datBall
+    datBall = new RawBall(DBC);
+
+    // Set Team Colour
+    is_team_blue = is_team_blue_in;
+
+    // Get device Numbers for drobots depending on which colour
+    int myGoalieDvNr;
+    int myStriker1DvNr;
+    int theOpponent1DvNr;
+    if (is_team_blue) {
+        myGoalieDvNr = 0;
+        myStriker1DvNr = 1;
+        theOpponent1DvNr = 3;
+    }
+    else {
+        myGoalieDvNr = 3;
+        myStriker1DvNr = 4;
+        theOpponent1DvNr = 0;
+    }
+
+    // Initialize Robot Objects
+    goalie = new Goalie(DBC, myGoalieDvNr);
+    striker1 = new Striker(DBC, myStriker1DvNr);
+    striker2 = new Striker(DBC, myStriker1DvNr+1);
+    opponent1 = new Opponent(DBC, theOpponent1DvNr);
+    opponent2 = new Opponent(DBC, theOpponent1DvNr+1);
+    opponent3 = new Opponent(DBC, theOpponent1DvNr+2);
 
     // initialize state machine variables
     stay_in_state_machine = true;
     previous_state = REFEREE_INIT;
     current_state = REFEREE_INIT;
 
+    robots[0] = goalie;
+    robots[1] = striker1;
+    robots[2] = striker2;
+    robots[3] = opponent1;
+    robots[4] = opponent2;
+    robots[5] = opponent3;
+
+    strategy_modul = new Strategy();
+
     cout << "Game Handler initialized" << endl;
-}
-
-void Game::step(bool verbose)
-{
-    ePlayMode phase = referee_handler->GetPlayMode();
-    set_phase(phase, verbose);
-
-    if (verbose) {
-        print_state();
-        cin.get();
-    }
 }
 
 int Game::take_kick_off_position()
@@ -173,7 +198,7 @@ int Game::take_kick_off_position()
 
 void Game::perform_kick_off()
 {
-    striker1->GotoXY(datBall->GetX(), datBall->GetY(), 160, true);
+    Game::striker1->GotoXY(datBall->GetX(), datBall->GetY(), 160, true);
 }
 
 int Game::take_penalty_position()
@@ -293,141 +318,6 @@ void Game::update_kick_off()
     }
 }
 
-void Game::set_phase(ePlayMode new_phase, bool verbose=true)
-{
-    previous_state = current_state;
-    current_state = new_phase;
-
-    // catch phase transitions
-    if (previous_state != new_phase) {
-        if (verbose) {
-            cout << "State transition" << endl;
-        }
-
-        // REFEREE_INIT -> BEFORE_KICK_OFF
-        if ((previous_state == 0) && (current_state == 1)) {
-            if (verbose) {
-                cout << "Changed from REFEREE_INIT to BEFORE_KICK_OFF" << endl;
-            }
-            update_side();
-            take_kick_off_position();
-            referee_handler->SetReady(!is_team_blue);
-        }
-
-        // BEFORE_KICK_OFF -> KICK_OFF
-        if ((previous_state == 1) && (current_state == 2)) {
-            if (verbose) {
-                cout << "Changed from BEFORE_KICK_OFF to KICK_OFF" << endl;
-            }
-            update_kick_off();
-            if (has_kick_off) {
-                perform_kick_off();
-            }
-        }
-
-        // KICK_OFF -> PLAY_ON
-        if ((previous_state == 2) && (current_state == 5)) {
-            if (verbose) {
-                cout << "Changed from KICK_OFF to PLAY_ON" << endl;
-            }
-        }
-
-        // PLAY_ON -> BEFORE_KICK_OFF
-        if ((previous_state == 5) && (current_state == 1)) {
-            if (verbose) {
-                cout << "Changed from PLAY_ON to KICK_OFF" << endl;
-            }
-            update_side();
-            take_kick_off_position();
-            referee_handler->SetReady(!is_team_blue);
-        }
-
-        // PLAY_ON -> REFEREE_INIT
-        if ((previous_state == 5) && (current_state == 0)) {
-            if (verbose) {
-                cout << "Changed from PLAY_ON to REFEREE_INIT" << endl;
-            }
-        }
-
-        // PLAY_ON -> BEFORE_PENALTY
-        if ((previous_state == 5) && (current_state == 3)) {
-            if (verbose) {
-                cout << "Changed from PLAY_ON to BEFORE_PENALTY" << endl;
-            }
-            update_side();
-            update_kick_off();
-            take_penalty_position();
-        }
-
-        // BEFORE_PENALTY -> PENALTY
-        if ((previous_state == 3) && (current_state == 4)) {
-            if (verbose) {
-                cout << "Changed from BEFORE_PENALTY to PENALTY" << endl;
-            }
-            update_kick_off();
-            update_side();
-            if (has_kick_off) {
-                striker1->shoot_penalty();
-            }
-            else {
-                goalie->go_to_penalty_save_position();
-            }
-        }
-
-        // PENALTY -> BEFORE_PENALTY
-        if ((previous_state == 4) && (current_state == 3)) {
-            if (verbose) {
-                cout << "Changed from PENALTY to BEFORE_PENALTY" << endl;
-            }
-            update_side();
-            update_kick_off();
-            take_penalty_position();
-        }
-
-        // PENALTY -> REFEREE_INIT
-        if ((previous_state == 4) && (current_state == 0)) {
-            if (verbose) {
-                cout << "Changed from PENALTY to REFEREE_INIT" << endl;
-            }
-        }
-
-        // existing but senseless transitions
-        // BEFORE_KICK_OFF -> PENALTY
-        if ((previous_state == 1) && (current_state == 4)) {
-            if (verbose) {
-                cout << "Changed from BEFORE_KICK_OFF to PENALTY" << endl;
-                cout << "--Exceptional Transition--" << endl;
-            }
-        }
-
-        // REFEREE_INIT -> PENALTY
-        if ((previous_state == 0) && (current_state == 4)) {
-            if (verbose) {
-                cout << "Changed from REFEREE_INIT to PENALTY" << endl;
-                cout << "--Exceptional Transition--" << endl;
-            }
-        }
-
-        // KICK_OFF -> PENALTY
-        if ((previous_state == 2) && (current_state == 4)) {
-            if (verbose) {
-                cout << "Changed from KICK_OFF to PENALTY" << endl;
-                cout << "--Exceptional Transition--" << endl;
-            }
-        }
-
-        // PLAY_ON -> PENALTY
-        if ((previous_state == 5) && (current_state == 4)) {
-            if (verbose) {
-                cout << "Changed from PLAY_ON to PENALTY" << endl;
-                cout << "--Exceptional Transition--" << endl;
-            }
-        }
-    }
-}
-
-
-
 bool Game::get_is_team_blue()
 {
     return is_team_blue;
@@ -441,15 +331,6 @@ bool Game::get_is_left_side()
 bool Game::get_has_kick_off()
 {
     return has_kick_off;
-}
-
-RawBall* Game::get_ball()
-{
-    return datBall;
-}
-
-void Game::set_ball(RawBall* ball){
-    Game::datBall = ball;
 }
 
 void Game::print_state(ePlayMode state)
@@ -582,13 +463,21 @@ void Game::state_machine(bool verbose)
             }
 
             // perform Game state initializations like creating timers
+            Timer goalie_timer(TIME_STEP_SIZE_GOALIE);
+            goalie_timer.enable_periodically();
 
             while (stay_in_state) {
                 // perform regular state tasks like timers
+                if (goalie_timer.timeout()) {
+                    cout << "Goalie timer has timed out" << endl;
+                    goalie_timer.enable_periodically();
+                }
 
                 // detect state changes
                 update_state();
             }
+
+            goalie_timer.~Timer();
         }
 
         // PLAY_ON -> BEFORE_KICK_OFF
@@ -738,3 +627,15 @@ void Game::state_machine(bool verbose)
     }
 }
 
+std::string Game::matlsynt(Position pos)
+{
+    int precision = 3; // after decimal point
+
+    std::ostringstream stream_for_matlab_syntax;
+    stream_for_matlab_syntax << "[" << setprecision(precision) << fixed << pos.GetX() << ", " << (double) pos.GetY() << "]; ";
+    return stream_for_matlab_syntax.str();
+
+    // Usage
+    // Position pos2print(1, 0);
+    // cout << "pos2print = " << game_handler.matlsynt(pos2print) << endl;
+}
