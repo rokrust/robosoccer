@@ -258,15 +258,17 @@ int Goalie::do_the_goalkeepers_kick()
     MoveMs(180, 180, 700, 0);
 
 
-    cout << "r_ball = [" << ball_pos.GetX() << "," << ball_pos.GetY() << "]; ";
-    cout << "r_goalie = [" << goalie_pos.GetX() << "," << goalie_pos.GetY() << "]; ";
-    cout << "r_opp1 = [" << opp1_pos.GetX() << "," << opp1_pos.GetY() << "]; " << endl;
-    cout << "r_opp2 = [" << opp2_pos.GetX() << "," << opp2_pos.GetY() << "]; ";
-    cout << "r_opp3 = [" << opp3_pos.GetX() << "," << opp3_pos.GetY() << "]; ";
-    cout << "r_ball_target = [" << shoot_target_pos.GetX() << "," << shoot_target_pos.GetY() << "]; " << endl;
-    cout << "r_goalie_target = [" << goalie_pos_behind_ball.GetX() << "," << goalie_pos_behind_ball.GetY() << "]; ";
-    cout << "r_goalie_before_kick = [" << r_goalie_before_kick.GetX() << "," << r_goalie_before_kick.GetY() << "]; " << endl;
-    cout << "shoot_angle = " << angle_to_ball << endl;
+    if (0) {
+        cout << "r_ball = [" << ball_pos.GetX() << "," << ball_pos.GetY() << "]; ";
+        cout << "r_goalie = [" << goalie_pos.GetX() << "," << goalie_pos.GetY() << "]; ";
+        cout << "r_opp1 = [" << opp1_pos.GetX() << "," << opp1_pos.GetY() << "]; " << endl;
+        cout << "r_opp2 = [" << opp2_pos.GetX() << "," << opp2_pos.GetY() << "]; ";
+        cout << "r_opp3 = [" << opp3_pos.GetX() << "," << opp3_pos.GetY() << "]; ";
+        cout << "r_ball_target = [" << shoot_target_pos.GetX() << "," << shoot_target_pos.GetY() << "]; " << endl;
+        cout << "r_goalie_target = [" << goalie_pos_behind_ball.GetX() << "," << goalie_pos_behind_ball.GetY() << "]; ";
+        cout << "r_goalie_before_kick = [" << r_goalie_before_kick.GetX() << "," << r_goalie_before_kick.GetY() << "]; " << endl;
+        cout << "shoot_angle = " << angle_to_ball << endl;
+    }
 
     cout << endl;
     return 0;
