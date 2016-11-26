@@ -291,10 +291,10 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
     //controller_data.heading_integrator += current_error*controller_data.sampling_time;
 
     //double int_error = controller_data.heading_integrator;
-    //double diff_error = (current_error - error_buffer_mean())/controller_data.buffer_size;
+    double diff_error = (current_error - error_buffer_mean())/controller_data.buffer_size;
     controller_data.current_sample = (controller_data.current_sample + 1) % controller_data.buffer_size;
 
-    int u_omega = K_ph*current_error;//K_dh*diff_error;// + K_ih*int_error;
+    int u_omega = K_ph*current_error + K_dh*diff_error; // + K_ih*int_error;
 
     return u_omega;
 }
@@ -314,10 +314,13 @@ void Robot::set_wheelspeed(int timer_duration) {
     left_wheel_speed = u_speed - u_omega;
 
 
-    /* cout << "Right: " << right_wheel_speed << endl
-         << "Left: " << left_wheel_speed << endl << endl; */
+    cout << "Left: " << right_wheel_speed << " - Right: " << left_wheel_speed << endl;
+    cout << "diff_head: " << cur_heading-ref_heading << endl << endl; // : " << cur_heading << " - ref_head: " << ref_heading << endl;
+    // cout << "u_speed: " << u_speed << " - u_omega: " << u_omega << endl << endl;
+
 
     //Might have to change the last two arguments
+    // cout << target_pos.GetX() << ", " << target_pos.GetY() << ", " << GetPos().DistanceTo(Game::datBall->GetPos());
     MoveMs(left_wheel_speed, right_wheel_speed, timer_duration+10, 100);
 }
 
@@ -403,4 +406,9 @@ void Robot::test_loop_drive_parallel()
         cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'";
         cout << r1.DistanceTo(r0) << "\t'" << phi0 << "\t'" << phi1 << "\t'" << phi1-phi0 << endl;
     }
+}
+
+void Robot::set_sampling_time(int sampling_time)
+{
+    controller_data.sampling_time = sampling_time;
 }

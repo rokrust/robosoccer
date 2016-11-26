@@ -20,11 +20,11 @@
 #define MAX_WHEELSPEED 200
 
 enum Parameters
-     {K_ph = 20,
-      K_ih = 25,
-      K_dh = 5,
-      K_pt = 170, // old: 170
-      K_it = 100 }; // old: 100
+     {K_ph = 20, // working thursday: 20
+      // K_ih = 25, // working thursday: 25
+      K_dh = -5, // working thursday: 5
+      K_pt = 170, // working thursday: 170
+      K_it = 100 }; // working thursday: 100
 
 struct Controller_data{
     //General
@@ -112,6 +112,7 @@ public:
 
     const Position get_target_pos(){return target_pos;}
 
+    void set_sampling_time(int sampling_time);
 };
 
 #endif // ROBOT_H

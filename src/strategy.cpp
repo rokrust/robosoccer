@@ -235,8 +235,10 @@ void Strategy::update_extrapol_goal_position_per_robot(const int robot_nr)
     if ((cur_pos.DistanceTo(goal_pos) > VIA_POSITION_MAX_DIST)) {
         Position extrapol_goal_pos = extrapol_goal_position(cur_pos, goal_pos);
         Game::robots[robot_nr]->set_target_pos(extrapol_goal_pos);
+        // cout << "EP\t";
     } else {
         Game::robots[robot_nr]->set_target_pos(goal_pos);
+        // cout << "nEP\t";
     }
 }
 

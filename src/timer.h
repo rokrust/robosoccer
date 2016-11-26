@@ -118,5 +118,9 @@ public:
         }
 
     }
+
+    int get_timeout_duration_ms() {
+        return timeout_duration_ms;
+    }
 };
 #endif // TIMER_H
