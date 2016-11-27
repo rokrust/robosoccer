@@ -42,7 +42,9 @@
 
 
 
-Robot::Robot(RTDBConn DBC_in, int device_nr_in, int index) : RoboControl(DBC_in, device_nr_in)
+Robot::Robot(RTDBConn DBC_in, int device_nr_in, 
+			 Position target_pos, int index) : 
+			 RoboControl(DBC_in, device_nr_in)
 {
     device_nr = device_nr_in;
     left_wheel_speed = 0;
@@ -54,7 +56,7 @@ Robot::Robot(RTDBConn DBC_in, int device_nr_in, int index) : RoboControl(DBC_in,
                          .heading_integrator = 0.0, .buffer_size = n_samples,
                          .current_sample = 0, .error_buffer = new double[n_samples]};
     controller_data = c;
-    array_index = index;
+	path_finder = Path_finder(target_pos, index);
 }
 
 Robot::~Robot()
@@ -302,7 +304,8 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
 void Robot::set_wheelspeed(int timer_duration) {
-    Angle ref_heading = GetPos().AngleOfLineToPos(path_finder.get_target_pos());
+    Angle ref_heading = path_finder.sum_vector_field.vector_angle();
+// GetPos().AngleOfLineToPos(path_finder.get_target_pos());
     Angle cur_heading = GetPhi();
 
     reset_integrators_if_necessary(ref_heading, cur_heading);

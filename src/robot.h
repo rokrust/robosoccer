@@ -49,7 +49,6 @@ private:
      * @brief Device number of the robot
      */
     int device_nr;
-    int array_index;
 
     //These can probably be removed
     int left_wheel_speed;
@@ -63,7 +62,8 @@ private:
 
 public:
 
-    Robot(RTDBConn DBC_in, int device_nr_in, int index);
+    Robot(RTDBConn DBC_in, int device_nr_in, 
+		  Position target_pos, int index);
     ~Robot();
 
     /**

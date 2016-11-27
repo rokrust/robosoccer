@@ -43,7 +43,7 @@ ateam::Vector ateam::Vector::operator=(const ateam::Vector& vec){
     return *this;
 }
 
-ateam::Vector operator+=(const ateam::Vector& vec){
+ateam::Vector ateam::Vector::operator+=(const ateam::Vector& vec){
     return *this + vec;
 }
 
