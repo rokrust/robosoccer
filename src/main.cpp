@@ -20,16 +20,6 @@
 
 using namespace std;
 
-RawBall* Game::datBall = NULL;
-Goalie* Game::goalie = NULL;
-Striker* Game::striker1 = NULL;
-Striker* Game::striker2 = NULL;
-Opponent* Game::opponent1 = NULL;
-Opponent* Game::opponent2 = NULL;
-Opponent* Game::opponent3 = NULL;
-
-Robot* Game::robots[6] = {0};
-Position Game::robot_positions[6] = {Position(-1.3, 0.0),  Position(-0.3, 0.4), Position(-0.15, -0.15), Position(0,0), Position(0,0), Position(0,0)};
 
 int main(void) {
 

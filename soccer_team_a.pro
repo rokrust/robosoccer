@@ -13,6 +13,7 @@ OBJECTS_DIR = .obj
 #QT += core
 #QT -= gui
 CONFIG +=  debug
+QMAKE_CXXFLAGS += -std=c++11
 
 # Input
 HEADERS += \ 

@@ -46,6 +46,7 @@ Robot::Robot(RTDBConn DBC_in, int device_nr_in,
              int index, Position target_pos) :
 			 RoboControl(DBC_in, device_nr_in)
 {
+    cout << "JOHO" << endl;
     device_nr = device_nr_in;
     left_wheel_speed = 0;
     right_wheel_speed = 0;

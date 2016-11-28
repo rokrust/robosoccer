@@ -15,9 +15,24 @@
 /* Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
            Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
            Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in) */
+
+
+RawBall* Game::datBall = NULL;
+Goalie* Game::goalie = NULL;
+Striker* Game::striker1 = NULL;
+Striker* Game::striker2 = NULL;
+Opponent* Game::opponent1 = NULL;
+Opponent* Game::opponent2 = NULL;
+Opponent* Game::opponent3 = NULL;
+
+Robot* Game::robots[6] = {0};
+Position Game::robot_positions[6] = {Position(-1.3, 0.0),  Position(-0.3, 0.4), Position(-0.15, -0.15), Position(0,0), Position(0,0), Position(0,0)};
+
+
+
 Game::Game(RTDBConn DBC, bool is_team_blue_in)
 {
-    robot_positions[6] = {Position(-1.3, 0.0),  Position(-0.3, 0.4), Position(-0.15, -0.15), Position(0,0), Position(0,0), Position(0,0)};
+
     // Initialize Referee
     // Referee ref_in(DBC);
     // ref_in.Init();
@@ -25,13 +40,14 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
 
     referee_handler->Init();
 
-
     // Initialize datBall
     datBall = new RawBall(DBC);
 
 
     // Set Team Colour
     is_team_blue = is_team_blue_in;
+    //Position test = robot_positions[0];
+    //cout << "x:" << test.GetX() << ", y: " << test.GetY() << endl;
 
     // Get device Numbers for drobots depending on which colour
     int myGoalieDvNr;
@@ -50,7 +66,9 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
 
 
     // Initialize Robot Objects
+    cout << "Before goalie" << endl;
     goalie = new Goalie(DBC, myGoalieDvNr, 0, robot_positions[0]);
+    cout << "After goalie" << endl;
     striker1 = new Striker(DBC, myStriker1DvNr, 1, robot_positions[1]);
     striker2 = new Striker(DBC, myStriker1DvNr+1, 2, robot_positions[2]);
     opponent1 = new Opponent(DBC, theOpponent1DvNr, 3, robot_positions[3]);
