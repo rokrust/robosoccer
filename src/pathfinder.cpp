@@ -12,17 +12,17 @@ Path_finder::Path_finder(int robots_array_index, Position pos){
         vector_fields.push_back(robot_field);
 		
         //Some weight. Should be parameters
-        vector_field_weights.push_back(1/10.0); //fix hardcoding
+        vector_field_weights.push_back(0.0); //fix hardcoding
     }
 
     cout << "Index: " << endl;
     vector_field_weights[robots_array_index] = 0;
 
     vector_fields.push_back(new ateam::Wall_vector_field());
-    vector_field_weights.push_back(1.0); //fix hardcoding
+    vector_field_weights.push_back(0.0); //fix hardcoding
 
     vector_fields.push_back(new ateam::Target_vector_field(target_pos));
-    vector_field_weights.push_back(2.0); //fix hardcoding
+    vector_field_weights.push_back(1.0); //fix hardcoding
     cout << "Out of pathfinder constructor" << endl;
 }
 
@@ -31,11 +31,11 @@ ateam::Vector Path_finder::sum_vector_field(Position current_pos){
     ateam::Vector summed_weighted_vector; //Automatically set to zero vector
 
     for(unsigned int i = 0; i < vector_fields.size(); i++){
-
+        cout << "x: " << vector_fields[i]->vector_at_pos(current_pos).get_x() << ", y: " << vector_fields[i]->vector_at_pos(current_pos).get_y() << endl;
         summed_weighted_vector += vector_fields[i]->vector_at_pos(current_pos) *
                                   vector_field_weights[i];
     }
-
+    cout << "x: " << (summed_weighted_vector*1.0).get_x() << ", y: " << (summed_weighted_vector*1.0).get_y() << endl;
     return summed_weighted_vector;
 }
 

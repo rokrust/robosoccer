@@ -306,7 +306,7 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
 void Robot::set_wheelspeed(int timer_duration) {
     Angle ref_heading = path_finder.sum_vector_field(GetPos()).vector_angle();
-    cout << "Reference heading set" << endl;
+    cout << "Reference heading: " << ref_heading << endl;
 
     //Angle ref_heading = GetPos().AngleOfLineToPos(path_finder.get_target_pos());
     Angle cur_heading = GetPhi();
@@ -315,17 +315,17 @@ void Robot::set_wheelspeed(int timer_duration) {
 
     int u_omega = update_heading_controller(ref_heading, cur_heading);
     int u_speed = update_speed_controller(ref_heading, cur_heading);
-
+    u_speed = 0;
 
     right_wheel_speed = u_speed + u_omega;
     left_wheel_speed = u_speed - u_omega;
 
 
-    cout << "Right: " << right_wheel_speed << endl
-         << "Left: " << left_wheel_speed << endl << endl;
+    /*cout << "Right: " << right_wheel_speed << endl
+         << "Left: " << left_wheel_speed << endl << endl;*/
 
     //Might have to change the last two arguments
-    cout << "MoveMs" << endl;
+    //cout << "MoveMs" << endl;
     MoveMs(left_wheel_speed, right_wheel_speed, timer_duration+10, 100);
 }
 

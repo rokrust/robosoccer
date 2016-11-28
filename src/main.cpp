@@ -262,7 +262,7 @@ int main(void) {
             while(1) {
                 game_handler.update_robot_positions();
                 Game::striker1->get_path_finder().set_target_pos(Game::datBall->GetPos());
-                cout << "x: " << Game::striker1->GetX() << "y: ", Game::striker1->GetY() << endl;
+
                 if (datTimer.timeout()) {
  //                   game_handler.strategy_modul->set_goal_pos(Game::datBall->GetPos(), 1);
                     Game::striker1->set_wheelspeed(timer_duration);
