@@ -63,7 +63,7 @@ private:
 public:
 
     Robot(RTDBConn DBC_in, int device_nr_in, 
-		  Position target_pos, int index);
+          int index, Position target_pos);
     ~Robot();
 
     /**
@@ -111,9 +111,8 @@ public:
 
     void set_wheelspeed(int timer_duration);
 
-    void set_array_index(int index){array_index = index;}
-    int get_array_index(){return array_index;}
     Path_finder get_path_finder(){return path_finder;}
+
 };
 
 #endif // ROBOT_H

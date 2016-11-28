@@ -20,7 +20,6 @@
 
 using namespace std;
 
-
 RawBall* Game::datBall = NULL;
 Goalie* Game::goalie = NULL;
 Striker* Game::striker1 = NULL;
@@ -30,7 +29,7 @@ Opponent* Game::opponent2 = NULL;
 Opponent* Game::opponent3 = NULL;
 
 Robot* Game::robots[6] = {0};
-
+Position Game::robot_positions[6] = {Position(-1.3, 0.0),  Position(-0.3, 0.4), Position(-0.15, -0.15), Position(0,0), Position(0,0), Position(0,0)};
 
 int main(void) {
 
@@ -256,11 +255,29 @@ int main(void) {
             Timer datTimer(timer_duration);
 
             while(1) {
+                game_handler.update_robot_positions();
+
                 if (datTimer.timeout()) {
  //                   game_handler.strategy_modul->set_goal_pos(Game::datBall->GetPos(), 1);
                     Game::striker1->set_wheelspeed(timer_duration);
                 }
             }
+        }
+
+        if (SCENARIO == 33){
+            int timer_duration = 250;
+            Timer datTimer(timer_duration);
+
+            while(1) {
+                game_handler.update_robot_positions();
+                Game::striker1->get_path_finder().set_target_pos(Game::datBall->GetPos());
+
+                if (datTimer.timeout()) {
+ //                   game_handler.strategy_modul->set_goal_pos(Game::datBall->GetPos(), 1);
+                    Game::striker1->set_wheelspeed(timer_duration);
+                }
+            }
+
         }
 
         if (SCENARIO == 123456) {

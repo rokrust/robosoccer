@@ -61,10 +61,12 @@ ateam::Vector ateam::Vector::operator+=(const ateam::Vector& vec){
 //the overloaded operator +=
 
 ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
-    double x = (pos.GetX()-origo.GetX()) /
-            (pow(fabs(origo.GetX()+pos.GetX()), 3));
-    double y = (pos.GetY()-origo.GetY()) /
-            (pow(fabs(origo.GetY()+pos.GetY()), 3));
+    double x_diff = pos.GetX()-center_point.GetX();
+    double y_diff = pos.GetY()-center_point.GetY();
+    double numerator = pow(fabs(x_diff), 3)+pow(fabs(y_diff), 3);
+
+    double x = (x_diff) / numerator;
+    double y = (y_diff) / numerator;
 
     return ateam::Vector(x, y);
 }
@@ -74,27 +76,25 @@ ateam::Vector ateam::Wall_vector_field::vector_at_pos(Position pos){
     //Effect of the field shrinks with the higher the power.
     double x = (pos.GetX() - X_MIN_COOR)/
             pow(fabs(pos.GetX() - X_MIN_COOR), 3) +
-            (pos.GetX() - X_MIN_COOR)/
-            pow(fabs(pos.GetX() - X_MIN_COOR), 3);
+            (pos.GetX() - X_MAX_COOR)/
+            pow(fabs(pos.GetX() - X_MAX_COOR), 3);
 
     double y = (pos.GetY() - Y_MIN_COOR)/
             pow(fabs(pos.GetY() - Y_MIN_COOR), 3) +
-            (pos.GetY() - Y_MIN_COOR)/
-            pow(fabs(pos.GetY() - Y_MIN_COOR), 3);
+            (pos.GetY() - Y_MAX_COOR)/
+            pow(fabs(pos.GetY() - Y_MAX_COOR), 3);
 
     return ateam::Vector(x, y);
 }
 
 
 ateam::Vector ateam::Target_vector_field::vector_at_pos(Position pos){
-    //Effect of the field shrinks with the higher the power.
-    double x = scale*(origo.GetX() - pos.GetX())/
-            pow(fabs(pos.GetX() - X_MIN_COOR), 3);
+    double x_diff = pos.GetX()-center_point.GetX();
+    double y_diff = pos.GetY()-center_point.GetY();
+    double numerator = -sqrt(pow(fabs(x_diff), 2) + pow(fabs(y_diff), 2));
 
-    double y = (pos.GetY() - Y_MIN_COOR)/
-            pow(fabs(pos.GetY() - Y_MIN_COOR), 3) +
-            (pos.GetY() - Y_MIN_COOR)/
-            pow(fabs(pos.GetY() - Y_MIN_COOR), 3);
+    double x = x_diff/numerator;
+    double y = y_diff/numerator;
 
     return ateam::Vector(x, y);
 }

@@ -61,18 +61,18 @@ private:
 
 
 public:
-    Vector_field(double x, double y): origo(x, y){}
-    Vector_field(Position pos = Position(0,0)): origo(pos){}
+    Vector_field(double x, double y): center_point(x, y){}
+    Vector_field(Position pos = Position(0,0)): center_point(pos){}
 
     //Maybe make this virtual and create subclasses for robots, walls
     //and target position
     virtual Vector vector_at_pos(Position pos) = 0;
 
-    void set_origo(Position pos){origo = pos;}
-    void set_origo(double x, double y){origo.SetX(x); origo.SetY(y);}
+    void set_center_point(Position pos){center_point = pos;}
+    void set_center_point(double x, double y){center_point.SetX(x); center_point.SetY(y);}
 
 protected:
-    Position origo;
+    Position center_point;
 
 };
 
@@ -82,7 +82,7 @@ private:
 
 
 public:
-    Robot_vector_field(Position pos = Position(0,0)){origo = pos;}
+    Robot_vector_field(Position pos = Position(0,0)){center_point = pos;}
 
     Vector vector_at_pos(Position pos);
 };
@@ -92,7 +92,7 @@ private:
 
 
 public:	
-    Wall_vector_field(Position pos = Position(0,0)) {origo = pos;}
+    Wall_vector_field(Position pos = Position(0,0)) {center_point = pos;}
 
     Vector vector_at_pos(Position pos);
 };
@@ -105,7 +105,7 @@ private:
 
 public:
     Target_vector_field(){}
-    Target_vector_field(Position pos){origo = pos;}
+    Target_vector_field(Position pos){center_point = pos;}
 
     Vector vector_at_pos(Position pos);
 };

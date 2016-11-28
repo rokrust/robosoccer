@@ -43,7 +43,7 @@
 
 
 Robot::Robot(RTDBConn DBC_in, int device_nr_in, 
-			 Position target_pos, int index) : 
+             int index, Position target_pos) :
 			 RoboControl(DBC_in, device_nr_in)
 {
     device_nr = device_nr_in;
@@ -304,7 +304,7 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
 void Robot::set_wheelspeed(int timer_duration) {
-    Angle ref_heading = path_finder.sum_vector_field.vector_angle();
+    Angle ref_heading = path_finder.sum_vector_field(GetPos()).vector_angle();
 // GetPos().AngleOfLineToPos(path_finder.get_target_pos());
     Angle cur_heading = GetPhi();
 

@@ -6,7 +6,7 @@
 #define MAX_LOOP_COUNTDOWN -250
 #define V_X_THRESHOLD 0.01
 
-Goalie::Goalie(RTDBConn DBC_in, int device_nr_in, int robot_array_index) : Robot(DBC_in, device_nr_in, robot_array_index)
+Goalie::Goalie(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position target_pos) : Robot(DBC_in, device_nr_in, robot_array_index, target_pos)
 {
 
 }

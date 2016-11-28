@@ -10,19 +10,25 @@
 
 #define ROBOT_ARRIVED_THRESHOLD 0.2
 
+#define N_ROBOTS 6
+
 /* Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
            Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
            Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in) */
 Game::Game(RTDBConn DBC, bool is_team_blue_in)
 {
+    robot_positions[6] = {Position(-1.3, 0.0),  Position(-0.3, 0.4), Position(-0.15, -0.15), Position(0,0), Position(0,0), Position(0,0)};
     // Initialize Referee
     // Referee ref_in(DBC);
     // ref_in.Init();
     referee_handler = new Referee(DBC);
+
     referee_handler->Init();
+
 
     // Initialize datBall
     datBall = new RawBall(DBC);
+
 
     // Set Team Colour
     is_team_blue = is_team_blue_in;
@@ -42,13 +48,15 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
         theOpponent1DvNr = 0;
     }
 
+
     // Initialize Robot Objects
-    goalie = new Goalie(DBC, myGoalieDvNr, 0);
-    striker1 = new Striker(DBC, myStriker1DvNr, 1);
-    striker2 = new Striker(DBC, myStriker1DvNr+1, 2);
-    opponent1 = new Opponent(DBC, theOpponent1DvNr, 3);
-    opponent2 = new Opponent(DBC, theOpponent1DvNr+1, 4);
-    opponent3 = new Opponent(DBC, theOpponent1DvNr+2, 5);
+    goalie = new Goalie(DBC, myGoalieDvNr, 0, robot_positions[0]);
+    striker1 = new Striker(DBC, myStriker1DvNr, 1, robot_positions[1]);
+    striker2 = new Striker(DBC, myStriker1DvNr+1, 2, robot_positions[2]);
+    opponent1 = new Opponent(DBC, theOpponent1DvNr, 3, robot_positions[3]);
+    opponent2 = new Opponent(DBC, theOpponent1DvNr+1, 4, robot_positions[4]);
+    opponent3 = new Opponent(DBC, theOpponent1DvNr+2, 5, robot_positions[5]);
+
 
     // initialize state machine variables
     stay_in_state_machine = true;
@@ -62,9 +70,7 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
     robots[4] = opponent2;
     robots[5] = opponent3;
 
-    //strategy_modul = new Strategy();
 
-    cout << "Game Handler initialized" << endl;
 }
 
 int Game::take_kick_off_position()
@@ -624,6 +630,13 @@ void Game::state_machine(bool verbose)
                 update_state();
             }
         }
+    }
+}
+
+void Game::update_robot_positions(){
+    for(int i = 0; i < N_ROBOTS; i++){
+        robot_positions[i] = robots[i]->GetPos();
+        robots[i]->get_path_finder().update_vector_field_positions();
     }
 }
 
