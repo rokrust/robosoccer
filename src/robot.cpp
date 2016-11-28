@@ -42,8 +42,7 @@
 
 
 
-Robot::Robot(RTDBConn DBC_in, int device_nr_in, 
-             int index, Position target_pos) :
+Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos) :
 			 RoboControl(DBC_in, device_nr_in)
 {
     cout << "JOHO" << endl;
@@ -57,7 +56,8 @@ Robot::Robot(RTDBConn DBC_in, int device_nr_in,
                          .heading_integrator = 0.0, .buffer_size = n_samples,
                          .current_sample = 0, .error_buffer = new double[n_samples]};
     controller_data = c;
-	path_finder = Path_finder(target_pos, index);
+
+    path_finder = Path_finder(robot_array_index, pos);
 }
 
 Robot::~Robot()
@@ -306,7 +306,9 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
 void Robot::set_wheelspeed(int timer_duration) {
     Angle ref_heading = path_finder.sum_vector_field(GetPos()).vector_angle();
-// GetPos().AngleOfLineToPos(path_finder.get_target_pos());
+    cout << "Reference heading set" << endl;
+
+    //Angle ref_heading = GetPos().AngleOfLineToPos(path_finder.get_target_pos());
     Angle cur_heading = GetPhi();
 
     reset_integrators_if_necessary(ref_heading, cur_heading);
@@ -319,10 +321,11 @@ void Robot::set_wheelspeed(int timer_duration) {
     left_wheel_speed = u_speed - u_omega;
 
 
-    /* cout << "Right: " << right_wheel_speed << endl
-         << "Left: " << left_wheel_speed << endl << endl; */
+    cout << "Right: " << right_wheel_speed << endl
+         << "Left: " << left_wheel_speed << endl << endl;
 
     //Might have to change the last two arguments
+    cout << "MoveMs" << endl;
     MoveMs(left_wheel_speed, right_wheel_speed, timer_duration+10, 100);
 }
 

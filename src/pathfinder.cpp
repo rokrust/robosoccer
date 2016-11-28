@@ -3,17 +3,19 @@
 
 //Constructors
 
-Path_finder::Path_finder(Position target_pos, int robots_array_index){
-    this->target_pos = target_pos;
+Path_finder::Path_finder(int robots_array_index, Position pos){
+    //this->target_pos = target_pos;
+    cout << "In pathfinder constructor" << endl;
 
     for(int i = 0; i < N_ROBOTS; i++){
-        vector_fields.push_back(new ateam::Robot_vector_field
-								(Game::robots[i]->GetPos()));
+        ateam::Vector_field* robot_field = new ateam::Robot_vector_field(pos);
+        vector_fields.push_back(robot_field);
 		
-		//Some weight. Should be parameters
+        //Some weight. Should be parameters
         vector_field_weights.push_back(1/10.0); //fix hardcoding
     }
 
+    cout << "Index: " << endl;
     vector_field_weights[robots_array_index] = 0;
 
     vector_fields.push_back(new ateam::Wall_vector_field());
@@ -21,6 +23,7 @@ Path_finder::Path_finder(Position target_pos, int robots_array_index){
 
     vector_fields.push_back(new ateam::Target_vector_field(target_pos));
     vector_field_weights.push_back(2.0); //fix hardcoding
+    cout << "Out of pathfinder constructor" << endl;
 }
 
 //mathematics
@@ -38,7 +41,7 @@ ateam::Vector Path_finder::sum_vector_field(Position current_pos){
 
 void Path_finder::update_vector_field_positions(){
     for(int i = 0; i < N_ROBOTS; i++){
-        vector_fields[i]->set_center_point(Game::robot_positions[i]);
+        //vector_fields[i]->set_center_point(Game::robot_positions[i]);
     }
 }
 

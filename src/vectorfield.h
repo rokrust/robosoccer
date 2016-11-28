@@ -82,7 +82,8 @@ private:
 
 
 public:
-    Robot_vector_field(Position pos = Position(0,0)){center_point = pos;}
+    Robot_vector_field(){}
+    Robot_vector_field(Position pos){center_point = pos;}
 
     Vector vector_at_pos(Position pos);
 };

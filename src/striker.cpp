@@ -1,7 +1,7 @@
 #include "striker.h"
 #include "game.h"
 
-Striker::Striker(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position target_pos) : Robot(DBC_in, device_nr_in, robot_array_index, target_pos)
+Striker::Striker(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos) : Robot(DBC_in, device_nr_in, robot_array_index, pos)
 {
 
 }

@@ -62,8 +62,7 @@ private:
 
 public:
 
-    Robot(RTDBConn DBC_in, int device_nr_in, 
-          int index, Position target_pos);
+    Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos);
     ~Robot();
 
     /**
