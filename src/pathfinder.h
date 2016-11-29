@@ -14,7 +14,6 @@ class Path_finder{
 private:
     std::vector<ateam::Vector_field*> vector_fields;
 	std::vector<double> vector_field_weights;
-    //Position robot_current_positions[N_ROBOTS];
 
     Position target_pos;
 	int robots_array_index;

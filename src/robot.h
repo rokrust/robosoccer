@@ -61,7 +61,7 @@ private:
     double error_buffer_mean();
 
 public:
-
+    void set_target_pos(Position pos){path_finder.set_target_pos(pos);}
     Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos);
     ~Robot();
 

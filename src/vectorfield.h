@@ -38,11 +38,11 @@ public:
 
 
     //Operators
-    Vector operator+(const Vector& vec);
+    friend Vector operator+(const Vector& vec1, const Vector& vec2);
 
-    Vector operator*(const double& scale);
+    friend Vector operator*(const double& scale, const Vector& vec);
 
-    double operator*(const Vector& vec);
+    friend double operator*(const Vector& vec1, const Vector& vec2);
 
     Vector operator*=(const double& scale);
 
@@ -110,5 +110,12 @@ public:
 
     Vector vector_at_pos(Position pos);
 };
+
+Vector operator+(const Vector& vec1, const Vector& vec2);
+
+Vector operator*(const double& scale, const Vector& vec);
+
+double operator*(const Vector& vec1, const Vector& vec2);
+
 }
 #endif
