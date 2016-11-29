@@ -274,6 +274,9 @@ int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negati
 //P controller might be good enough
 int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
     double distance_to_pos = GetPos().DistanceTo(path_finder.get_target_pos());
+    cout << "Distance: " << distance_to_pos << endl;
+    cout << "ME: " << this->GetPos() << endl;
+    cout << "IT: " << path_finder.get_target_pos() << endl;
 
     controller_data.speed_integrator += distance_to_pos * controller_data.sampling_time;
 
@@ -285,7 +288,7 @@ int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
     if(u_speed > MAX_WHEELSPEED || u_speed < -MAX_WHEELSPEED){
         controller_data.speed_integrator = 0;
     }
-
+    cout << "Speed: " << u_speed << endl;
     return u_speed;
 
 }
@@ -308,13 +311,10 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
 void Robot::set_wheelspeed(int timer_duration) {
-    ateam::Vector temp = path_finder.sum_vector_field(GetPos());
-    cout << "x: " << temp.get_x() << " y: " << temp.get_y() << endl;
 
     Angle ref_heading = path_finder.sum_vector_field(GetPos()).vector_angle();
     cout << "Reference heading: " << ref_heading << endl;
 
-    //Angle ref_heading = GetPos().AngleOfLineToPos(path_finder.get_target_pos());
     Angle cur_heading = GetPhi();
 
     reset_integrators_if_necessary(ref_heading, cur_heading);
@@ -327,8 +327,9 @@ void Robot::set_wheelspeed(int timer_duration) {
     left_wheel_speed = u_speed - u_omega;
 
 
-    /*cout << "Right: " << right_wheel_speed << endl
-         << "Left: " << left_wheel_speed << endl << endl;*/
+    cout << "Right: " << right_wheel_speed << endl
+         << "Left: " << left_wheel_speed << endl << endl;
+
 
     //Might have to change the last two arguments
     //cout << "MoveMs" << endl;

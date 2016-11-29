@@ -242,14 +242,15 @@ int main(void) {
         }
 
         if (SCENARIO == 32){
-            int timer_duration = 250;
+            int timer_duration = 100;
             Timer datTimer(timer_duration);
 
             while(1) {
                 Position pos = Game::datBall->GetPos();
 
                 game_handler.update_robot_positions();
-                Game::striker1->get_path_finder().set_target_pos(pos);
+                Game::striker1->set_target_pos(pos);
+                //cout << "Target_pos: " << Game::striker1->get_path_finder().get_target_pos() << endl;
 
                 if (datTimer.timeout()) {
                     Game::striker1->set_wheelspeed(timer_duration);

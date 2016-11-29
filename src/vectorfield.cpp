@@ -1,5 +1,6 @@
 #include "vectorfield.h"
 
+#define exponent 3
 
 //Vector class funtions
 
@@ -32,7 +33,7 @@ double ateam::operator*(const ateam::Vector& vec1, const ateam::Vector& vec2){
 //member operators
 ateam::Vector ateam::Vector::operator*=(const double& scale){
 
-    return scale*(*this);
+    return *this = scale*(*this);
 }
 
 
@@ -45,7 +46,7 @@ ateam::Vector ateam::Vector::operator=(const ateam::Vector& vec){
 
 ateam::Vector ateam::Vector::operator+=(const ateam::Vector& vec){
 
-    return *this + vec;
+    return *this = *this + vec;
 }
 
 
@@ -65,10 +66,10 @@ ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
 
     double x_diff = pos.GetX()-center_point.GetX();
     double y_diff = pos.GetY()-center_point.GetY();
-    double numerator = pow(fabs(x_diff), 3)+pow(fabs(y_diff), 3);
+    double denominator = pow(fabs(x_diff), exponent)+pow(fabs(y_diff), exponent);
 
-    double x = (x_diff) / numerator;
-    double y = (y_diff) / numerator;
+    double x = (x_diff) / denominator;
+    double y = (y_diff) / denominator;
 
     return ateam::Vector(x, y);
 }
@@ -77,14 +78,14 @@ ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
 ateam::Vector ateam::Wall_vector_field::vector_at_pos(Position pos){
     //Effect of the field shrinks with the higher the power.
     double x = (pos.GetX() - X_MIN_COOR)/
-            pow(fabs(pos.GetX() - X_MIN_COOR), 3) +
+            pow(fabs(pos.GetX() - X_MIN_COOR), exponent) +
             (pos.GetX() - X_MAX_COOR)/
-            pow(fabs(pos.GetX() - X_MAX_COOR), 3);
+            pow(fabs(pos.GetX() - X_MAX_COOR), exponent);
 
     double y = (pos.GetY() - Y_MIN_COOR)/
-            pow(fabs(pos.GetY() - Y_MIN_COOR), 3) +
+            pow(fabs(pos.GetY() - Y_MIN_COOR), exponent) +
             (pos.GetY() - Y_MAX_COOR)/
-            pow(fabs(pos.GetY() - Y_MAX_COOR), 3);
+            pow(fabs(pos.GetY() - Y_MAX_COOR), exponent);
 
     return ateam::Vector(x, y);
 }
@@ -93,10 +94,10 @@ ateam::Vector ateam::Wall_vector_field::vector_at_pos(Position pos){
 ateam::Vector ateam::Target_vector_field::vector_at_pos(Position pos){
     double x_diff = pos.GetX()-center_point.GetX();
     double y_diff = pos.GetY()-center_point.GetY();
-    double numerator = -sqrt(pow(fabs(x_diff), 2) + pow(fabs(y_diff), 2));
+    double denominator = -sqrt(pow(fabs(x_diff), 2) + pow(fabs(y_diff), 2));
 
-    double x = x_diff/numerator;
-    double y = y_diff/numerator;
+    double x = x_diff/denominator;
+    double y = y_diff/denominator;
 
     return ateam::Vector(x, y);
 }
