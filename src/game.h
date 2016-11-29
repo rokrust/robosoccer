@@ -1,7 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-class Strategy;
+//class Strategy;
 
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
@@ -10,7 +10,7 @@ class Strategy;
 #include "striker.h"
 #include "opponent.h"
 #include "referee.h"
-#include "strategy.h"
+//#include "strategy.h"
 
 #define GOAL_MAX_YPOS 0.13
 #define GOAL_MIN_YPOS -0.13
@@ -41,31 +41,39 @@ public:
 
     static RawBall* datBall;
 
-    static Robot* robots[6];
+    static Robot* robots[6]; //Should fix this hard coding
+    static Position robot_positions[6]; //Should fix this hard coding
 
-    Strategy* strategy_modul;
+//    Strategy* strategy_modul;
 
     Game(RTDBConn DBC, bool is_team_blue_in);
-
-    int take_kick_off_position();
-    void perform_kick_off();
-
-    int take_penalty_position();
-
-    void update_side();
-    void update_kick_off();
-	
-    bool get_is_team_blue();
-    bool get_is_left_side();
-    bool get_has_kick_off();
 
     // state machine
     void print_state(ePlayMode state=PAUSE);
     void update_state();
     void state_machine(bool verbose=false);
 
+    //Kick off functions
+    int take_kick_off_position();
+    void perform_kick_off();
+    void update_kick_off();
+
+    //Penalty functions
+    int take_penalty_position();
+
+    void update_side();
+	
+    //Boolean get functions
+    bool get_is_team_blue();
+    bool get_is_left_side();
+    bool get_has_kick_off();
+
+    void update_robot_positions();
+
     // build string of Position in matlab syntax
     std::string matlsynt(Position pos);
 
 };
+
+
 #endif // GAME_H

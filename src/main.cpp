@@ -21,16 +21,6 @@
 using namespace std;
 
 
-RawBall* Game::datBall = NULL;
-Goalie* Game::goalie = NULL;
-Striker* Game::striker1 = NULL;
-Striker* Game::striker2 = NULL;
-Opponent* Game::opponent1 = NULL;
-Opponent* Game::opponent2 = NULL;
-Opponent* Game::opponent3 = NULL;
-
-Robot* Game::robots[6] = {0};
-
 
 int main(void) {
 
@@ -88,7 +78,7 @@ int main(void) {
         }
 
         if (SCENARIO == 5) {
-            game_handler.strategy_modul->command_drive();
+            //game_handler.strategy_modul->command_drive();
         }
 
         if (SCENARIO == 6) {
@@ -110,7 +100,7 @@ int main(void) {
                 cin.get();
             }
         }
-
+/*
         if (SCENARIO == 9) {
             cout << "Prediction and estimation testing" << endl;
             int time_step_size;
@@ -132,7 +122,7 @@ int main(void) {
                 }
             }
         }
-
+*/
         // bigger collision avoidance debugging scenario
         if (SCENARIO == 10) {
             // Position goal_left(-1.3, 0.0);
@@ -141,7 +131,7 @@ int main(void) {
             // bool is_left = true;
             // bool can_turn = true;
 
-            Game::striker2->set_target_pos(left_middle);
+            Game::striker2->get_path_finder().set_target_pos(left_middle);
 
             cout << "Collision Avoidance Scenario" << endl;
             int time_step_strategy, time_step_driving;
@@ -159,8 +149,8 @@ int main(void) {
             while(1) {
                 if (striker1_timer.timeout()) {
                     // striker1 follows the ball
-                    game_handler.strategy_modul->set_goal_pos(game_handler.datBall->GetPos(), 1);
-                    game_handler.striker1->set_wheelspeed(striker1_timer.get_timeout_duration_ms());
+                    // game_handler.strategy_modul->set_goal_pos(game_handler.datBall->GetPos(), 1);
+                    // game_handler.striker1->set_wheelspeed(striker1_timer.get_timeout_duration_ms());
                     // Game::striker1->set_target_pos(Game::datBall->GetPos());
                     // Game::striker1->set_wheelspeed(time_step_driving);
                 }
@@ -172,33 +162,40 @@ int main(void) {
                 } */
 
                 // Strategy tasks
-                /* if (strategy_timer.timeout()) {
+                /*
+                if (strategy_timer.timeout()) {
                     game_handler.strategy_modul->update_position_history();
                     game_handler.strategy_modul->update_estimation_and_prediction(time_step_strategy);
                     game_handler.strategy_modul->check_and_handle_collisions();
-                } */
+                }
+                */
 
                 // Goal position switching
                 // goalie alternates between the two goals in a ten seconds pace
                 /* if (goalie_switch_timer.timeout()) {
                     if (is_left) {
+<<<<<<< HEAD
                         Game::goalie->set_target_pos(goal_left);
                         // can_turn = true;
                         is_left = false;
                     } else {
                         Game::goalie->set_target_pos(goal_right);
                         // can_turn = true;
+=======
+                        Game::goalie->get_path_finder().set_target_pos(goal_left);
+                        can_turn = true;
+                        is_left = false;
+                    } else {
+                        Game::goalie->get_path_finder().set_target_pos(goal_right);
+                        can_turn = true;
+>>>>>>> errorFixer
                         is_left = true;
                     }
                 } */
 
                 // Driving
                 /* if (goalie_timer.timeout()) {
-                    // game_handler.strategy_modul->set_goal_pos(Game::datBall->GetPos(), 1);
-                    game_handler.strategy_modul->update_extrapol_goal_position_per_robot(0);
-                    Game::goalie->set_wheelspeed(time_step_driving);
-
-                    Angle goal_phi = Game::goalie->GetPos().AngleOfLineToPos(Game::goalie->get_target_pos());
+                    Angle goal_phi = Game::goalie->GetPos().AngleOfLineToPos(Game::goalie->get_path_finder().get_target_pos());
                     int ddeg = Game::goalie->calc_ddeg(goal_phi);
                     if (abs(ddeg) > 60 && can_turn) {
                         int wait_time = Game::goalie->spot_turn(goal_phi);
@@ -209,6 +206,17 @@ int main(void) {
                     } else {
 
                     } */
+
+            /* if (striker1_timer.timeout()) {
+                // striker1 follows the ball
+                Game::striker1->get_path_finder().set_target_pos(Game::datBall->GetPos());
+                Game::striker1->set_wheelspeed(time_step_driving);
+            }
+
+            if (striker2_timer.timeout()) {
+                // striker2 stays on one spot
+                Game::striker2->set_wheelspeed(time_step_driving);
+            } */
         }
 
 
@@ -231,7 +239,7 @@ int main(void) {
 
             while(1) {
                 if (datTimer.timeout()) {
-                    Game::striker1->set_target_pos(Game::datBall->GetPos());
+                    Game::striker1->get_path_finder().set_target_pos(Game::datBall->GetPos());
                     Game::striker1->set_wheelspeed(timer_duration);
                 }
             }
@@ -243,11 +251,11 @@ int main(void) {
 
             while(1) {
                 if (datTimer.timeout()) {
-                    Position cur_pos = Game::striker1->GetPos();
-                    Position goal_pos = Game::datBall->GetPos();
-                    Position via_pos = game_handler.strategy_modul->extrapol_goal_position(cur_pos, goal_pos);
+                    //Position cur_pos = Game::striker1->GetPos();
+                    //Position goal_pos = Game::datBall->GetPos();
+//                    Position via_pos = game_handler.strategy_modul->extrapol_goal_position(cur_pos, goal_pos);
 
-                    Game::striker1->set_target_pos(via_pos);
+//                    Game::striker1->set_target_pos(via_pos);
                     Game::striker1->set_wheelspeed(timer_duration);
                 }
             }
@@ -265,15 +273,29 @@ int main(void) {
             // game_handler.striker2->set_target_pos(Game::datBall->GetPos());
 
             while(1) {
-                if (datTimer.timeout()) {
-                    // Position strikerPos = game_handler.striker1->GetPos();
-                    // cout << strikerPos.GetX() << ", " << strikerPos.GetY() << ", ";
+                game_handler.update_robot_positions();
 
-                    game_handler.strategy_modul->set_goal_pos(Game::datBall->GetPos(), 2);
-                    Game::striker2->set_wheelspeed(timer_duration);
-                    // cout << "; " << endl;
+                if (datTimer.timeout()) {
+ //                   game_handler.strategy_modul->set_goal_pos(Game::datBall->GetPos(), 1);
+                    Game::striker1->set_wheelspeed(timer_duration);
                 }
             }
+        }
+
+        if (SCENARIO == 33){
+            int timer_duration = 250;
+            Timer datTimer(timer_duration);
+
+            while(1) {
+                game_handler.update_robot_positions();
+                Game::striker1->get_path_finder().set_target_pos(Game::datBall->GetPos());
+
+                if (datTimer.timeout()) {
+ //                   game_handler.strategy_modul->set_goal_pos(Game::datBall->GetPos(), 1);
+                    Game::striker1->set_wheelspeed(timer_duration);
+                }
+            }
+
         }
 
         if (SCENARIO == 123456) {

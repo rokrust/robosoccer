@@ -13,7 +13,7 @@ private:
 
 
 public:
-    Striker(RTDBConn DBC_in, int device_nr_in);
+    Striker(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos);
 
     int shoot_penalty();
 

@@ -1,5 +1,11 @@
 #include "strategy.h"
 
+Strategy::Strategy(){
+
+}
+
+
+/*
 Strategy::Strategy()
 {
     int robot_index, history_index;
@@ -197,10 +203,10 @@ void Strategy::check_and_handle_collisions()
                 cout << "Collision danger detected for robot " << robot_index << " with robot " << collision_with[robot_index] << endl;
 
 
-                /*
+                These two lines should be commented out
                 Position alternative_pos = calculate_alternative_position(robot_pos_cur, obstacle_pos);
                 robot_position_prediction[robot_index] = alternative_pos;
-                */
+
             }
         }
 
@@ -295,3 +301,4 @@ void Strategy::command_drive()
         cin.get();
     }
 }
+*/

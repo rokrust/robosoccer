@@ -10,22 +10,44 @@
 
 #define ROBOT_ARRIVED_THRESHOLD 0.2
 
+#define N_ROBOTS 6
+
 /* Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
            Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
            Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in) */
+
+
+RawBall* Game::datBall = NULL;
+Goalie* Game::goalie = NULL;
+Striker* Game::striker1 = NULL;
+Striker* Game::striker2 = NULL;
+Opponent* Game::opponent1 = NULL;
+Opponent* Game::opponent2 = NULL;
+Opponent* Game::opponent3 = NULL;
+
+Robot* Game::robots[6] = {0};
+Position Game::robot_positions[6] = {Position(-1.3, 0.0),  Position(-0.3, 0.4), Position(-0.15, -0.15), Position(0,0), Position(0,0), Position(0,0)};
+
+
+
 Game::Game(RTDBConn DBC, bool is_team_blue_in)
 {
+
     // Initialize Referee
     // Referee ref_in(DBC);
     // ref_in.Init();
     referee_handler = new Referee(DBC);
+
     referee_handler->Init();
 
     // Initialize datBall
     datBall = new RawBall(DBC);
 
+
     // Set Team Colour
     is_team_blue = is_team_blue_in;
+    //Position test = robot_positions[0];
+    //cout << "x:" << test.GetX() << ", y: " << test.GetY() << endl;
 
     // Get device Numbers for drobots depending on which colour
     int myGoalieDvNr;
@@ -42,13 +64,17 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
         theOpponent1DvNr = 0;
     }
 
+
     // Initialize Robot Objects
-    goalie = new Goalie(DBC, myGoalieDvNr);
-    striker1 = new Striker(DBC, myStriker1DvNr);
-    striker2 = new Striker(DBC, myStriker1DvNr+1);
-    opponent1 = new Opponent(DBC, theOpponent1DvNr);
-    opponent2 = new Opponent(DBC, theOpponent1DvNr+1);
-    opponent3 = new Opponent(DBC, theOpponent1DvNr+2);
+    cout << "Before goalie" << endl;
+    goalie = new Goalie(DBC, myGoalieDvNr, 0, robot_positions[0]);
+    cout << "After goalie" << endl;
+    striker1 = new Striker(DBC, myStriker1DvNr, 1, robot_positions[1]);
+    striker2 = new Striker(DBC, myStriker1DvNr+1, 2, robot_positions[2]);
+    opponent1 = new Opponent(DBC, theOpponent1DvNr, 3, robot_positions[3]);
+    opponent2 = new Opponent(DBC, theOpponent1DvNr+1, 4, robot_positions[4]);
+    opponent3 = new Opponent(DBC, theOpponent1DvNr+2, 5, robot_positions[5]);
+
 
     // initialize state machine variables
     stay_in_state_machine = true;
@@ -62,9 +88,7 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
     robots[4] = opponent2;
     robots[5] = opponent3;
 
-    strategy_modul = new Strategy();
 
-    cout << "Game Handler initialized" << endl;
 }
 
 int Game::take_kick_off_position()
@@ -624,6 +648,13 @@ void Game::state_machine(bool verbose)
                 update_state();
             }
         }
+    }
+}
+
+void Game::update_robot_positions(){
+    for(int i = 0; i < N_ROBOTS; i++){
+        robot_positions[i] = robots[i]->GetPos();
+        robots[i]->get_path_finder().update_vector_field_positions();
     }
 }
 

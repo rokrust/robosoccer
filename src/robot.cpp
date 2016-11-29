@@ -42,8 +42,10 @@
 
 
 
-Robot::Robot(RTDBConn DBC_in, int device_nr_in) : RoboControl(DBC_in, device_nr_in)
+Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos) :
+			 RoboControl(DBC_in, device_nr_in)
 {
+    cout << "JOHO" << endl;
     device_nr = device_nr_in;
     left_wheel_speed = 0;
     right_wheel_speed = 0;
@@ -54,6 +56,8 @@ Robot::Robot(RTDBConn DBC_in, int device_nr_in) : RoboControl(DBC_in, device_nr_
                          .heading_integrator = 0.0, .buffer_size = n_samples,
                          .current_sample = 0, .error_buffer = new double[n_samples]};
     controller_data = c;
+
+    path_finder = Path_finder(robot_array_index, pos);
 }
 
 Robot::~Robot()
@@ -266,7 +270,7 @@ int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negati
 //Set u_speed according to distance_to_pos (should be called every controller tick
 //P controller might be good enough
 int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
-    double distance_to_pos = GetPos().DistanceTo(target_pos);
+    double distance_to_pos = GetPos().DistanceTo(path_finder.get_target_pos());
 
     controller_data.speed_integrator += distance_to_pos * controller_data.sampling_time;
 
@@ -301,26 +305,28 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
 void Robot::set_wheelspeed(int timer_duration) {
-    Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
+    Angle ref_heading = path_finder.sum_vector_field(GetPos()).vector_angle();
+    cout << "Reference heading: " << ref_heading << endl;
+
+    //Angle ref_heading = GetPos().AngleOfLineToPos(path_finder.get_target_pos());
     Angle cur_heading = GetPhi();
 
     reset_integrators_if_necessary(ref_heading, cur_heading);
 
     int u_omega = update_heading_controller(ref_heading, cur_heading);
     int u_speed = update_speed_controller(ref_heading, cur_heading);
-
+    u_speed = 0;
 
     right_wheel_speed = u_speed + u_omega;
     left_wheel_speed = u_speed - u_omega;
 
 
-    cout << "Left: " << right_wheel_speed << " - Right: " << left_wheel_speed << endl;
-    cout << "diff_head: " << cur_heading-ref_heading << endl << endl; // : " << cur_heading << " - ref_head: " << ref_heading << endl;
-    // cout << "u_speed: " << u_speed << " - u_omega: " << u_omega << endl << endl;
-
+    /* cout << "Right: " << right_wheel_speed << endl
+         << "Left: " << left_wheel_speed << endl << endl;*/
 
     //Might have to change the last two arguments
-    // cout << target_pos.GetX() << ", " << target_pos.GetY() << ", " << GetPos().DistanceTo(Game::datBall->GetPos());
+    //cout << "MoveMs" << endl;
+
     MoveMs(left_wheel_speed, right_wheel_speed, timer_duration+10, 100);
 }
 
@@ -336,7 +342,7 @@ double Robot::error_buffer_mean(){
 
 void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading){
     //Acceptably close to target_pos
-    if(GetPos().DistanceTo(target_pos) < ACCEPTABLE_DISTANCE_THRESHOLD){
+    if(GetPos().DistanceTo(path_finder.get_target_pos()) < ACCEPTABLE_DISTANCE_THRESHOLD){
         controller_data.speed_integrator = 0;
     }
 

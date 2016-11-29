@@ -13,6 +13,7 @@
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
 #include "timer.h"
+#include "pathfinder.h"
 
 #include <math.h>
 #include <boost/circular_buffer.hpp>
@@ -48,19 +49,20 @@ private:
      * @brief Device number of the robot
      */
     int device_nr;
+
+    //These can probably be removed
     int left_wheel_speed;
     int right_wheel_speed;
-	Position target_pos;
 
     Controller_data controller_data;
-
+    Path_finder path_finder;
 
     void reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading);
     double error_buffer_mean();
 
 public:
 
-    Robot(RTDBConn DBC_in, int device_nr_in);
+    Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos);
     ~Robot();
 
     /**
@@ -108,9 +110,7 @@ public:
 
     void set_wheelspeed(int timer_duration);
 
-    void set_target_pos(Position pos){target_pos = pos;}
-
-    const Position get_target_pos(){return target_pos;}
+    Path_finder get_path_finder(){return path_finder;}
 
     void set_sampling_time(int sampling_time);
 };
