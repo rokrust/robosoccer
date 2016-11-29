@@ -313,6 +313,7 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 void Robot::set_wheelspeed(int timer_duration) {
 
     Angle ref_heading = path_finder.sum_vector_field(GetPos()).vector_angle();
+
     cout << "Reference heading: " << ref_heading << endl;
 
     Angle cur_heading = GetPhi();
