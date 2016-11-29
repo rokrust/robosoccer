@@ -292,6 +292,56 @@ int main(void) {
 
         }
 
+        if (SCENARIO == 34) {
+            int robot_duration = 100;
+            double x_val = 1.0;
+            double y_val = 0.65;
+            Position left_window(-x_val, -y_val);
+            Position left_hall(-x_val, y_val);
+            // Position right_window(x_val,-y_val);
+            Position right_hall(x_val, y_val);
+
+            Game::striker1->set_target_pos(left_window);
+            Game::striker2->set_target_pos(right_hall);
+            Game::goalie->set_target_pos(left_hall);
+
+            Timer robot_timer(robot_duration);
+
+            while(1) {
+
+                game_handler.update_robot_positions();
+                if (robot_timer.timeout()) {
+                    // Set target positions
+                    if (fabs(Game::goalie->get_target_pos().DistanceTo(Game::goalie->GetPos())) < 0.1) {
+                        Position target = Game::goalie->get_target_pos();
+                        target.SetX(-target.GetX());
+                        target.SetY(-target.GetY());
+                        Game::goalie->set_target_pos(target);
+                        cout << "Goalie goal changed to x: " << target.GetX() << " y: " << target.GetY() << endl;
+                    }
+                    if (fabs(Game::striker1->get_target_pos().DistanceTo(Game::striker1->GetPos())) < 0.1) {
+                        Position target = Game::striker1->get_target_pos();
+                        target.SetX(-target.GetX());
+                        target.SetY(-target.GetY());
+                        Game::striker1->set_target_pos(target);
+                        cout << "Striker1 goal changed to x: " << target.GetX() << " y: " << target.GetY() << endl;
+                    }
+                    if (fabs(Game::striker2->get_target_pos().DistanceTo(Game::striker2->GetPos())) < 0.1) {
+                        Position target = Game::striker2->get_target_pos();
+                        target.SetX(-target.GetX());
+                        target.SetY(-target.GetY());
+                        Game::striker2->set_target_pos(target);
+                        cout << "Striker2 goal changed to x: " << target.GetX() << " y: " << target.GetY() << endl;
+                    }
+
+                    Game::goalie->set_wheelspeed(robot_duration);
+                    Game::striker1->set_wheelspeed(robot_duration);
+                    Game::striker2->set_wheelspeed(robot_duration);
+
+                }
+            }
+        }
+
         if (SCENARIO == 123456) {
             int timer_duration;
             cout << "Type desired timer_duration in ms: ";

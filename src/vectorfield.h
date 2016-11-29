@@ -8,6 +8,7 @@
 #include <math.h>
 #include <vector>
 #include <cstdlib>
+#include <iostream>
 
 //Probably redundant
 #define X_MIN_COOR -1.15
@@ -40,15 +41,21 @@ public:
     //Operators
     friend Vector operator+(const Vector& vec1, const Vector& vec2);
 
+    friend Vector operator-(const Vector& vec1, const Vector& vec2);
+
     friend Vector operator*(const double& scale, const Vector& vec);
 
     friend double operator*(const Vector& vec1, const Vector& vec2);
+
+    friend ostream& operator<<(ostream& os, const Vector& vec);
 
     Vector operator*=(const double& scale);
 
     Vector operator=(const Vector& vec);
 
     Vector operator+=(const Vector& vec);
+
+    Vector operator-=(const Vector& vec);
 
 };
 
@@ -111,11 +118,14 @@ public:
     Vector vector_at_pos(Position pos);
 };
 
+Vector operator-(const Vector& vec1, const Vector& vec2);
+
 Vector operator+(const Vector& vec1, const Vector& vec2);
 
 Vector operator*(const double& scale, const Vector& vec);
 
 double operator*(const Vector& vec1, const Vector& vec2);
 
+ostream& operator<<(ostream& os, const Vector& vec);
 }
 #endif

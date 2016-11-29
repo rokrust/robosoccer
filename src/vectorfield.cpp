@@ -1,6 +1,6 @@
 #include "vectorfield.h"
 
-#define exponent 3
+#define exponent 4 // quite working at 4
 
 //Vector class funtions
 
@@ -14,8 +14,19 @@ Angle ateam::Vector::vector_angle(){
 
 
 //non-member operators
+ostream& ateam::operator<<(ostream& os, const Vector& vec)
+{
+    os << "[" << vec.get_x() << ", " << vec.get_y() << "]";
+    return os;
+}
+
 ateam::Vector ateam::operator+(const ateam::Vector& vec1, const ateam::Vector& vec2){
     return ateam::Vector(vec1.get_x()+vec2.get_x(), vec1.get_y()+vec2.get_y());
+
+}
+
+ateam::Vector ateam::operator-(const ateam::Vector& vec1, const ateam::Vector& vec2){
+    return ateam::Vector(vec1.get_x()-vec2.get_x(), vec1.get_y()-vec2.get_y());
 
 }
 
@@ -49,6 +60,11 @@ ateam::Vector ateam::Vector::operator+=(const ateam::Vector& vec){
     return *this = *this + vec;
 }
 
+ateam::Vector ateam::Vector::operator-=(const ateam::Vector& vec){
+
+    return *this = *this + vec;
+}
+
 
 
 
@@ -61,6 +77,20 @@ ateam::Vector ateam::Vector::operator+=(const ateam::Vector& vec){
 //the current robots position
 //Vectors from each field is calculated and added together with
 //the overloaded operator +=
+
+/*
+ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
+
+    double x_diff = pos.GetX()-center_point.GetX();
+    double y_diff = pos.GetY()-center_point.GetY();
+    double denominator = pow(fabs(x_diff), exponent)+pow(fabs(y_diff), exponent);
+
+    double x = (x_diff) / denominator;
+    double y = (y_diff) / denominator;
+
+    return ateam::Vector(x, y);
+}
+*/
 
 ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
 
