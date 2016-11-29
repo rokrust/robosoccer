@@ -112,6 +112,8 @@ public:
 
     Path_finder get_path_finder(){return path_finder;}
 
+    Position get_target_pos() {return path_finder.get_target_pos();}
+
 };
 
 #endif // ROBOT_H

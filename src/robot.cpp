@@ -296,6 +296,7 @@ int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
 //Set u_omega according to ref_heading and cur_heading (should be called every controller tick)
 int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
     double current_error = (ref_heading - cur_heading).Get();
+    current_error = sin(current_error);
 
     controller_data.error_buffer[controller_data.current_sample] = current_error;
     //controller_data.heading_integrator += current_error*controller_data.sampling_time;
@@ -322,7 +323,14 @@ void Robot::set_wheelspeed(int timer_duration) {
 
     int u_omega = update_heading_controller(ref_heading, cur_heading);
     int u_speed = update_speed_controller(ref_heading, cur_heading);
-    u_speed = 0;
+    //u_speed = 0;
+
+    if (u_speed > 50) {
+        u_speed = 50;
+    }
+    if (u_speed < -50) {
+        u_speed = -50;
+    }
 
     right_wheel_speed = u_speed + u_omega;
     left_wheel_speed = u_speed - u_omega;

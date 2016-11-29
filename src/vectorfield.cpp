@@ -1,6 +1,6 @@
 #include "vectorfield.h"
 
-#define exponent 3
+#define exponent 4
 
 //Vector class funtions
 
@@ -61,6 +61,20 @@ ateam::Vector ateam::Vector::operator+=(const ateam::Vector& vec){
 //the current robots position
 //Vectors from each field is calculated and added together with
 //the overloaded operator +=
+
+/*
+ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
+
+    double x_diff = pos.GetX()-center_point.GetX();
+    double y_diff = pos.GetY()-center_point.GetY();
+    double denominator = pow(fabs(x_diff), exponent)+pow(fabs(y_diff), exponent);
+
+    double x = (x_diff) / denominator;
+    double y = (y_diff) / denominator;
+
+    return ateam::Vector(x, y);
+}
+*/
 
 ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
 
