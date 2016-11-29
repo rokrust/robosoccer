@@ -267,6 +267,9 @@ int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negati
     return 0;
 }
 
+
+
+
 //Set u_speed according to distance_to_pos (should be called every controller tick
 //P controller might be good enough
 int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
@@ -305,6 +308,9 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
 void Robot::set_wheelspeed(int timer_duration) {
+    ateam::Vector temp = path_finder.sum_vector_field(GetPos());
+    cout << "x: " << temp.get_x() << " y: " << temp.get_y() << endl;
+
     Angle ref_heading = path_finder.sum_vector_field(GetPos()).vector_angle();
     cout << "Reference heading: " << ref_heading << endl;
 
@@ -352,7 +358,12 @@ void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading)
     }
 
 }
- 
+
+
+
+
+
+
 void Robot::test_loop_drive_parallel()
 {
     // set the wheel speed for the turn time
