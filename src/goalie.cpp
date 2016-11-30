@@ -163,7 +163,7 @@ int Goalie::do_the_goalkeepers_kick()
     cin.get();
     cin.get();
 
-    Position goalie_pos(-1.2, 0.0);
+    Position goalie_pos(-1.4, 0.0);
     GotoPos(goalie_pos);
 
     cout << "Press Enter, if ready! ..." << endl;

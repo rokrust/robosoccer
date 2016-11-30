@@ -305,12 +305,21 @@ int main(void) {
             Game::striker2->set_target_pos(right_hall);
             Game::goalie->set_target_pos(left_hall);
 
+            Position rand_pos(0.0, 0.0);
+            Game::opponent1->set_target_pos(rand_pos);
+            Game::opponent1->GotoPos(rand_pos);
             Timer robot_timer(robot_duration);
+            Timer timer2(2000);
 
             while(1) {
 
                 game_handler.update_robot_positions();
                 if (robot_timer.timeout()) {
+                    float rand1 = ((rand() % 100) / 100.0);
+                    float rand2 = ((rand() % 100) / 100.00);
+                    rand_pos.SetX(rand1 - 0.5);
+                    rand_pos.SetY(rand2 - 0.5);
+
                     // Set target positions
                     if (fabs(Game::goalie->get_target_pos().DistanceTo(Game::goalie->GetPos())) < 0.1) {
                         Position target = Game::goalie->get_target_pos();
@@ -333,11 +342,14 @@ int main(void) {
                         Game::striker2->set_target_pos(target);
                         cout << "Striker2 goal changed to x: " << target.GetX() << " y: " << target.GetY() << endl;
                     }
+                    if (fabs(Game::opponent1->get_target_pos().DistanceTo(Game::opponent1->GetPos())) < 0.1) {
+                        Game::opponent1->set_target_pos(rand_pos);
+                        Game::opponent1->GotoPos(rand_pos);
+                    }
 
                     Game::goalie->set_wheelspeed(robot_duration);
                     Game::striker1->set_wheelspeed(robot_duration);
                     Game::striker2->set_wheelspeed(robot_duration);
-
                 }
             }
         }
