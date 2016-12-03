@@ -546,7 +546,7 @@ void Game::take_penalty_position()
     Angle angle4allRobots(180);
 
     if (is_left_side && kicking_team) {
-        cout << "In take_penalty_position - Case 1" << endl;
+        // cout << "In take_penalty_position - Case 1" << endl;
         posStriker1.SetX(0.0); // Striking from Middle Point
         posStriker1.SetY(0.0);
 
@@ -559,7 +559,7 @@ void Game::take_penalty_position()
         angle4allRobots.Set(3.1415); // all orientate to left side
     }
     else if (is_left_side && !kicking_team) {
-        cout << "In take_penalty_position - Case 2" << endl;
+        // cout << "In take_penalty_position - Case 2" << endl;
 
         posGoalie.SetX(-1.3); // Defend
         posGoalie.SetY(0.0);
@@ -573,7 +573,7 @@ void Game::take_penalty_position()
         angle4allRobots.Set(0); // all orientate to left side
     }
     else if (!is_left_side && kicking_team) {
-        cout << "In take_penalty_position - Case 3" << endl;
+        // cout << "In take_penalty_position - Case 3" << endl;
 
         posStriker1.SetX(0.0); // Striking from Middle Point
         posStriker1.SetY(0.0);
@@ -587,7 +587,7 @@ void Game::take_penalty_position()
         angle4allRobots.Set(0); // all orientate to left side
     }
     else if (!is_left_side && !kicking_team) {
-        cout << "In take_penalty_position - Case 4" << endl;
+        // cout << "In take_penalty_position - Case 4" << endl;
 
         posGoalie.SetX(1.3); // Defend
         posGoalie.SetY(0.0);

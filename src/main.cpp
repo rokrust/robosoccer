@@ -69,7 +69,7 @@ int main(void) {
 
         // Dem Scenarios
         switch (SCENARIO) {
-        case 1 :
+        case 1:
             game_handler.state_machine(true);
             break;
 

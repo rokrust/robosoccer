@@ -50,7 +50,7 @@ void Goalie::do_a_penalty_save()
     int calculus_countup = 0;
 
     bool loop = true;
-    bool print_stuff = false; // set on true to print position used for estimations and calculations
+    bool print_stuff = true; // set on true to print position used for estimations and calculations
     while (loop) {
         // pass the new ball estimate through the line
         ball_t0 = ball_t1;

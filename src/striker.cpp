@@ -54,6 +54,6 @@ void Striker::do_a_shot_at_goal(bool is_left_side)
     usleep(1000000);
 
     // SHOOT THE BALL
-    MoveMs(180, 180, 700, 0);
+    MoveMs(180, 180, 400, 0);
 }
 
