@@ -6,28 +6,11 @@ Striker::Striker(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Posit
 
 }
 
-int Striker::shoot_penalty()
-{
-    Position pos_ball(Game::datBall->GetPos());
-    Position strikerPos(GetPos());
-
-    double dist = fabs(strikerPos.DistanceTo(pos_ball));
-    if (dist < 0.4) {
-        GotoPos(pos_ball);
-        cout << "Shoot" << endl;
-    }
-    else {
-        cout << "Ball too far away" << endl;
-    }
-
-    return 0;
-}
-
-void Striker::shoot_ball_at_goal(bool is_left_side){
+void Striker::do_a_shot_at_goal(bool is_left_side){
     Position shooting_pos;
     Position goal;
 
-    //Find a random position in goal
+    // Find a random position in goal
     srand(time(NULL));
 
     double f = 0;
@@ -37,7 +20,7 @@ void Striker::shoot_ball_at_goal(bool is_left_side){
     goal.SetY(GOAL_MIN_YPOS+f*(GOAL_MAX_YPOS-GOAL_MIN_YPOS));
     std::cout << "goal y-coordinate: " << goal.GetY() << std::endl;
 
-    //Set a flat line under the ball to shoot from
+    // Set a flat line under the ball to shoot from
     if(is_left_side){
         goal.SetX(GOAL_RIGHT_XPOS);
         shooting_pos.SetX(Game::datBall->GetX() - 0.15);
@@ -68,6 +51,8 @@ void Striker::shoot_ball_at_goal(bool is_left_side){
 
     usleep(spot_turn(angle_to_ball));
     usleep(1000000);
-    this->Kick(75, 0.15);
+
+    // SHOOT THE BALL
+    MoveMs(180, 180, 700, 0);
 }
 

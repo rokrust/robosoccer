@@ -220,12 +220,7 @@ int Game::take_kick_off_position()
     return 0;
 }
 
-void Game::perform_kick_off()
-{
-    Game::striker1->GotoXY(datBall->GetX(), datBall->GetY(), 160, true);
-}
-
-int Game::take_penalty_position()
+void Game::take_penalty_position()
 {
     update_kick_off();
     bool kicking_team = has_kick_off;
@@ -303,8 +298,6 @@ int Game::take_penalty_position()
     goalie->spot_turn(angle4allRobots);
     striker1->spot_turn(angle4allRobots);
     striker2->spot_turn(angle4allRobots);
-
-    return 0;
 }
 
 void Game::update_side()

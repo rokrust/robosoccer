@@ -12,9 +12,9 @@ private:
 public:
     Goalie(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos);
 
-    int go_to_penalty_save_position();
+    void do_a_penalty_save();
 
-    int do_the_goalkeepers_kick();
+    void do_the_goalkeepers_kick();
 
 };
 

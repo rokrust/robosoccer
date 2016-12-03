@@ -53,17 +53,16 @@ public:
     void update_state();
     void state_machine(bool verbose=false);
 
-    //Kick off functions
+    // Kick off functions
     int take_kick_off_position();
-    void perform_kick_off();
     void update_kick_off();
 
-    //Penalty functions
-    int take_penalty_position();
+    // Penalty functions
+    void take_penalty_position();
 
     void update_side();
 	
-    //Boolean get functions
+    // Boolean get functions
     bool get_is_team_blue();
     bool get_is_left_side();
     bool get_has_kick_off();
