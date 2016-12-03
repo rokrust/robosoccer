@@ -9,6 +9,29 @@
 #include "robot.h"
 #include "game.h"
 
+double Robot::error_buffer_mean(){
+    double average_error = 0;
+
+    for(int i = 0; i < controller_data.buffer_size; i++){
+        average_error += controller_data.error_buffer[i];
+    }
+
+    return average_error/= controller_data.buffer_size;
+}
+
+void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading){
+    //Acceptably close to target_pos
+    if(GetPos().DistanceTo(path_finder.get_target_pos()) < ACCEPTABLE_DISTANCE_THRESHOLD){
+        controller_data.speed_integrator = 0;
+    }
+
+    //Acceptably close to target_pos
+    if((ref_heading - cur_heading).Abs() < ACCEPTABLE_HEADING_THRESHOLD){
+        controller_data.heading_integrator = 0;
+        // cout << "Heading integrator reset." << endl;
+    }
+}
+
 Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos) :
 			 RoboControl(DBC_in, device_nr_in)
 {
@@ -181,32 +204,24 @@ void Robot::set_wheelspeed(int timer_duration) {
     MoveMs(left_wheel_speed, right_wheel_speed, timer_duration+10, 100);
 }
 
-double Robot::error_buffer_mean(){
-    double average_error = 0;
-
-    for(int i = 0; i < controller_data.buffer_size; i++){
-        average_error += controller_data.error_buffer[i];
-    }
-
-    return average_error/= controller_data.buffer_size;
-}
-
-void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading){
-    //Acceptably close to target_pos
-    if(GetPos().DistanceTo(path_finder.get_target_pos()) < ACCEPTABLE_DISTANCE_THRESHOLD){
-        controller_data.speed_integrator = 0;
-    }
-
-    //Acceptably close to target_pos
-    if((ref_heading - cur_heading).Abs() < ACCEPTABLE_HEADING_THRESHOLD){
-        controller_data.heading_integrator = 0;
-        // cout << "Heading integrator reset." << endl;
-    }
+Path_finder Robot::get_path_finder()
+{
+    return path_finder;
 }
 
 void Robot::set_sampling_time(int sampling_time)
 {
     controller_data.sampling_time = sampling_time;
+}
+
+void Robot::set_target_pos(Position pos)
+{
+    path_finder.set_target_pos(pos);
+}
+
+Position Robot::get_target_pos()
+{
+    return path_finder.get_target_pos();
 }
 
 int Robot::ddeg(Angle goal_phi) {

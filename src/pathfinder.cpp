@@ -60,3 +60,8 @@ void Path_finder::set_target_pos(Position pos){
     target_pos = pos;
     vector_fields[TARGET_FIELD]->set_center_point(pos);
 }
+
+Position Path_finder::get_target_pos()
+{
+    return target_pos;
+}

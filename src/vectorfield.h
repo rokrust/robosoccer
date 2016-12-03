@@ -10,11 +10,6 @@
 #include <cstdlib>
 #include <iostream>
 
-//Probably redundant
-#define X_MIN_COOR -1.15
-#define Y_MIN_COOR -0.9
-#define X_MAX_COOR 1.15
-#define Y_MAX_COOR 0.9
 
 namespace ateam{
 
@@ -59,6 +54,8 @@ public:
 
 };
 
+
+
 //Might be called as an array/std::vector of Vector_fields taking in 
 //the current robots position
 //Vectors from each field is calculated and added toGether with
@@ -68,6 +65,11 @@ private:
 
 
 public:
+    const double X_MIN_COOR = -1.15;
+    const double Y_MIN_COOR = -0.9;
+    const double X_MAX_COOR = 1.15;
+    const double Y_MAX_COOR = 0.9;
+
     Vector_field(double x, double y): center_point(x, y){}
     Vector_field(Position pos = Position(0,0)): center_point(pos){}
 

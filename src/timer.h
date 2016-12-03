@@ -7,19 +7,21 @@
 
 using namespace std;
 
-/**
- * @brief The Timer class
- */
 
 class Timer{
 private:
     struct timeval current_time;
+
     long long start_time_ms, current_time_ms, end_time_ms;
+
     int timeout_duration_ms;
+
     int ID;
 
+
     // Converts the given timeval to the ms passed since some date back in 1970
-    long long time_in_ms(timeval time_to_conv) {
+    long long time_in_ms(timeval time_to_conv)
+    {
         return (long long) time_to_conv.tv_sec * 1000L + time_to_conv.tv_usec / 1000;
     }
 
@@ -52,15 +54,10 @@ private:
         cout << ms << " ";
     }
 
-    // timespec start_time, current_time; // , temp;
-    // void (*timeout_action)();
-
-    // TODO: Set endtime
-
 public:
-    Timer(){;}
+    Timer() {;}
 
-    ~Timer(){;}
+    ~Timer() {;}
 
     Timer(int timer_duration, int ID_in=0)
     {
@@ -76,7 +73,8 @@ public:
         }
     }
 
-    void enable_periodically() {
+    void enable_periodically()
+    {
         gettimeofday(&current_time, NULL);
         current_time_ms = time_in_ms(current_time);
 
@@ -91,7 +89,8 @@ public:
         }
     }
 
-    void enable_manually(const int manual_duration_ms) {
+    void enable_manually(const int manual_duration_ms)
+    {
         gettimeofday(&current_time, NULL);
         current_time_ms = time_in_ms(current_time);
 
@@ -106,7 +105,8 @@ public:
         }
     }
 
-    bool timeout(){
+    bool timeout()
+    {
         gettimeofday(&current_time, NULL);
         current_time_ms = time_in_ms(current_time);
 
@@ -119,7 +119,8 @@ public:
 
     }
 
-    int get_timeout_duration_ms() {
+    int get_timeout_duration_ms()
+    {
         return timeout_duration_ms;
     }
 };

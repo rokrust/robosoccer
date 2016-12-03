@@ -71,6 +71,11 @@ private:
     double error_buffer_mean();
 
 public:
+    // public constants for inheritance
+    const double GOAL_MAX_YPOS = 0.13;
+    const double GOAL_MIN_YPOS = -0.13;
+    const double GOAL_LEFT_XPOS = -1.48;
+    const double GOAL_RIGHT_XPOS =  1.48;
 
     Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos);
     ~Robot();
@@ -83,21 +88,16 @@ public:
     int update_heading_controller(Angle ref_heading, Angle cur_heading);
     void set_wheelspeed(int timer_duration);
 
-    Path_finder get_path_finder(){return path_finder;}
+    Path_finder get_path_finder();
     void set_sampling_time(int sampling_time);
 
     // target pos
-    void set_target_pos(Position pos){path_finder.set_target_pos(pos);}
-    Position get_target_pos() {return path_finder.get_target_pos();}
+    void set_target_pos(Position pos);
+    Position get_target_pos();
 
     // misc
     int ddeg(Angle goal_phi);
 
-    // public constants for inheritance
-    const double GOAL_MAX_YPOS = 0.13;
-    const double GOAL_MIN_YPOS = -0.13;
-    const double GOAL_LEFT_XPOS = -1.48;
-    const double GOAL_RIGHT_XPOS =  1.48;
 };
 
 #endif // ROBOT_H

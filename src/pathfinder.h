@@ -26,7 +26,7 @@ public:
     void update_vector_field_positions();
 
     void set_target_pos(Position pos);
-    Position get_target_pos(){return target_pos;}
+    Position get_target_pos();
 };
 
 #endif // PATHFINDER_H
