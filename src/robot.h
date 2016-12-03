@@ -96,7 +96,13 @@ public:
     Position get_target_pos();
 
     // misc
-    int ddeg(Angle goal_phi);
+    int ddeg(Angle cur_phi, Angle goal_phi);
+
+    // try out alternative controller
+    double err_heading_sum = 0;
+    double u_heading(double bias, bool debug=true);
+    double u_dist(bool debug=true);
+    void update_movement(int timeout_ms, bool debug=true);
 
 };
 

@@ -63,9 +63,9 @@ int Robot::spot_turn(Angle phi_in, bool verbose)
     int v_left, v_right;
 
     // calculate the difference in the current and the desired orientation
-    // Angle cur_phi = this->GetPhi();
+    Angle cur_phi = this->GetPhi();
     Angle goal_phi = phi_in;
-    int cur_ddeg = ddeg(goal_phi);  // goal_phi.Deg() - cur_phi.Deg();
+    int cur_ddeg = ddeg(cur_phi, goal_phi);  // goal_phi.Deg() - cur_phi.Deg();
     if (verbose) {
         cout << "Angle difference before turn: " << cur_ddeg << endl;
     }
@@ -224,8 +224,7 @@ Position Robot::get_target_pos()
     return path_finder.get_target_pos();
 }
 
-int Robot::ddeg(Angle goal_phi) {
-    Angle cur_phi = this->GetPhi();
+int Robot::ddeg(Angle cur_phi, Angle goal_phi) {
     int ddeg = goal_phi.Deg() - cur_phi.Deg();
     if (ddeg > 180) {
         ddeg = ddeg - 360;
@@ -234,4 +233,100 @@ int Robot::ddeg(Angle goal_phi) {
         ddeg = ddeg + 360;
     }
     return ddeg;
+}
+
+// --------- alternative controller try-out -----------
+double Robot::u_heading(double bias, bool debug)
+{
+    const double KP_h = 40.0;
+    const double KI_h = 2.0;
+    const double MAX_DRAD = M_PI;
+    const double MAX_INTEGRATOR_VALUE = 4.0;
+    int prec = 3;
+
+    // calculate sinus of heading error with saturation
+    Angle cur_heading = GetPhi();
+    Angle goal_heading = GetPos().AngleOfLineToPos(get_target_pos());
+    int cur_ddeg = ddeg(cur_heading, goal_heading);
+    double cur_drad = ((float)cur_ddeg / 360.0)*2*M_PI;
+    if (cur_drad > MAX_DRAD) {
+        cur_drad = MAX_DRAD;
+        cout << "Warning: Current heading error in radian saturated to " << MAX_DRAD << endl;
+    }
+    if (cur_drad < -MAX_DRAD) {
+        cur_drad = -MAX_DRAD;
+        cout << "Warning: Current heading error in radian saturated to " << MAX_DRAD << endl;
+    }
+    double err = sin(cur_drad);
+
+    // update integrator
+    err_heading_sum += err;
+    if (err_heading_sum > MAX_INTEGRATOR_VALUE) {
+        err_heading_sum = MAX_INTEGRATOR_VALUE;
+        cout << "Info: Integrator saturated to " << err_heading_sum << endl;
+    }
+    if (err_heading_sum < -MAX_INTEGRATOR_VALUE) {
+        err_heading_sum = -MAX_INTEGRATOR_VALUE;
+        cout << "Info: Integrator saturated to " << err_heading_sum << endl;
+    }
+
+    double u_heading = KP_h * err + KI_h * err_heading_sum;
+
+    if (debug) {
+        cout << "--Heading--" << endl;
+        cout << setprecision(prec) << fixed << "       cur_ddeg: " << cur_ddeg << endl;
+        cout << setprecision(prec) << fixed << "            err: " << err << endl;
+        cout << setprecision(prec) << fixed << "err_heading_sum: " << err_heading_sum << endl;
+        cout << setprecision(prec) << fixed << "      u_heading: " << u_heading << endl;
+    }
+
+    return u_heading;
+}
+
+double Robot::u_dist(bool debug)
+{
+    const double KP_d = 0.0;
+    const double MAX_DIST_ERR = 0.8;
+    int prec = 3;
+
+    double err = GetPos().DistanceTo(get_target_pos());
+    if (err > MAX_DIST_ERR) {
+        err = MAX_DIST_ERR;
+        cout << "Warning: Current distance error in meters saturated to " << MAX_DIST_ERR << endl;
+    }
+    if (err < -MAX_DIST_ERR) {
+        err = -MAX_DIST_ERR;
+        cout << "Warning: Current distance error in meters saturated to " << MAX_DIST_ERR << endl;
+    }
+
+    // TODO
+    double u_dist = KP_d * err;
+
+    if (debug) {
+        cout << "--Distance--" << endl;
+        cout << setprecision(prec) << fixed << "   err: " << err << endl;
+        cout << setprecision(prec) << fixed << "u_dist: " << u_dist << endl;
+    }
+
+    return u_dist;
+}
+
+void Robot::update_movement(int timeout_ms, bool debug)
+{
+    const int prec = 3;
+
+    double cur_u_dist = u_dist();
+    // TODO bias
+    double cur_u_heading = u_heading(0.0);
+
+    left_wheel_speed = cur_u_dist - cur_u_heading;
+    right_wheel_speed = cur_u_dist + cur_u_heading;
+
+    if (debug) {
+        cout << "--Wheel Speeds--" << endl;
+        cout << setprecision(prec) << fixed << " Left Speed: " << left_wheel_speed << endl;
+        cout << setprecision(prec) << fixed << "Right Speed: " << right_wheel_speed << endl;
+    }
+
+    MoveMs(left_wheel_speed, right_wheel_speed, timeout_ms+10, 100);
 }

@@ -210,4 +210,14 @@ void test_controller(Game& game_handler_in)
 {
     int ctrlDuration = 100;
     Timer robot_timer(ctrlDuration);
+    Position target_pos(0.0, 0.0);
+    Game::goalie->set_target_pos(target_pos);
+
+    while(1) {
+        if (robot_timer.timeout()) {
+            //Game::goalie->u_heading(0.0);
+            //Game::goalie->u_dist();
+            Game::goalie->update_movement(ctrlDuration);
+        }
+    }
 }
