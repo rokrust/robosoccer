@@ -81,10 +81,6 @@ int main(void) {
             //game_handler.strategy_modul->command_drive();
         }
 
-        if (SCENARIO == 6) {
-            game_handler.goalie->test_loop_drive_parallel();
-        }
-
         if (SCENARIO == 7) {
             game_handler.goalie->do_the_goalkeepers_kick();
         }
@@ -221,7 +217,7 @@ int main(void) {
         }
 
         if (SCENARIO == 22) {
-            game_handler.goalie->drive_parallel(+10, false);
+            game_handler.goalie->drive_parallel(+10);
         }
 
         if (SCENARIO == 30){

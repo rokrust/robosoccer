@@ -1,29 +1,175 @@
-Old Driving Scenario
-            /* if (SCENARIO == 5) {
+Testing of Drive Parallel
+void Robot::test_loop_drive_parallel()
+{
+    // set the wheel speed for the turn time
+    Position r1 = this->GetPos();
+    Angle phi1 = this->GetPhi();
+    Position r0 = r1;
+    Angle phi0 = phi1;
 
-                int r_value;
+    cin.get();
+    cin.get();
 
-                while (runflag) {
-                    r_value = drive_to_pos(robo0, posstart, 40, 6000000);
-                    usleep(r_value);
-                    r_value = drive_to_pos(robo0, pos0, 40, 6000000);
-                    usleep(r_value);
-                    r_value = drive_to_pos(robo0, pos1, 40, 10000000);
-                    usleep(r_value);
-                    r_value = drive_to_pos(robo0, pos2, 40, 10000000);
-                    usleep(r_value);
-                    r_value = drive_to_pos(robo0, pos3, 40, 10000000);
-                    usleep(r_value);
-                    r_value = drive_to_pos(robo0, pos4, 40, 10000000);
-                    usleep(r_value);
-                    r_value = drive_to_pos(robo0, pos5, 40, 10000000);
-                    usleep(r_value);
-                    r_value = drive_to_pos(robo0, pos6, 40, 10000000);
-                    usleep(r_value);
+    // cout << "Sign" << "\t" << "diff_to_drive" << "\t" << "Runtime" << "\t" << "diff_driven\trelError" << endl;
+    cout << "Sign\t" << "diff_to_drive\t" << "Runtime\t" << "diff_driven\t"
+         << "phi0\t" << "phi1\t" << "diff_angle\t" << endl;
 
-                    runflag = 0;
-                }
-            } */
+
+    float diff_to_drive_step = 0.05;
+
+    //int i;
+    int run_time;
+    int v_left = 80;
+    int v_right = 80;
+
+    cout.precision(4);
+
+    // for (i = 50; i < 900; i = i + 50)
+    for (float diff_to_drive = 0.15; diff_to_drive < 0.61; diff_to_drive = diff_to_drive + diff_to_drive_step)
+    {
+        // Test forward
+        run_time = 3200 * diff_to_drive; // forward: 3200 for speed 80 | 2200 for speed 120
+        //run_time = i;
+        this->MoveMs(v_left, v_right, run_time, TURN_RAMP_UP);
+        usleep((run_time+500) * 1000 + 1000000);
+
+        r0 = r1;
+        r1 = this->GetPos();
+        phi0 = phi1;
+        phi1 = this->GetPhi();
+
+        //cout << "'+" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'"
+        //     << r1.DistanceTo(r0) << "\t'" << r1.DistanceTo(r0)/diff_to_drive << endl;
+        cout << "'+" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'";
+        cout << r1.DistanceTo(r0) << "\t'" << phi0 << "\t'" << phi1 << "\t'" << phi1-phi0 << endl;
+
+        // Test backward
+        run_time = 3400 * diff_to_drive; // backward: 3400 for speed 80 | 2150 for speed 120
+        //run_time = i;
+        this->MoveMs(-v_left, -v_right, run_time, TURN_RAMP_UP);
+        usleep((run_time+500) * 1000 + 1000000);
+
+        phi0 = phi1;
+        phi1 = this->GetPhi();
+        r0 = r1;
+        r1 = this->GetPos();
+
+        cout << "'-" << "\t'" << diff_to_drive << "\t'" << run_time << "\t'";
+        cout << r1.DistanceTo(r0) << "\t'" << phi0 << "\t'" << phi1 << "\t'" << phi1-phi0 << endl;
+    }
+}
+
+Experimentation on Spot Turn
+int Robot::spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negativ)
+{
+    // define left and right wheel speed variables
+    int v_left, v_right;
+
+    // calculate the difference in the current and the desired orientation
+    Angle cur_phi = this->GetPhi();
+    cout << "Current angle before turn: " << cur_phi.Deg() << endl;
+
+    if (left_negativ) {
+        // miraculously clockwise
+        v_left = -wheel_speed;
+        v_right = wheel_speed;
+    } else {
+        // miraculously anti-clockwise
+        v_left = wheel_speed;
+        v_right = -wheel_speed;
+    }
+
+    // set the wheel speed for the turn time
+    this->MoveMs(v_left, v_right, turn_time, TURN_RAMP_UP);
+
+    usleep(2*pow(10, 6));
+
+    Angle new_phi = this->GetPhi();
+    cout << "Current angle after turn: " << new_phi.Deg() << endl;
+
+    int diff = new_phi.Deg() - cur_phi.Deg();
+    if (diff > 360) {
+        diff = diff - 360;
+    } else if (diff < 0) {
+        diff = diff + 360;
+    }
+    cout << "Angle difference-----> " << diff << endl;
+
+    return 0;
+}
+
+Old Driving Pos
+void Robot::drive_to_pos(Position pos_in, bool verbose=false)
+{
+    // initialize left and right wheel speed, ground speed and speed difference
+    int v_left, v_right, v_ground, dspeed;
+
+    // calculate the distance between the robot and the goal
+    Position goal_pos = pos_in;
+    Position cur_pos = this->GetPos();
+    double dist = cur_pos.DistanceTo(pos_in);
+    if (verbose) {
+        cout << "Distance to goal: " << dist << "\n" << endl;
+    }
+
+    // calculate the difference in the orientation
+    Angle cur_phi = this->GetPhi();
+    Angle goal_phi = cur_pos.AngleOfLineToPos(goal_pos);
+    int ddeg = calc_ddeg(goal_phi);
+
+    if (dist > DIST_THRESHOLD_STOP) {
+        // if the orientation difference is above a threshold, turn on the spot before driving
+        if (abs(ddeg) > ANGLE_TURN_THRESHOLD) {
+            int wait_time = this->spot_turn(goal_phi);
+            usleep(wait_time);
+        }
+
+        // drive the robot while the distance is above the threshold
+        while (dist > DIST_THRESHOLD_STOP) {
+            // update the difference in orientation
+            cur_phi = this->GetPhi();
+            goal_phi = cur_pos.AngleOfLineToPos(goal_pos);
+            ddeg = calc_ddeg(goal_phi);
+
+            // update the distance
+            cur_pos = this->GetPos();
+            dist = cur_pos.DistanceTo(pos_in);
+
+            // calculate the ground speed depending on the distance
+            if (dist > DIST_THRESHOLD_LINEAR) {
+                v_ground = V_GROUND_MAX;
+            } else {
+                v_ground = int(dist*((V_GROUND_MAX - V_GROUND_MIN) / DIST_THRESHOLD_LINEAR) + V_GROUND_MIN);
+            }
+
+            // calculate the speed difference that will be applied on the wheels,
+            // depending on the ground speed and the difference in orientation
+            dspeed = int((float(fabs(sin(ddeg*PI/180))) * float(DSPEED_GAIN)) * float(MAX_DSPEED_REL) * float(v_ground));
+            if (ddeg > 0) {
+                // robot orientation too far left of goal in driving direction
+                v_left = v_ground - dspeed;
+                v_right = v_ground + dspeed;
+            } else {
+                // robot orientation too far right of goal in driving direction
+                v_left = v_ground + dspeed;
+                v_right = v_ground - dspeed;
+            }
+
+            if (verbose) {
+                cout << "Disance to goal is: " << dist << endl;
+                cout << "Ground speed is: " << v_ground << endl;
+                cout << "ddeg is: " << ddeg << endl;
+                cout << "Left speed: " << v_left << "   Right speed: " << v_right << endl;
+                cout << "RampUp is: " << DRIVE_RAMP_UP << endl;
+                cout << "---------------------" << endl;
+            }
+
+            // set the wheel speeds for the run time
+            this->MoveMs(v_left, v_right, DRIVE_DURATION, DRIVE_RAMP_UP);
+            usleep((DRIVE_DURATION + 30)*1000);
+        }
+    }
+}
 
 MAC and batterie read-out
             /*
@@ -44,26 +190,6 @@ MAC and batterie read-out
             cout << "\t initial rotation: " << robo.GetPhi() << endl;
 
             */
-
-Change single robot
-/*
-        //Activate the project option "Run in terminal" in Ctrl+5 (Ctrl+2 to come back here)
-        //to use "cin" function.
-
-        char cInput;
-
-        cout << "Specify rfcomm number of the robot you want to move. Blue 0-2, Red 3-5: ";
-        while (1) {
-                cin >> cInput;
-                if (!((cInput >= '0') && (cInput <= '7'))) {
-                        cout << "Please specify valid rfcomm number between 0 and 7"
-                                        << endl;
-                } else {
-                        rfcomm_nr = cInput-48; //simple "char to int" function
-                        break;
-                }
-        }
-*/
 
 Old drive_to_pos with P controller
 /*

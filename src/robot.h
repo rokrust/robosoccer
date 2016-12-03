@@ -45,12 +45,22 @@ struct Controller_data{
 class Robot : public RoboControl
 {
 private:
-    /**
-     * @brief Device number of the robot
-     */
     int device_nr;
 
-    //These can probably be removed
+    // turn constants
+    const int BASE_TURN_SPEED = 80;
+    const int TURN_RAMP_UP = 0;
+    const double DDEG_MULTIPLYER = 2.29;
+
+    // goalie constants
+    const int GOALIE_SPEED = 120;
+    const int GOALIE_CONST_SPEED_120_FORWARD = 2200;
+    const int GOALIE_CONST_SPEED_120_BACKWARD = 2150;
+
+    // controller driving constants
+    const double ACCEPTABLE_DISTANCE_THRESHOLD = 0.08;
+    const double ACCEPTABLE_HEADING_THRESHOLD = 0.05;
+
     int left_wheel_speed;
     int right_wheel_speed;
 
@@ -61,61 +71,27 @@ private:
     double error_buffer_mean();
 
 public:
-    void set_target_pos(Position pos){path_finder.set_target_pos(pos);}
+
     Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos);
     ~Robot();
 
-    /**
-     * @brief Custom driving function
-     * @param pos_in Position to drive to
-     */
-    void drive_to_pos(Position pos_in, bool verbose);
+    int spot_turn(Angle phi_in, bool verbose=true);
+    int drive_parallel(float diff_to_drive);
 
-    /**
-     * @brief drive_parallel
-     * @param pos_in
-     * @param verbose
-     */
-    int drive_parallel(float diff_to_drive, bool verbose);
-
-    /**
-     * @brief calc_ddeg
-     * @param goal_phi
-     * @return
-     */
-    int calc_ddeg(Angle goal_phi);
-
-    /**
-     * @brief Calculate the difference between two position (e.g. the direction of a movement)
-     * @param pos_a First position
-     * @param pos_b Second position
-     * @return Difference between the two positions in meters
-     */
-    Position calc_pos_diff(Position pos_a, Position pos_b);
-
-    /**
-     * @brief Turn on the spot
-     * @param phi_in Angle to turn to
-     * @return Estimated time required to turn in micro seconds
-     */
-    int spot_turn(Angle phi_in);
-
-    int spot_turn_time_speed(int turn_time, int wheel_speed, bool left_negativ);
-
-    void test_loop_drive_parallel();
-
+    // controller functions
     int update_speed_controller(Angle ref_heading, Angle cur_heading);
-
     int update_heading_controller(Angle ref_heading, Angle cur_heading);
-
     void set_wheelspeed(int timer_duration);
 
     Path_finder get_path_finder(){return path_finder;}
-
     void set_sampling_time(int sampling_time);
 
+    // target pos
+    void set_target_pos(Position pos){path_finder.set_target_pos(pos);}
     Position get_target_pos() {return path_finder.get_target_pos();}
 
+    // misc
+    int ddeg(Angle goal_phi);
 };
 
 #endif // ROBOT_H

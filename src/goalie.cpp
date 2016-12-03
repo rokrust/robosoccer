@@ -99,7 +99,7 @@ int Goalie::go_to_penalty_save_position()
                     delta_y_G = y_G - GetPos().GetY();
                     cout << "delta_y_G = " << delta_y_G << "; " << endl;
                     cout << "% Moving the goalie!-------------------" << endl;
-                    this->drive_parallel(delta_y_G, false);
+                    this->drive_parallel(delta_y_G);
                 } else {
                     cout << "y_G is not within the goal, therefore the goalie does not move." << endl;
                 }
