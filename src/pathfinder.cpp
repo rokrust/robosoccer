@@ -11,14 +11,14 @@ Path_finder::Path_finder(int robots_array_index, Position pos){
         vector_fields.push_back(robot_field);
 		
         //Some weight. Should be parameters
-        vector_field_weights.push_back(0.005); //fix hardcoding  0.005
+        vector_field_weights.push_back(0.0); //fix hardcoding  0.005
     }
 
     cout << "Index: " << endl;
     vector_field_weights[robots_array_index] = 0;
 
     vector_fields.push_back(new ateam::Wall_vector_field());
-    vector_field_weights.push_back(0.001); //fix hardcoding  0.001
+    vector_field_weights.push_back(0.0); //fix hardcoding  0.001
 
     vector_fields.push_back(new ateam::Target_vector_field(target_pos));
     vector_field_weights.push_back(1.0); //fix hardcoding  1.0

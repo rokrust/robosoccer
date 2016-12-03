@@ -26,6 +26,8 @@ using namespace std;
 void collision_avoidance_ball_tracking(Game& game_handler_in);
 void collision_avoidance_corner_driving(Game& game_handler_in);
 void test_controller(Game& game_handler_in);
+void test_extrapol_shit(Game& game_handler_in);
+
 
 
 int main(void) {
@@ -62,6 +64,7 @@ int main(void) {
         cout << "6: Run take penalty positions" << endl;
         cout << "7: Run collision avoidance during ball tracking" << endl;
         cout << "8: Run collision avoidance during corner driving" << endl;
+
 
         cout << "SCENARIO = ";
         cin >> SCENARIO;
@@ -104,9 +107,12 @@ int main(void) {
         case 9:
             test_controller(game_handler);
             break;
+
+        case 10:
+            test_extrapol_shit(game_handler);
+            break;
+
         }
-
-
     } catch (DBError err) {
         cout << "Client died on Error: " << err.what() << endl;
     }
@@ -143,7 +149,6 @@ void collision_avoidance_ball_tracking(Game &game_handler_in)
         }
     }
 }
-
 
 void collision_avoidance_corner_driving(Game &game_handler_in)
 {
@@ -210,4 +215,23 @@ void test_controller(Game& game_handler_in)
 {
     int ctrlDuration = 100;
     Timer robot_timer(ctrlDuration);
+}
+
+void test_extrapol_shit(Game& game_handler_in)
+{
+    int timer_duration = 150;
+    Timer datTimer(timer_duration);
+    game_handler_in.goalie->set_sampling_time((float) timer_duration/1000);
+    int sign = -1;
+    Position go_here(sign * 1.0, sign * 0.3);
+
+    int waitabit = game_handler_in.goalie->spot_turn(game_handler_in.goalie->GetPos().AngleOfLineToPos(go_here));
+    usleep(waitabit + 350 * 1000);
+
+    while(1) {
+        if (datTimer.timeout()) {
+            game_handler_in.goalie->set_target_pos(go_here, true);
+            game_handler_in.goalie->set_wheelspeed(timer_duration);
+        }
+    }
 }

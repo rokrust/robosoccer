@@ -18,7 +18,6 @@
 #include <math.h>
 #include <boost/circular_buffer.hpp>
 
-#define MAX_WHEELSPEED 200
 
 enum Parameters
      {K_ph = 20, // working thursday: 20
@@ -51,6 +50,7 @@ private:
     const int BASE_TURN_SPEED = 80;
     const int TURN_RAMP_UP = 0;
     const double DDEG_MULTIPLYER = 2.29;
+    const int MAX_WHEELSPEED = 200;
 
     // goalie constants
     const int GOALIE_SPEED = 120;
@@ -60,6 +60,8 @@ private:
     // controller driving constants
     const double ACCEPTABLE_DISTANCE_THRESHOLD = 0.08;
     const double ACCEPTABLE_HEADING_THRESHOLD = 0.05;
+
+    const double EXTRAPOL_LIMIT = 1.0;
 
     int left_wheel_speed;
     int right_wheel_speed;
@@ -92,7 +94,7 @@ public:
     void set_sampling_time(int sampling_time);
 
     // target pos
-    void set_target_pos(Position pos);
+    void set_target_pos(Position pos, bool extrapol=false);
     Position get_target_pos();
 
     // misc

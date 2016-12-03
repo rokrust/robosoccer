@@ -133,18 +133,14 @@ int Robot::drive_parallel(float diff_to_drive)
 //P controller might be good enough
 int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
     double distance_to_pos = GetPos().DistanceTo(path_finder.get_target_pos());
-    cout << "Distance: " << distance_to_pos << endl;
-    cout << "ME: " << this->GetPos() << endl;
-    cout << "IT: " << path_finder.get_target_pos() << endl;
 
     controller_data.speed_integrator += distance_to_pos * controller_data.sampling_time;
 
     int u_speed = K_pt*distance_to_pos + K_it*controller_data.speed_integrator;
 
-
     u_speed *= cos((ref_heading - cur_heading).Get());
 
-    if(u_speed > MAX_WHEELSPEED || u_speed < -MAX_WHEELSPEED){
+    if (u_speed > MAX_WHEELSPEED || u_speed < -MAX_WHEELSPEED){
         controller_data.speed_integrator = 0;
     }
     cout << "Speed: " << u_speed << endl;
@@ -184,11 +180,12 @@ void Robot::set_wheelspeed(int timer_duration) {
     int u_speed = update_speed_controller(ref_heading, cur_heading);
     //u_speed = 0;
 
-    if (u_speed > 50) {
-        u_speed = 50;
+    int saturation_speed = 220;
+    if (u_speed > saturation_speed) {
+        u_speed = saturation_speed;
     }
-    if (u_speed < -50) {
-        u_speed = -50;
+    if (u_speed < -saturation_speed) {
+        u_speed = -saturation_speed;
     }
 
     right_wheel_speed = u_speed + u_omega;
@@ -214,9 +211,23 @@ void Robot::set_sampling_time(int sampling_time)
     controller_data.sampling_time = sampling_time;
 }
 
-void Robot::set_target_pos(Position pos)
+void Robot::set_target_pos(Position pos, bool extrapol)
 {
-    path_finder.set_target_pos(pos);
+    if (extrapol) {
+        Position current_pos = GetPos();
+        double dist_to_targ = current_pos.DistanceTo(pos);
+        if (dist_to_targ > EXTRAPOL_LIMIT) {
+            Position direction_to_targ((pos.GetX() - current_pos.GetX()) / dist_to_targ,
+                                       (pos.GetY() - current_pos.GetY()) / dist_to_targ);
+            Position extrapol_target_pos((current_pos.GetX() + EXTRAPOL_LIMIT * direction_to_targ.GetX()),
+                                         (current_pos.GetY() + EXTRAPOL_LIMIT * direction_to_targ.GetY()));
+            path_finder.set_target_pos(extrapol_target_pos); // Really extrapolating (Distance to targ > EXTRAPOL_LIMIT)
+        } else {
+            path_finder.set_target_pos(pos); // Not extrapolating (Distance to targ < EXTRAPOL_LIMIT)
+        }
+    } else {
+        path_finder.set_target_pos(pos); // Not extrapolating (because it should not extrapolated as given by variable extrapol)
+    }
 }
 
 Position Robot::get_target_pos()
@@ -225,7 +236,7 @@ Position Robot::get_target_pos()
 }
 
 int Robot::ddeg(Angle goal_phi) {
-    Angle cur_phi = this->GetPhi();
+    Angle cur_phi = GetPhi();
     int ddeg = goal_phi.Deg() - cur_phi.Deg();
     if (ddeg > 180) {
         ddeg = ddeg - 360;
