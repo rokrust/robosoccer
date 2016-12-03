@@ -21,6 +21,11 @@
 using namespace std;
 
 
+// Function declaration to call from Scenario
+// Code is below main Function
+void collision_avoidance_ball_tracking(Game& game_handler_in);
+void collision_avoidance_corner_driving(Game& game_handler_in);
+
 
 int main(void) {
 
@@ -44,326 +49,154 @@ int main(void) {
 
         //-------------------------------------- End Init ---------------------------------
 
+
         int SCENARIO;
         cout << "Select scenario..." << endl;
         cout << "Play scenarios:" << endl;
         cout << "1: Run the state machine" << endl;
-        cout << "2: Run the goalie ball stopping scenario" << endl;
-        cout << "3: Run the striker penalty shooting scenario" << endl;
-        cout << "Development and debug scenarios:" << endl;
-        cout << "5: Run the manual robot to position drive function" << endl;
-        cout << "6: Run the goalie drive parallel test loop" << endl;
-        cout << "7: Run the goalkeepers kick scenario" << endl;
-        cout << "8: Run the side and kick-off check function" << endl;
-        cout << "9: Run the prediction and velocity estimation scenario" << endl;
-        cout << "...or enter another scenario number known to you" << endl;
+        cout << "2: Run the goalie doing a penalty save" << endl;
+        cout << "3: Run the striker doing a shot the goal" << endl;
+        cout << "4: Run the goalie doing the goalkeeper's kick" << endl;
+        cout << "5: Run take kick-off positions" << endl;
+        cout << "6: Run take penalty positions" << endl;
+        cout << "7: Run collision avoidance during ball tracking" << endl;
+        cout << "8: Run collision avoidance during corner driving" << endl;
+
         cout << "SCENARIO = ";
         cin >> SCENARIO;
 
-        // select scenario
 
-        if (SCENARIO == 1) {
+        // Dem Scenarios
+        switch (SCENARIO) {
+        case 1 :
             game_handler.state_machine(true);
-        }
+            break;
 
-        if (SCENARIO == 2) {
-            game_handler.goalie->GotoPos(Position(-1.3, 0.0));
-            usleep(4000 * 1000);
-            game_handler.goalie->spot_turn(90);
-            game_handler.goalie->go_to_penalty_save_position();
-        }
+        case 2:
+            Game::goalie->do_a_penalty_save();
+            break;
 
-        if (SCENARIO == 3){
-            Game::striker1->shoot_ball_at_goal(game_handler.get_is_left_side());
-        }
+        case 3:
+            Game::striker1->do_a_shot_at_goal(game_handler.get_is_left_side());
+            break;
 
-        if (SCENARIO == 5) {
-            //game_handler.strategy_modul->command_drive();
-        }
+        case 4:
+            Game::goalie->do_the_goalkeepers_kick();
+            break;
 
-        if (SCENARIO == 7) {
-            game_handler.goalie->do_the_goalkeepers_kick();
-        }
-
-
-        if (SCENARIO == 8) {
-            while(1) {
-                game_handler.update_side();
-                game_handler.update_kick_off();
-                cout << "----" << endl;
-                cout << "is_left_side: " << game_handler.get_is_left_side() << endl;
-                cout << "has_kick_off: " << game_handler.get_has_kick_off() << endl;
-                cin.get();
-            }
-        }
-/*
-        if (SCENARIO == 9) {
-            cout << "Prediction and estimation testing" << endl;
-            int time_step_size;
-            cout << "Type desired time step size in ms: ";
-            cin >> time_step_size;
-            Timer test_timer(time_step_size);
-            while(1) {
-                if(test_timer.timeout()) {
-                    game_handler.strategy_modul->update_position_history();
-                    game_handler.strategy_modul->update_estimation_and_prediction(time_step_size);
-                    game_handler.strategy_modul->print_robot_position_history(0);
-                    game_handler.strategy_modul->print_robot_position_history(1);
-                    game_handler.strategy_modul->print_robot_position_history(2);
-                    game_handler.strategy_modul->print_robot_position_history(3);
-                    game_handler.strategy_modul->print_robot_position_history(4);
-                    game_handler.strategy_modul->print_robot_position_history(5);
-                    game_handler.strategy_modul->print_robot_velocity_estimation();
-                    game_handler.strategy_modul->print_robot_position_prediction();
-                }
-            }
-        }
-*/
-        // bigger collision avoidance debugging scenario
-        if (SCENARIO == 10) {
-            // Position goal_left(-1.3, 0.0);
-            // Position goal_right(1.3, 0.0);
-            Position left_middle(0.0, 0.4);
-            // bool is_left = true;
-            // bool can_turn = true;
-
-            Game::striker2->get_path_finder().set_target_pos(left_middle);
-
-            cout << "Collision Avoidance Scenario" << endl;
-            int time_step_strategy, time_step_driving;
-            cout << "Please enter the time step size for the strategy, including estimation, prediction and collision avoidance" << endl;
-            cout << "time_step_strategy = ";
-            cin >> time_step_strategy;
-            cout << "Please enter the time step size for the robot driving" << endl;
-            cout << "time_step_driving = ";
-            cin >> time_step_driving;
-            // Timer strategy_timer(time_step_strategy, 10);
-            // Timer goalie_timer(time_step_driving, 0);
-            Timer striker1_timer(time_step_driving, 1);
-            // Timer striker2_timer(time_step_driving, 2);
-            // Timer goalie_switch_timer(8000, 2);
-            while(1) {
-                if (striker1_timer.timeout()) {
-                    // striker1 follows the ball
-                    // game_handler.strategy_modul->set_goal_pos(game_handler.datBall->GetPos(), 1);
-                    // game_handler.striker1->set_wheelspeed(striker1_timer.get_timeout_duration_ms());
-                    // Game::striker1->set_target_pos(Game::datBall->GetPos());
-                    // Game::striker1->set_wheelspeed(time_step_driving);
-                }
-            }
-
-                /* if (striker2_timer.timeout()) {
-                    // striker2 stays on one spot
-                    Game::striker2->set_wheelspeed(time_step_driving);
-                } */
-
-                // Strategy tasks
-                /*
-                if (strategy_timer.timeout()) {
-                    game_handler.strategy_modul->update_position_history();
-                    game_handler.strategy_modul->update_estimation_and_prediction(time_step_strategy);
-                    game_handler.strategy_modul->check_and_handle_collisions();
-                }
-                */
-
-                // Goal position switching
-                // goalie alternates between the two goals in a ten seconds pace
-                /* if (goalie_switch_timer.timeout()) {
-                    if (is_left) {
-                        Game::goalie->get_path_finder().set_target_pos(goal_left);
-                        can_turn = true;
-                        is_left = false;
-                    } else {
-                        Game::goalie->get_path_finder().set_target_pos(goal_right);
-                        can_turn = true;
-                        is_left = true;
-                    }
-                } */
-
-                // Driving
-                /* if (goalie_timer.timeout()) {
-                    Angle goal_phi = Game::goalie->GetPos().AngleOfLineToPos(Game::goalie->get_path_finder().get_target_pos());
-                    int ddeg = Game::goalie->calc_ddeg(goal_phi);
-                    if (abs(ddeg) > 60 && can_turn) {
-                        int wait_time = Game::goalie->spot_turn(goal_phi);
-                        goalie_timer.enable_manually(wait_time);
-                        can_turn = false;
-
-                        cout << "Goalie turned on the spot" << endl;
-                    } else {
-
-                    } */
-
-            /* if (striker1_timer.timeout()) {
-                // striker1 follows the ball
-                Game::striker1->get_path_finder().set_target_pos(Game::datBall->GetPos());
-                Game::striker1->set_wheelspeed(time_step_driving);
-            }
-
-            if (striker2_timer.timeout()) {
-                // striker2 stays on one spot
-                Game::striker2->set_wheelspeed(time_step_driving);
-            } */
-        }
-
-
-        if (SCENARIO == 1000) {
+        case 5:
             game_handler.take_kick_off_position();
-        }
+            break;
 
-        if (SCENARIO == 21) {
+        case 6:
             game_handler.take_penalty_position();
-            usleep(1000 * 1000);
+            break;
+
+        case 7:
+            collision_avoidance_ball_tracking(game_handler);
+            break;
+
+        case 8:
+            collision_avoidance_corner_driving(game_handler);
+            break;
         }
 
-        if (SCENARIO == 22) {
-            game_handler.goalie->drive_parallel(+10);
-        }
-
-        if (SCENARIO == 30){
-            int timer_duration = 250;
-            Timer datTimer(timer_duration);
-
-            while(1) {
-                if (datTimer.timeout()) {
-                    Game::striker1->get_path_finder().set_target_pos(Game::datBall->GetPos());
-                    Game::striker1->set_wheelspeed(timer_duration);
-                }
-            }
-        }
-
-        if (SCENARIO == 31){
-            int timer_duration = 250;
-            Timer datTimer(timer_duration);
-
-            while(1) {
-                if (datTimer.timeout()) {
-                    //Position cur_pos = Game::striker1->GetPos();
-                    //Position goal_pos = Game::datBall->GetPos();
-//                    Position via_pos = game_handler.strategy_modul->extrapol_goal_position(cur_pos, goal_pos);
-
-//                    Game::striker1->set_target_pos(via_pos);
-                    Game::striker1->set_wheelspeed(timer_duration);
-                }
-            }
-        }
-
-        if (SCENARIO == 32){
-            int timer_duration = 100;
-            Timer datTimer(timer_duration);
-            game_handler.striker2->set_sampling_time((float) timer_duration/1000);
-
-            // cout << "ball_pos = [" << Game::datBall->GetPos().GetX() << ", " << Game::datBall->GetPos().GetY() << "]; " << endl;
-
-            // cout << "poses = [";
-
-            // game_handler.striker2->set_target_pos(Game::datBall->GetPos());
-
-            while(1) {
-                Position pos = Game::datBall->GetPos();
-
-                game_handler.update_robot_positions();
-                Game::striker1->set_target_pos(pos);
-                //cout << "Target_pos: " << Game::striker1->get_path_finder().get_target_pos() << endl;
-
-                if (datTimer.timeout()) {
-                    Game::striker1->set_wheelspeed(timer_duration);
-                }
-            }
-        }
-
-        if (SCENARIO == 33){
-            int timer_duration = 250;
-            Timer datTimer(timer_duration);
-
-            while(1) {
-                game_handler.update_robot_positions();
-                Game::striker1->get_path_finder().set_target_pos(Game::datBall->GetPos());
-
-                if (datTimer.timeout()) {
- //                   game_handler.strategy_modul->set_goal_pos(Game::datBall->GetPos(), 1);
-                    Game::striker1->set_wheelspeed(timer_duration);
-                }
-            }
-
-        }
-
-        if (SCENARIO == 34) {
-            int robot_duration = 100;
-            double x_val = 1.0;
-            double y_val = 0.65;
-            Position left_window(-x_val, -y_val);
-            Position left_hall(-x_val, y_val);
-            // Position right_window(x_val,-y_val);
-            Position right_hall(x_val, y_val);
-
-            Game::striker1->set_target_pos(left_window);
-            Game::striker2->set_target_pos(right_hall);
-            Game::goalie->set_target_pos(left_hall);
-
-            Position rand_pos(0.0, 0.0);
-            Game::opponent1->set_target_pos(rand_pos);
-            Game::opponent1->GotoPos(rand_pos);
-            Timer robot_timer(robot_duration);
-            Timer timer2(2000);
-
-            while(1) {
-
-                game_handler.update_robot_positions();
-                if (robot_timer.timeout()) {
-                    float rand1 = ((rand() % 100) / 100.0);
-                    float rand2 = ((rand() % 100) / 100.00);
-                    rand_pos.SetX(rand1 - 0.5);
-                    rand_pos.SetY(rand2 - 0.5);
-
-                    // Set target positions
-                    if (fabs(Game::goalie->get_target_pos().DistanceTo(Game::goalie->GetPos())) < 0.1) {
-                        Position target = Game::goalie->get_target_pos();
-                        target.SetX(-target.GetX());
-                        target.SetY(-target.GetY());
-                        Game::goalie->set_target_pos(target);
-                        cout << "Goalie goal changed to x: " << target.GetX() << " y: " << target.GetY() << endl;
-                    }
-                    if (fabs(Game::striker1->get_target_pos().DistanceTo(Game::striker1->GetPos())) < 0.1) {
-                        Position target = Game::striker1->get_target_pos();
-                        target.SetX(-target.GetX());
-                        target.SetY(-target.GetY());
-                        Game::striker1->set_target_pos(target);
-                        cout << "Striker1 goal changed to x: " << target.GetX() << " y: " << target.GetY() << endl;
-                    }
-                    if (fabs(Game::striker2->get_target_pos().DistanceTo(Game::striker2->GetPos())) < 0.1) {
-                        Position target = Game::striker2->get_target_pos();
-                        target.SetX(-target.GetX());
-                        target.SetY(-target.GetY());
-                        Game::striker2->set_target_pos(target);
-                        cout << "Striker2 goal changed to x: " << target.GetX() << " y: " << target.GetY() << endl;
-                    }
-                    if (fabs(Game::opponent1->get_target_pos().DistanceTo(Game::opponent1->GetPos())) < 0.1) {
-                        Game::opponent1->set_target_pos(rand_pos);
-                        Game::opponent1->GotoPos(rand_pos);
-                    }
-
-                    Game::goalie->set_wheelspeed(robot_duration);
-                    Game::striker1->set_wheelspeed(robot_duration);
-                    Game::striker2->set_wheelspeed(robot_duration);
-                }
-            }
-        }
-
-        if (SCENARIO == 123456) {
-            int timer_duration;
-            cout << "Type desired timer_duration in ms: ";
-            cin >> timer_duration;
-            Timer test_timer(timer_duration);
-            while(1) {
-                if(test_timer.timeout())
-                    cout << "timed out" << endl;
-            }
-        }
 
     } catch (DBError err) {
         cout << "Client died on Error: " << err.what() << endl;
     }
     cout << "End" << endl;
     return 0;
+}
+
+  // ================ //
+ // === END MAIN === //
+// ================ //
+
+
+
+void collision_avoidance_ball_tracking(Game &game_handler_in)
+{
+    int timer_duration = 100;
+    Timer datTimer(timer_duration);
+    Game::striker2->set_sampling_time((float) timer_duration/1000);
+
+    // cout << "ball_pos = [" << Game::datBall->GetPos().GetX() << ", " << Game::datBall->GetPos().GetY() << "]; " << endl;
+    // cout << "poses = [";
+
+    // game_handler.striker2->set_target_pos(Game::datBall->GetPos());
+
+    while(1) {
+        Position pos = Game::datBall->GetPos();
+
+        game_handler_in.update_robot_positions();
+        Game::striker1->set_target_pos(pos);
+        // cout << "Target_pos: " << Game::striker1->get_path_finder().get_target_pos() << endl;
+
+        if (datTimer.timeout()) {
+            Game::striker1->set_wheelspeed(timer_duration);
+        }
+    }
+}
+
+
+void collision_avoidance_corner_driving(Game &game_handler_in)
+{
+    int robot_duration = 100;
+    double x_val = 1.0;
+    double y_val = 0.65;
+    Position left_window(-x_val, -y_val);
+    Position left_hall(-x_val, y_val);
+    // Position right_window(x_val,-y_val);
+    Position right_hall(x_val, y_val);
+
+    Game::striker1->set_target_pos(left_window);
+    Game::striker2->set_target_pos(right_hall);
+    Game::goalie->set_target_pos(left_hall);
+
+    Position rand_pos(0.0, 0.0);
+    Game::opponent1->set_target_pos(rand_pos);
+    Game::opponent1->GotoPos(rand_pos);
+    Timer robot_timer(robot_duration);
+
+    while(1) {
+        game_handler_in.update_robot_positions();
+        if (robot_timer.timeout()) {
+            float rand1 = ((rand() % 100) / 100.0);
+            float rand2 = ((rand() % 100) / 100.00);
+            rand_pos.SetX(rand1 - 0.5);
+            rand_pos.SetY(rand2 - 0.5);
+
+            // Set target positions
+            if (fabs(Game::goalie->get_target_pos().DistanceTo(Game::goalie->GetPos())) < 0.1) {
+                Position target = Game::goalie->get_target_pos();
+                target.SetX(-target.GetX());
+                target.SetY(-target.GetY());
+                Game::goalie->set_target_pos(target);
+                cout << "Goalie goal changed to x: " << target.GetX() << " y: " << target.GetY() << endl;
+            }
+            if (fabs(Game::striker1->get_target_pos().DistanceTo(Game::striker1->GetPos())) < 0.1) {
+                Position target = Game::striker1->get_target_pos();
+                target.SetX(-target.GetX());
+                target.SetY(-target.GetY());
+                Game::striker1->set_target_pos(target);
+                cout << "Striker1 goal changed to x: " << target.GetX() << " y: " << target.GetY() << endl;
+            }
+            if (fabs(Game::striker2->get_target_pos().DistanceTo(Game::striker2->GetPos())) < 0.1) {
+                Position target = Game::striker2->get_target_pos();
+                target.SetX(-target.GetX());
+                target.SetY(-target.GetY());
+                Game::striker2->set_target_pos(target);
+                cout << "Striker2 goal changed to x: " << target.GetX() << " y: " << target.GetY() << endl;
+            }
+            if (fabs(Game::opponent1->get_target_pos().DistanceTo(Game::opponent1->GetPos())) < 0.1) {
+                Game::opponent1->set_target_pos(rand_pos);
+                Game::opponent1->GotoPos(rand_pos);
+            }
+
+            Game::goalie->set_wheelspeed(robot_duration);
+            Game::striker1->set_wheelspeed(robot_duration);
+            Game::striker2->set_wheelspeed(robot_duration);
+        }
+    }
 }
