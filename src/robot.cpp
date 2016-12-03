@@ -238,10 +238,10 @@ int Robot::ddeg(Angle cur_phi, Angle goal_phi) {
 // --------- alternative controller try-out -----------
 double Robot::u_heading(double bias, bool debug)
 {
-    const double KP_h = 40.0;
-    const double KI_h = 2.0;
+    const double KP_h = 20.0;
+    const double KI_h = 0.0;
     const double MAX_DRAD = M_PI;
-    const double MAX_INTEGRATOR_VALUE = 4.0;
+    const double MAX_INTEGRATOR_VALUE = 2.0;
     int prec = 3;
 
     // calculate sinus of heading error with saturation
@@ -285,7 +285,7 @@ double Robot::u_heading(double bias, bool debug)
 
 double Robot::u_dist(bool debug)
 {
-    const double KP_d = 0.0;
+    const double KP_d = 200.0;
     const double MAX_DIST_ERR = 0.8;
     int prec = 3;
 
