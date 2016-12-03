@@ -92,6 +92,12 @@ public:
 
     // misc
     int ddeg(Angle goal_phi);
+
+    // public constants for inheritance
+    const double GOAL_MAX_YPOS = 0.13;
+    const double GOAL_MIN_YPOS = -0.13;
+    const double GOAL_LEFT_XPOS = -1.48;
+    const double GOAL_RIGHT_XPOS =  1.48;
 };
 
 #endif // ROBOT_H

@@ -12,11 +12,6 @@
 #include "referee.h"
 //#include "strategy.h"
 
-#define GOAL_MAX_YPOS 0.13
-#define GOAL_MIN_YPOS -0.13
-#define GOAL_LEFT_XPOS -1.48
-#define GOAL_RIGHT_XPOS 1.48
-
 class Game
 {
 private:
