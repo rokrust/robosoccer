@@ -6,7 +6,8 @@ Striker::Striker(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Posit
 
 }
 
-void Striker::do_a_shot_at_goal(bool is_left_side){
+void Striker::do_a_shot_at_goal(bool is_left_side)
+{
     Position shooting_pos;
     Position goal;
 

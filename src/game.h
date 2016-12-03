@@ -49,18 +49,15 @@ public:
     Game(RTDBConn DBC, bool is_team_blue_in);
 
     // state machine
-    void print_state(ePlayMode state=PAUSE);
-    void update_state();
     void state_machine(bool verbose=false);
-
-    // Kick off functions
-    int take_kick_off_position();
-    void update_kick_off();
-
-    // Penalty functions
-    void take_penalty_position();
-
+    void update_state();
     void update_side();
+    void update_kick_off();
+    void print_state(ePlayMode state=PAUSE);
+
+    // Take position functions
+    void take_kick_off_position();
+    void take_penalty_position();
 	
     // Boolean get functions
     bool get_is_team_blue();

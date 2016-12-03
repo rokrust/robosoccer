@@ -1,10 +1,6 @@
 #include "goalie.h"
 #include "game.h"
 
-#define GOALIE_SLEEP_TIME 0.15
-#define CALCULUS_RATE 1
-#define MAX_LOOP_COUNTDOWN -500
-#define V_X_THRESHOLD 0.01
 
 Goalie::Goalie(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos) : Robot(DBC_in, device_nr_in, robot_array_index, pos)
 {
