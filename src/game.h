@@ -26,6 +26,15 @@ private:
     bool stay_in_state_machine;
     bool stay_in_state;
 
+    // constants
+    const int WAIT_TIME_POSITION_TAKING = 10000000;
+    const int WAIT_TIME_TURNING = 3000000;
+    const int WAIT_FOR_PENALTY_POS = 12000000;
+    const int WAIT_TIME_POSITION_CORRECTING = 2000000;
+    const int TIME_STEP_SIZE_GOALIE = 5000;
+    const double ROBOT_ARRIVED_THRESHOLD = 0.2;
+    const int NR_ROBOTS = 6;
+
 public:
     static Goalie* goalie;
     static Striker* striker1;

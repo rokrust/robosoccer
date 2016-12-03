@@ -25,6 +25,7 @@ using namespace std;
 // Code is below main Function
 void collision_avoidance_ball_tracking(Game& game_handler_in);
 void collision_avoidance_corner_driving(Game& game_handler_in);
+void test_controller(Game& game_handler_in);
 
 
 int main(void) {
@@ -98,6 +99,10 @@ int main(void) {
 
         case 8:
             collision_avoidance_corner_driving(game_handler);
+            break;
+
+        case 9:
+            test_controller(game_handler);
             break;
         }
 
@@ -199,4 +204,10 @@ void collision_avoidance_corner_driving(Game &game_handler_in)
             Game::striker2->set_wheelspeed(robot_duration);
         }
     }
+}
+
+void test_controller(Game& game_handler_in)
+{
+    int ctrlDuration = 100;
+    Timer robot_timer(ctrlDuration);
 }

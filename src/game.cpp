@@ -1,16 +1,5 @@
 #include "game.h"
 
-#define DEBUG 1
-#define WAIT_TIME_POSITION_TAKING 10000000
-#define WAIT_TIME_TURNING 3000000
-#define WAIT_FOR_PENALTY_POS 12000000
-#define WAIT_TIME_POSITION_CORRECTING 2000000
-
-#define TIME_STEP_SIZE_GOALIE 5000
-
-#define ROBOT_ARRIVED_THRESHOLD 0.2
-
-#define N_ROBOTS 6
 
 /* Game::Game(Referee* ref_in, bool is_team_blue_in, RawBall *datBall_in,
            Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
@@ -645,7 +634,7 @@ void Game::state_machine(bool verbose)
 }
 
 void Game::update_robot_positions(){
-    for(int i = 0; i < N_ROBOTS; i++){
+    for(int i = 0; i < NR_ROBOTS; i++){
         robot_positions[i] = robots[i]->GetPos();
         robots[i]->get_path_finder().update_vector_field_positions();
     }
