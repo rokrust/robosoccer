@@ -18,11 +18,14 @@ Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position 
     right_wheel_speed = 0;
 
     int n_samples = 6;
-    Controller_data c = {.sampling_time = 0.01,
-                         .speed_integrator = 0.0,
-                         .heading_integrator = 0.0, .buffer_size = n_samples,
-                         .current_sample = 0, .error_buffer = new double[n_samples]};
-    controller_data = c;
+
+    // initialize controller data
+    controller_data.sampling_time = 0.01;
+    controller_data.speed_integrator = 0.0;
+    controller_data.heading_integrator = 0.0;
+    controller_data.buffer_size = n_samples;
+    controller_data.current_sample = 0;
+    controller_data.error_buffer = new double[n_samples];
 
     path_finder = Path_finder(robot_array_index, pos);
 }
