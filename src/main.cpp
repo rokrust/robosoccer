@@ -229,7 +229,7 @@ void test_controller(Game& game_handler_in)
 
     while(1) {
         if (robot_timer.timeout()) {
-            Game::goalie->update_movement(ctrlDuration, KP_h, KI_h, KD_h, KP_d, KI_d, KD_d);
+            Game::goalie->update_movement(robot_timer, KP_h, KI_h, KD_h, KP_d, KI_d, KD_d);
         }
     }
 }

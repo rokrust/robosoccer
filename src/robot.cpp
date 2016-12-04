@@ -57,7 +57,7 @@ Robot::~Robot()
 {
 }
 
-int Robot::spot_turn(Angle phi_in, bool verbose)
+int Robot::spot_turn(Angle phi_in, int extra_wait_time_ms, bool verbose)
 {
     // define left and right wheel speed variables
     int v_left, v_right;
@@ -91,7 +91,7 @@ int Robot::spot_turn(Angle phi_in, bool verbose)
 
     // calculate the time that the turn will take in micro seconds
     // there is 30ms delay due to the bluetooth system
-    int wait_time = (turn_time + 30);
+    int wait_time = (turn_time + extra_wait_time_ms);
     if (verbose) {
         cout << "Wait time in ms: " << wait_time << endl;
     }
@@ -291,23 +291,35 @@ double Robot::u_dist(double KP_d, double KI_d, double KD_d, bool debug)
     return u_dist;
 }
 
-void Robot::update_movement(int timeout_ms, double KP_h, double KI_h, double KD_h,
+void Robot::update_movement(Timer& timer, double KP_h, double KI_h, double KD_h,
                             double KP_d, double KI_d, double KD_d, bool debug)
 {
-    double cur_u_dist = u_dist(KP_d, KI_d, KD_d);
-    // TODO bias
-    double cur_u_heading = u_heading(0.0, KP_h, KI_h, KD_h);
+    int periodic_timeout_ms = timer.get_timeout_duration_ms();
 
-    left_wheel_speed = cur_u_dist - cur_u_heading;
-    right_wheel_speed = cur_u_dist + cur_u_heading;
+    // check for spot-turn
+    const int MAX_ANGLE_NO_SPOT_TURN = 60;
+    Angle goal_phi = GetPos().AngleOfLineToPos(get_target_pos());
+    int cur_ddeg = ddeg(GetPhi(), goal_phi);
+    if (abs(cur_ddeg) > MAX_ANGLE_NO_SPOT_TURN) {
+        int wait_time = spot_turn(goal_phi);
+        timer.enable_manually(wait_time);
+    } else {
+        // drive
+        double cur_u_dist = u_dist(KP_d, KI_d, KD_d);
+        double cur_u_heading = u_heading(0.0, KP_h, KI_h, KD_h);
 
-    if (debug) {
-        cout << "--Wheel Speeds--" << endl;
-        cout << setprecision(prec) << fixed << " Left Speed: " << left_wheel_speed << endl;
-        cout << setprecision(prec) << fixed << "Right Speed: " << right_wheel_speed << endl;
+        left_wheel_speed = cur_u_dist - cur_u_heading;
+        right_wheel_speed = cur_u_dist + cur_u_heading;
+
+        if (debug) {
+            cout << "--Wheel Speeds--" << endl;
+            cout << setprecision(prec) << fixed << " Left Speed: " << left_wheel_speed << endl;
+            cout << setprecision(prec) << fixed << "Right Speed: " << right_wheel_speed << endl;
+        }
+
+        MoveMs(left_wheel_speed, right_wheel_speed, periodic_timeout_ms+10, 100);
+        timer.enable_manually(periodic_timeout_ms);
     }
-
-    MoveMs(left_wheel_speed, right_wheel_speed, timeout_ms+10, 100);
 }
 
 double Robot::clip(double input, const double limit, string saturation_print)

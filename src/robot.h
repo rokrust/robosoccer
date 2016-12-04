@@ -80,7 +80,7 @@ public:
     Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos);
     ~Robot();
 
-    int spot_turn(Angle phi_in, bool verbose=true);
+    int spot_turn(Angle phi_in, int extra_wait_time_ms=500, bool verbose=true);
     int drive_parallel(float diff_to_drive);
 
     // controller functions
@@ -99,12 +99,13 @@ public:
     int ddeg(Angle cur_phi, Angle goal_phi);
 
     // try out alternative controller
+    // TODO: Bias in heading
     const int prec = 3; // output precision
     double err_heading_sum = 0;
     double err_heading_before = 0;
     double u_heading(double bias, double KP_h, double KI_h, double KD_h, bool debug=true);
     double u_dist(double KP_d, double KI_d, double KD_d, bool debug=true);
-    void update_movement(int timeout_ms, double KP_h, double KI_h, double KD_h, double KP_d, double KI_d, double KD_d, bool debug=true);
+    void update_movement(Timer& timer, double KP_h, double KI_h, double KD_h, double KP_d, double KI_d, double KD_d, bool debug=true);
     double clip(double input, const double limit, string saturation_print);
 
 };
