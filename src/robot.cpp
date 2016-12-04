@@ -261,7 +261,7 @@ double Robot::u_heading(double bias, double KP_h, double KI_h, double KD_h, bool
     double u_heading = KP_h * err + KI_h * err_heading_sum + KD_h * delta_error_heading;
 
     if (debug) {
-        cout << "--Heading--" << endl;
+        cout << "----------Heading----------" << endl;
         cout << setprecision(prec) << fixed << "           cur_ddeg: " << cur_ddeg << endl;
         cout << setprecision(prec) << fixed << "                err: " << err << endl;
         cout << setprecision(prec) << fixed << "    err_heading_sum: " << err_heading_sum << endl;
@@ -294,7 +294,7 @@ double Robot::u_dist(double KP_d, double KI_d, double KD_d, bool debug)
     double u_dist = KP_d * err + KI_d * err_dist_sum + KD_d * delta_error_dist;
 
     if (debug) {
-        cout << "--Distance--" << endl;
+        cout << "----------Distance----------" << endl;
         cout << setprecision(prec) << fixed << "   err: " << err << endl;
         cout << setprecision(prec) << fixed << "u_dist: " << u_dist << endl;
     }
@@ -323,9 +323,11 @@ void Robot::update_movement(Timer& timer, double KP_h, double KI_h, double KD_h,
         right_wheel_speed = cur_u_dist + cur_u_heading;
 
         if (debug) {
-            cout << "--Wheel Speeds--" << endl;
-            cout << setprecision(prec) << fixed << " Left Speed: " << left_wheel_speed << endl;
-            cout << setprecision(prec) << fixed << "Right Speed: " << right_wheel_speed << endl;
+            cout << "----------Movement----------" << endl;
+            cout << "KP_h = " << KP_h << " | KI_h = " << KI_h << " | KD_h = " << KD_h << endl;
+            cout << "KP_d = " << KP_d << " | KI_d = " << KI_d << " | KD_d = " << KD_d << endl;
+            cout << setprecision(prec) << fixed << " Left Wheel Speed: " << left_wheel_speed << endl;
+            cout << setprecision(prec) << fixed << "Right Wheel Speed: " << right_wheel_speed << endl;
         }
 
         MoveMs(left_wheel_speed, right_wheel_speed, periodic_timeout_ms+10, 100);

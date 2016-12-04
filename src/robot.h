@@ -99,7 +99,8 @@ public:
     int ddeg(Angle cur_phi, Angle goal_phi);
 
     // try out alternative controller
-    // TODO: Bias in heading
+    // TODO: Bias in heading, saturation values, good gain parameter set, debug outputs
+    // TODO: Integrator decay
     const int prec = 3; // output precision
     // integrator and differentiator variables
     double err_heading_sum = 0;
