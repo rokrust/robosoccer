@@ -236,68 +236,48 @@ int Robot::ddeg(Angle cur_phi, Angle goal_phi) {
 }
 
 // --------- alternative controller try-out -----------
-double Robot::u_heading(double bias, bool debug)
+double Robot::u_heading(double bias, double KP_h, double KI_h, double KD_h, bool debug)
 {
-    const double KP_h = 20.0;
-    const double KI_h = 0.0;
     const double MAX_DRAD = M_PI;
     const double MAX_INTEGRATOR_VALUE = 2.0;
-    int prec = 3;
 
     // calculate sinus of heading error with saturation
     Angle cur_heading = GetPhi();
     Angle goal_heading = GetPos().AngleOfLineToPos(get_target_pos());
     int cur_ddeg = ddeg(cur_heading, goal_heading);
     double cur_drad = ((float)cur_ddeg / 360.0)*2*M_PI;
-    if (cur_drad > MAX_DRAD) {
-        cur_drad = MAX_DRAD;
-        cout << "Warning: Current heading error in radian saturated to " << MAX_DRAD << endl;
-    }
-    if (cur_drad < -MAX_DRAD) {
-        cur_drad = -MAX_DRAD;
-        cout << "Warning: Current heading error in radian saturated to " << MAX_DRAD << endl;
-    }
+    cur_drad = clip(cur_drad, MAX_DRAD, "Warning! Heading error in radian saturated to: ");
     double err = sin(cur_drad);
 
     // update integrator
     err_heading_sum += err;
-    if (err_heading_sum > MAX_INTEGRATOR_VALUE) {
-        err_heading_sum = MAX_INTEGRATOR_VALUE;
-        cout << "Info: Integrator saturated to " << err_heading_sum << endl;
-    }
-    if (err_heading_sum < -MAX_INTEGRATOR_VALUE) {
-        err_heading_sum = -MAX_INTEGRATOR_VALUE;
-        cout << "Info: Integrator saturated to " << err_heading_sum << endl;
-    }
+    err_heading_sum = clip(err_heading_sum, MAX_INTEGRATOR_VALUE, "Warning! Integrational heading error saturated to: ");
 
-    double u_heading = KP_h * err + KI_h * err_heading_sum;
+    // update differential part
+    double delta_error_heading = err_heading_before - err;
+    err_heading_before = err;
+
+    // heading value, consisting in P, I and D part
+    double u_heading = KP_h * err + KI_h * err_heading_sum + KD_h * delta_error_heading;
 
     if (debug) {
         cout << "--Heading--" << endl;
-        cout << setprecision(prec) << fixed << "       cur_ddeg: " << cur_ddeg << endl;
-        cout << setprecision(prec) << fixed << "            err: " << err << endl;
-        cout << setprecision(prec) << fixed << "err_heading_sum: " << err_heading_sum << endl;
-        cout << setprecision(prec) << fixed << "      u_heading: " << u_heading << endl;
+        cout << setprecision(prec) << fixed << "           cur_ddeg: " << cur_ddeg << endl;
+        cout << setprecision(prec) << fixed << "                err: " << err << endl;
+        cout << setprecision(prec) << fixed << "    err_heading_sum: " << err_heading_sum << endl;
+        cout << setprecision(prec) << fixed << "delta_error_heading: " << delta_error_heading << endl;
+        cout << setprecision(prec) << fixed << " err_heading_before: " << err_heading_before << endl;
+        cout << setprecision(prec) << fixed << " -->      u_heading: " << u_heading << endl;
     }
 
     return u_heading;
 }
 
-double Robot::u_dist(bool debug)
+double Robot::u_dist(double KP_d, double KI_d, double KD_d, bool debug)
 {
-    const double KP_d = 200.0;
     const double MAX_DIST_ERR = 0.8;
-    int prec = 3;
-
     double err = GetPos().DistanceTo(get_target_pos());
-    if (err > MAX_DIST_ERR) {
-        err = MAX_DIST_ERR;
-        cout << "Warning: Current distance error in meters saturated to " << MAX_DIST_ERR << endl;
-    }
-    if (err < -MAX_DIST_ERR) {
-        err = -MAX_DIST_ERR;
-        cout << "Warning: Current distance error in meters saturated to " << MAX_DIST_ERR << endl;
-    }
+    err = clip(err, MAX_DIST_ERR, "Info: Distance error saturated to: ");
 
     // TODO
     double u_dist = KP_d * err;
@@ -311,13 +291,12 @@ double Robot::u_dist(bool debug)
     return u_dist;
 }
 
-void Robot::update_movement(int timeout_ms, bool debug)
+void Robot::update_movement(int timeout_ms, double KP_h, double KI_h, double KD_h,
+                            double KP_d, double KI_d, double KD_d, bool debug)
 {
-    const int prec = 3;
-
-    double cur_u_dist = u_dist();
+    double cur_u_dist = u_dist(KP_d, KI_d, KD_d);
     // TODO bias
-    double cur_u_heading = u_heading(0.0);
+    double cur_u_heading = u_heading(0.0, KP_h, KI_h, KD_h);
 
     left_wheel_speed = cur_u_dist - cur_u_heading;
     right_wheel_speed = cur_u_dist + cur_u_heading;
@@ -329,4 +308,27 @@ void Robot::update_movement(int timeout_ms, bool debug)
     }
 
     MoveMs(left_wheel_speed, right_wheel_speed, timeout_ms+10, 100);
+}
+
+double Robot::clip(double input, const double limit, string saturation_print)
+{
+    bool saturated;
+    double max_value = fabs(limit);
+    double output;
+    if (input > max_value) {
+        output = max_value;
+        saturated = true;
+    } else if (input < -max_value) {
+        output = -max_value;
+        saturated = true;
+    } else {
+        output = input;
+        saturated = false;
+    }
+
+    if (saturated) {
+        cout << saturation_print << output << endl;
+    }
+
+    return output;
 }

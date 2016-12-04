@@ -208,6 +208,20 @@ void collision_avoidance_corner_driving(Game &game_handler_in)
 
 void test_controller(Game& game_handler_in)
 {
+    double KP_h, KI_h, KD_h;
+    double KP_d, KI_d, KD_d;
+    cout << "KP_h: ";
+    cin >> KP_h;
+    cout << "KI_h: ";
+    cin >> KI_h;
+    cout << "KD_h: ";
+    cin >> KD_h;
+    cout << "KP_d: ";
+    cin >> KP_d;
+    cout << "KI_d: ";
+    cin >> KI_d;
+    cout << "KD_d: ";
+    cin >> KD_d;
     int ctrlDuration = 100;
     Timer robot_timer(ctrlDuration);
     Position target_pos(0.0, 0.0);
@@ -215,9 +229,7 @@ void test_controller(Game& game_handler_in)
 
     while(1) {
         if (robot_timer.timeout()) {
-            //Game::goalie->u_heading(0.0);
-            //Game::goalie->u_dist();
-            Game::goalie->update_movement(ctrlDuration);
+            Game::goalie->update_movement(ctrlDuration, KP_h, KI_h, KD_h, KP_d, KI_d, KD_d);
         }
     }
 }

@@ -99,10 +99,13 @@ public:
     int ddeg(Angle cur_phi, Angle goal_phi);
 
     // try out alternative controller
+    const int prec = 3; // output precision
     double err_heading_sum = 0;
-    double u_heading(double bias, bool debug=true);
-    double u_dist(bool debug=true);
-    void update_movement(int timeout_ms, bool debug=true);
+    double err_heading_before = 0;
+    double u_heading(double bias, double KP_h, double KI_h, double KD_h, bool debug=true);
+    double u_dist(double KP_d, double KI_d, double KD_d, bool debug=true);
+    void update_movement(int timeout_ms, double KP_h, double KI_h, double KD_h, double KP_d, double KI_d, double KD_d, bool debug=true);
+    double clip(double input, const double limit, string saturation_print);
 
 };
 
