@@ -257,7 +257,7 @@ double Robot::u_heading(double bias, double KP_h, double KI_h, double KD_h, bool
     double delta_error_heading = err_heading_before - err;
     err_heading_before = err;
 
-    // heading value, consisting in P, I and D part
+    // heading control input, consisting in P, I and D part
     double u_heading = KP_h * err + KI_h * err_heading_sum + KD_h * delta_error_heading;
 
     if (debug) {
@@ -276,11 +276,22 @@ double Robot::u_heading(double bias, double KP_h, double KI_h, double KD_h, bool
 double Robot::u_dist(double KP_d, double KI_d, double KD_d, bool debug)
 {
     const double MAX_DIST_ERR = 0.8;
+    const double MAX_DIST_ERROR_SUM = 2.0;
+
+    // calculate distance error with saturation
     double err = GetPos().DistanceTo(get_target_pos());
     err = clip(err, MAX_DIST_ERR, "Info: Distance error saturated to: ");
 
-    // TODO
-    double u_dist = KP_d * err;
+    // update integrator
+    err_dist_sum += err;
+    err_dist_sum = clip(err_dist_sum, MAX_DIST_ERROR_SUM, "Warning: Integrational distance error saturated to: ");
+
+    // update differential part
+    double delta_error_dist = err_dist_before - err;
+    err_dist_before = err;
+
+    // distance control input, consisting in P, I and D part
+    double u_dist = KP_d * err + KI_d * err_dist_sum + KD_d * delta_error_dist;
 
     if (debug) {
         cout << "--Distance--" << endl;

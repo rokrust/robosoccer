@@ -101,11 +101,17 @@ public:
     // try out alternative controller
     // TODO: Bias in heading
     const int prec = 3; // output precision
+    // integrator and differentiator variables
     double err_heading_sum = 0;
     double err_heading_before = 0;
+    double err_dist_sum = 0;
+    double err_dist_before = 0;
+    // control input calculation
     double u_heading(double bias, double KP_h, double KI_h, double KD_h, bool debug=true);
     double u_dist(double KP_d, double KI_d, double KD_d, bool debug=true);
+    // movement function, performing a spot_turn or the driving, setting custom timeouts
     void update_movement(Timer& timer, double KP_h, double KI_h, double KD_h, double KP_d, double KI_d, double KD_d, bool debug=true);
+    // helper function to clip values to limits
     double clip(double input, const double limit, string saturation_print);
 
 };
