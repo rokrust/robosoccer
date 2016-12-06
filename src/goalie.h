@@ -14,7 +14,7 @@ private:
 
 
 public:
-    Goalie(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos);
+    Goalie(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position* robot_positions);
 
     void do_a_penalty_save();
 

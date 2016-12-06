@@ -46,7 +46,7 @@ public:
     static RawBall* datBall;
 
     static Robot* robots[6]; //Should fix this hard coding
-    static Position robot_positions[6]; //Should fix this hard coding
+    static Position robot_positions[6]; //Should fix this hard coding. Should not be static
 
 //    Strategy* strategy_modul;
 

@@ -45,6 +45,7 @@ class Robot : public RoboControl
 {
 private:
     int device_nr;
+    int robot_array_index;
 
     // turn constants
     const int BASE_TURN_SPEED = 80;
@@ -63,9 +64,6 @@ private:
 
     const double EXTRAPOL_LIMIT = 1.0;
 
-    int left_wheel_speed;
-    int right_wheel_speed;
-
     Controller_data controller_data;
     Path_finder path_finder;
 
@@ -73,13 +71,8 @@ private:
     double error_buffer_mean();
 
 public:
-    // public constants for inheritance
-    const double GOAL_MAX_YPOS = 0.13;
-    const double GOAL_MIN_YPOS = -0.13;
-    const double GOAL_LEFT_XPOS = -1.48;
-    const double GOAL_RIGHT_XPOS =  1.48;
 
-    Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos);
+    Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position* robot_positions);
     ~Robot();
 
     int spot_turn(Angle phi_in, bool verbose=true);
@@ -88,9 +81,8 @@ public:
     // controller functions
     int update_speed_controller(Angle ref_heading, Angle cur_heading);
     int update_heading_controller(Angle ref_heading, Angle cur_heading);
-    void set_wheelspeed(int timer_duration);
+    void set_wheelspeed(int timer_duration, Position* robot_positions);
 
-    Path_finder get_path_finder();
     void set_sampling_time(int sampling_time);
 
     // target pos
@@ -100,6 +92,11 @@ public:
     // misc
     int ddeg(Angle goal_phi);
 
+protected:
+    const double GOAL_MAX_YPOS = 0.13;
+    const double GOAL_MIN_YPOS = -0.13;
+    const double GOAL_LEFT_XPOS = -1.48;
+    const double GOAL_RIGHT_XPOS =  1.48;
 };
 
 #endif // ROBOT_H

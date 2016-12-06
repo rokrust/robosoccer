@@ -51,13 +51,13 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
 
     // Initialize Robot Objects
     cout << "Before goalie" << endl;
-    goalie = new Goalie(DBC, myGoalieDvNr, 0, robot_positions[0]);
+    goalie = new Goalie(DBC, myGoalieDvNr, 0, robot_positions);
     cout << "After goalie" << endl;
-    striker1 = new Striker(DBC, myStriker1DvNr, 1, robot_positions[1]);
-    striker2 = new Striker(DBC, myStriker1DvNr+1, 2, robot_positions[2]);
-    opponent1 = new Opponent(DBC, theOpponent1DvNr, 3, robot_positions[3]);
-    opponent2 = new Opponent(DBC, theOpponent1DvNr+1, 4, robot_positions[4]);
-    opponent3 = new Opponent(DBC, theOpponent1DvNr+2, 5, robot_positions[5]);
+    striker1 = new Striker(DBC, myStriker1DvNr, 1, robot_positions);
+    striker2 = new Striker(DBC, myStriker1DvNr+1, 2, robot_positions);
+    opponent1 = new Opponent(DBC, theOpponent1DvNr, 3, robot_positions);
+    opponent2 = new Opponent(DBC, theOpponent1DvNr+1, 4, robot_positions);
+    opponent3 = new Opponent(DBC, theOpponent1DvNr+2, 5, robot_positions);
 
 
     // initialize state machine variables
@@ -632,7 +632,6 @@ bool Game::get_has_kick_off()
 void Game::update_robot_positions(){
     for(int i = 0; i < NR_ROBOTS; i++){
         robot_positions[i] = robots[i]->GetPos();
-        robots[i]->get_path_finder().update_vector_field_positions();
     }
 }
 

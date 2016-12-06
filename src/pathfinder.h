@@ -16,14 +16,15 @@ private:
 	std::vector<double> vector_field_weights;
 
     Position target_pos;
-	int robots_array_index;
+
+    ateam::Vector sum_vector_field(Position current_pos);
+    void update_vector_field_positions(Position* robot_positions);
 
 public:
     Path_finder(){}
-    Path_finder(int robots_array_index, Position pos);
+    Path_finder(int robots_array_index, Position* robot_positions);
 
-    ateam::Vector sum_vector_field(Position current_pos);
-    void update_vector_field_positions();
+    Angle calculate_reference_angle(int current_pos_index, Position cur_pos);
 
     void set_target_pos(Position pos);
     Position get_target_pos();

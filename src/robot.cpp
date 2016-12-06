@@ -32,25 +32,24 @@ void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading)
     }
 }
 
-Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos) :
+Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position* robot_positions) :
 			 RoboControl(DBC_in, device_nr_in)
 {
     cout << "Robot Object initialized" << endl;
     device_nr = device_nr_in;
-    left_wheel_speed = 0;
-    right_wheel_speed = 0;
+    this->robot_array_index = robot_array_index;
 
-    int n_samples = 6;
 
     // initialize controller data
+    // can also consider putting this into a private function
     controller_data.sampling_time = 0.01;
     controller_data.speed_integrator = 0.0;
     controller_data.heading_integrator = 0.0;
-    controller_data.buffer_size = n_samples;
+    controller_data.buffer_size = 6;
     controller_data.current_sample = 0;
-    controller_data.error_buffer = new double[n_samples];
+    controller_data.error_buffer = new double[6];
 
-    path_finder = Path_finder(robot_array_index, pos);
+    path_finder = Path_finder(robot_array_index, robot_positions);
 }
 
 Robot::~Robot()
@@ -166,20 +165,17 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 }
 
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
-void Robot::set_wheelspeed(int timer_duration) {
+void Robot::set_wheelspeed(int timer_duration, Position* robot_positions) {
 
-    Angle ref_heading = path_finder.sum_vector_field(GetPos()).vector_angle();
-
-    cout << "Reference heading: " << ref_heading << endl;
-
+    Angle ref_heading = path_finder.calculate_reference_angle(robot_array_index, robot_positions);
     Angle cur_heading = GetPhi();
 
     reset_integrators_if_necessary(ref_heading, cur_heading);
 
     int u_omega = update_heading_controller(ref_heading, cur_heading);
     int u_speed = update_speed_controller(ref_heading, cur_heading);
-    //u_speed = 0;
 
+    //hard coding should be removed
     int saturation_speed = 220;
     if (u_speed > saturation_speed) {
         u_speed = saturation_speed;
@@ -188,31 +184,23 @@ void Robot::set_wheelspeed(int timer_duration) {
         u_speed = -saturation_speed;
     }
 
-    right_wheel_speed = u_speed + u_omega;
-    left_wheel_speed = u_speed - u_omega;
+    int right_wheel_speed = u_speed + u_omega;
+    int left_wheel_speed = u_speed - u_omega;
 
-
-    cout << "Right: " << right_wheel_speed << endl
-         << "Left: " << left_wheel_speed << endl << endl;
-
-    //Might have to change the last two arguments
-    //cout << "MoveMs" << endl;
-
+    //hard coding should be removed
     MoveMs(left_wheel_speed, right_wheel_speed, timer_duration+10, 100);
 }
 
-Path_finder Robot::get_path_finder()
-{
-    return path_finder;
-}
 
 void Robot::set_sampling_time(int sampling_time)
 {
     controller_data.sampling_time = sampling_time;
 }
 
+
 void Robot::set_target_pos(Position pos, bool extrapol)
 {
+
     if (extrapol) {
         Position current_pos = GetPos();
         double dist_to_targ = current_pos.DistanceTo(pos);
@@ -230,10 +218,12 @@ void Robot::set_target_pos(Position pos, bool extrapol)
     }
 }
 
+
 Position Robot::get_target_pos()
 {
     return path_finder.get_target_pos();
 }
+
 
 int Robot::ddeg(Angle goal_phi) {
     Angle cur_phi = GetPhi();

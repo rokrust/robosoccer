@@ -10,7 +10,7 @@ private:
 
 
 public:
-    Opponent(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos);
+    Opponent(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position* robot_positions);
 };
 
 #endif // OPPONENT_H

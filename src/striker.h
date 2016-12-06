@@ -13,7 +13,7 @@ private:
 
 
 public:
-    Striker(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos);
+    Striker(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position* robot_positions);
 
     void do_a_shot_at_goal(bool is_left_side);
 };
