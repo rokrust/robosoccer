@@ -119,6 +119,11 @@ int main(void) {
             test_extrapol_shit(game_handler);
             break;
 
+        case 11:
+            game_handler.set_is_left_side(true);
+            game_handler.strategy_module.strat_move();
+            break;
+
         }
     } catch (DBError err) {
         cout << "Client died on Error: " << err.what() << endl;

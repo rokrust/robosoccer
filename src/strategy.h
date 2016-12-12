@@ -1,7 +1,9 @@
 #ifndef STRATEGY_H
 #define STRATEGY_H
 
-#include "game.h"
+#include "goalie.h"
+#include "striker.h"
+#include "opponent.h"
 
 
 
@@ -22,15 +24,36 @@
 #define TARGET_FIELD 7
 #define N_ROBOTS 6
 
-class Strategy{
+class Strategy {
 
 private:
+    Goalie* goalie;
+    Striker* striker1;
+    Striker* striker2;
+    Opponent* opponent1;
+    Opponent* opponent2;
+    Opponent* opponent3;
+
+    RawBall* datBall;
+    bool is_left_side;
+
+    int attack();
+
+    int defend();
 
 
 public:
-    Strategy();
+    Strategy(){}
 
+    Strategy(Goalie *goalie_in, Striker *striker1_in, Striker *striker2_in,
+             Opponent *opponent1_in, Opponent *opponent2_in, Opponent *opponent3_in,
+             RawBall *datBall_in, bool is_left_side_in);
 
+    int strat_move();
+    // Strategy operator=(Strategy strat);
+
+    void set_is_left_side(bool is_left_side_in);
+    bool get_is_left_side();
 };
 
 

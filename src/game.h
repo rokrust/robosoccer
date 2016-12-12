@@ -1,8 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-//class Strategy;
-
 #include "kogmo_rtdb.hxx"
 #include "robo_control.h"
 #include "robot.h"
@@ -10,7 +8,7 @@
 #include "striker.h"
 #include "opponent.h"
 #include "referee.h"
-//#include "strategy.h"
+#include "strategy.h"
 
 class Game
 {
@@ -20,7 +18,7 @@ private:
     Referee* referee_handler;
 
     bool is_team_blue;
-    bool is_left_side;
+    bool is_left_side; // IF YOU CHANGE THIS: USE THE SET_FUNCTION SO IT ALSO GETS CHANGED IN THE STRATEGY MODULE
     bool has_kick_off;
 
     bool stay_in_state_machine;
@@ -36,6 +34,8 @@ private:
     const int NR_ROBOTS = 6;
 
 public:
+    Strategy strategy_module;
+
     Goalie* goalie;
     Striker* striker1;
     Striker* striker2;
@@ -48,7 +48,6 @@ public:
     Robot* robots[6]; //Should fix this hard coding
     Position robot_positions[6]; //Should fix this hard coding. Should not be static
 
-//    Strategy* strategy_modul;
 
     Game(RTDBConn DBC, bool is_team_blue_in);
 
@@ -72,7 +71,7 @@ public:
 
     // build string of Position in matlab syntax
     std::string matlsynt(Position pos);
-
+    void set_is_left_side(bool is_left_side_in);
 };
 
 

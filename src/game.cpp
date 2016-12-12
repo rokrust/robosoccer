@@ -6,12 +6,8 @@
 
 Game::Game(RTDBConn DBC, bool is_team_blue_in)
 {
-
     // Initialize Referee
-    // Referee ref_in(DBC);
-    // ref_in.Init();
     referee_handler = new Referee(DBC);
-
     referee_handler->Init();
 
     // Initialize datBall
@@ -20,8 +16,6 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
 
     // Set Team Colour
     is_team_blue = is_team_blue_in;
-    //Position test = robot_positions[0];
-    //cout << "x:" << test.GetX() << ", y: " << test.GetY() << endl;
 
     // Get device Numbers for drobots depending on which colour
     int myGoalieDvNr;
@@ -40,14 +34,17 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
 
 
     // Initialize Robot Objects
-    cout << "Before goalie" << endl;
     goalie = new Goalie(DBC, myGoalieDvNr, 0, robot_positions);
-    cout << "After goalie" << endl;
     striker1 = new Striker(DBC, myStriker1DvNr, 1, robot_positions);
     striker2 = new Striker(DBC, myStriker1DvNr+1, 2, robot_positions);
     opponent1 = new Opponent(DBC, theOpponent1DvNr, 3, robot_positions);
     opponent2 = new Opponent(DBC, theOpponent1DvNr+1, 4, robot_positions);
     opponent3 = new Opponent(DBC, theOpponent1DvNr+2, 5, robot_positions);
+
+    // Initialize Strategy Module
+    strategy_module = Strategy(goalie, striker1, striker2,
+                               opponent1, opponent2, opponent3,
+                               datBall, is_left_side);
 
 
     // initialize state machine variables
@@ -320,18 +317,23 @@ void Game::update_state()
 
 void Game::update_side()
 {
+    // ANDI DID MODIFY THIS WITH THE SET FUNCTION IT SHOULD STILL DO THE SAME BUT ALSO SET THE SIDE IN STRATEGY
     int blue_has_right = referee_handler->GetBlueSide();
     if ((is_team_blue) && (!blue_has_right)) {
-        is_left_side = true;
+        // is_left_side = true;
+        this->set_is_left_side(true);
     }
     if ((is_team_blue) && (blue_has_right)) {
-        is_left_side = false;
+        // is_left_side = false;
+        this->set_is_left_side(false);
     }
     if ((!is_team_blue) && (!blue_has_right)) {
-        is_left_side = false;
+        // is_left_side = false;
+        this->set_is_left_side(false);
     }
     if ((!is_team_blue) && (blue_has_right)) {
-        is_left_side = true;
+        // is_left_side = true;
+        this->set_is_left_side(true);
     }
 }
 
@@ -637,4 +639,10 @@ std::string Game::matlsynt(Position pos)
     // Usage
     // Position pos2print(1, 0);
     // cout << "pos2print = " << game_handler.matlsynt(pos2print) << endl;
+}
+
+void Game::set_is_left_side(bool is_left_side_in)
+{
+    is_left_side = is_left_side_in;
+    strategy_module.set_is_left_side(is_left_side_in);
 }

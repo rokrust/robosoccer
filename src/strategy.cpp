@@ -1,7 +1,75 @@
 #include "strategy.h"
 
-Strategy::Strategy(){
 
+Strategy::Strategy(Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
+                   Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in,
+                   RawBall* datBall_in, bool is_left_side_in)
+{
+    goalie = goalie_in;
+    striker1 = striker1_in;
+    striker2 = striker2_in;
+    opponent1 = opponent1_in;
+    opponent2 = opponent2_in;
+    opponent3 = opponent3_in;
+
+    datBall = datBall_in;
+    is_left_side = is_left_side_in;
+}
+
+
+int Strategy::attack()
+{
+    cout << "Team is Attacking" << endl;
+    return 0;
+}
+
+int Strategy::defend()
+{
+    cout << "Team is Defending" << endl;
+    return 0;
+}
+
+
+// Determine if attack or defend
+int Strategy::strat_move()
+{
+    // Determine which side of the Field the Ball is in
+    bool ball_in_our_half= false;
+    if (is_left_side) {
+        if (datBall->GetX() >= 0.0) {
+            ball_in_our_half = true;
+            // cout << "Case 1" << endl;
+        } else {
+            ball_in_our_half = false;
+            // cout << "Case 2" << endl;
+        }
+    } else {
+        if (datBall->GetX() < 0.0) {
+            ball_in_our_half = true;
+            // cout << "Case 3" << endl;
+        } else {
+            ball_in_our_half = false;
+            // cout << "Case 4" << endl;
+        }
+
+    }
+
+    cout << "We play on the left side: " << is_left_side << " and the Ball is on the left Half: " << ball_in_our_half << endl;
+
+    // Get Robot closest to Ball
+
+
+    return 0;
+}
+
+void Strategy::set_is_left_side(bool is_left_side_in)
+{
+    is_left_side = is_left_side_in;
+}
+
+bool Strategy::get_is_left_side()
+{
+    return is_left_side;
 }
 
 
