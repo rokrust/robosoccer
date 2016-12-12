@@ -6,7 +6,7 @@ Striker::Striker(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Posit
 
 }
 
-void Striker::do_a_shot_at_goal(bool is_left_side)
+void Striker::do_a_shot_at_goal(RawBall* datBall, bool is_left_side)
 {
     Position shooting_pos;
     Position goal;
@@ -24,17 +24,17 @@ void Striker::do_a_shot_at_goal(bool is_left_side)
     // Set a flat line under the ball to shoot from
     if(is_left_side){
         goal.SetX(GOAL_RIGHT_XPOS);
-        shooting_pos.SetX(Game::datBall->GetX() - 0.15);
+        shooting_pos.SetX(datBall->GetX() - 0.15);
     }
     else{
         goal.SetX(GOAL_LEFT_XPOS);
-        shooting_pos.SetX(Game::datBall->GetX() + 0.15);
+        shooting_pos.SetX(datBall->GetX() + 0.15);
     }
 
     //Find equation for the line between ball and goal
     //y = ascent*x + constant
-    double ascent = (goal.GetY()-Game::datBall->GetY())/(goal.GetX()-Game::datBall->GetX());
-    double constant = Game::datBall->GetY() - ascent*Game::datBall->GetX();
+    double ascent = (goal.GetY()-datBall->GetY())/(goal.GetX()-datBall->GetX());
+    double constant = datBall->GetY() - ascent*datBall->GetX();
 
     //find y-coordinate where estimation line and shooting line crosses
     shooting_pos.SetY(ascent*shooting_pos.GetX() + constant);
@@ -48,7 +48,7 @@ void Striker::do_a_shot_at_goal(bool is_left_side)
     //while(this->GetMovingStatus() == STATUS_MOVING){ cout << "In while\n";}
 
     //Turn towards the ball and kick
-    Angle angle_to_ball = GetPos().AngleOfLineToPos(Game::datBall->GetPos());
+    Angle angle_to_ball = GetPos().AngleOfLineToPos(datBall->GetPos());
 
     usleep(spot_turn(angle_to_ball));
     usleep(1000000);

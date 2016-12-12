@@ -36,17 +36,17 @@ private:
     const int NR_ROBOTS = 6;
 
 public:
-    static Goalie* goalie;
-    static Striker* striker1;
-    static Striker* striker2;
-    static Opponent* opponent1;
-    static Opponent* opponent2;
-    static Opponent* opponent3;
+    Goalie* goalie;
+    Striker* striker1;
+    Striker* striker2;
+    Opponent* opponent1;
+    Opponent* opponent2;
+    Opponent* opponent3;
 
-    static RawBall* datBall;
+    RawBall* datBall;
 
-    static Robot* robots[6]; //Should fix this hard coding
-    static Position robot_positions[6]; //Should fix this hard coding. Should not be static
+    Robot* robots[6]; //Should fix this hard coding
+    Position robot_positions[6]; //Should fix this hard coding. Should not be static
 
 //    Strategy* strategy_modul;
 
