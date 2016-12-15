@@ -2,8 +2,7 @@
 
 
 Strategy::Strategy(Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in,
-                   Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in,
-                   RawBall* datBall_in, bool is_left_side_in)
+                   Opponent* opponent1_in, Opponent* opponent2_in, Opponent* opponent3_in, RawBall* datBall_in, bool is_left_side_in)
 {
     goalie = goalie_in;
     striker1 = striker1_in;
@@ -11,6 +10,33 @@ Strategy::Strategy(Goalie* goalie_in, Striker* striker1_in, Striker* striker2_in
     opponent1 = opponent1_in;
     opponent2 = opponent2_in;
     opponent3 = opponent3_in;
+
+    robots[0] = goalie;
+    robots[1] = striker1;
+    robots[2] = striker2;
+    robots[3] = opponent1;
+    robots[4] = opponent2;
+    robots[5] = opponent3;
+
+    datBall = datBall_in;
+    is_left_side = is_left_side_in;
+}
+
+Strategy::Strategy(Robot **robots_in, RawBall *datBall_in, bool is_left_side_in)
+{
+    robots[0] = *(robots_in);
+    robots[1] = *(robots_in + 1);
+    robots[2] = *(robots_in + 2);
+    robots[3] = *(robots_in + 3);
+    robots[4] = *(robots_in + 4);
+    robots[5] = *(robots_in + 5);
+
+    goalie = static_cast<Goalie*>(robots[0]);
+    striker1 = static_cast<Striker*>(robots[1]);
+    striker2 = static_cast<Striker*>(robots[2]);
+    opponent1 = static_cast<Opponent*>(robots[3]);
+    opponent2 = static_cast<Opponent*>(robots[4]);
+    opponent3 = static_cast<Opponent*>(robots[5]);
 
     datBall = datBall_in;
     is_left_side = is_left_side_in;
@@ -30,33 +56,45 @@ int Strategy::defend()
 }
 
 
-// Determine if attack or defend
+// Determine if attack or defend respectively which kind of sick move to do
 int Strategy::strat_move()
 {
     // Determine which side of the Field the Ball is in
     bool ball_in_our_half= false;
     if (is_left_side) {
         if (datBall->GetX() >= 0.0) {
-            ball_in_our_half = true;
+            ball_in_our_half = false;
             // cout << "Case 1" << endl;
         } else {
-            ball_in_our_half = false;
+            ball_in_our_half = true;
             // cout << "Case 2" << endl;
         }
     } else {
         if (datBall->GetX() < 0.0) {
-            ball_in_our_half = true;
+            ball_in_our_half = false;
             // cout << "Case 3" << endl;
         } else {
-            ball_in_our_half = false;
+            ball_in_our_half = true;
             // cout << "Case 4" << endl;
         }
 
     }
 
-    cout << "We play on the left side: " << is_left_side << " and the Ball is on the left Half: " << ball_in_our_half << endl;
+    cout << setprecision(3) << fixed << showpos << "We play on the left side: " << is_left_side << " and the Ball is on our Half: " << ball_in_our_half << endl;
 
     // Get Robot closest to Ball
+    int closest_robot_idx = -1;
+    double closest_dist = 10;
+    for (int i=0; i<6; i++) {
+        double dist_robot_ball = datBall->GetPos().DistanceTo(robots[i]->GetPos());
+        // cout << "Curr Dist at Index " << i << " is " << dist_robot_ball << endl;
+        if (dist_robot_ball < closest_dist) {
+            closest_dist = dist_robot_ball;
+            closest_robot_idx = i;
+        }
+    }
+
+    cout << "Closest robot with Index: " << closest_robot_idx << " at a Distance of: " << closest_dist << endl;
 
 
     return 0;

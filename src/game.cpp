@@ -41,11 +41,6 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
     opponent2 = new Opponent(DBC, theOpponent1DvNr+1, 4, robot_positions);
     opponent3 = new Opponent(DBC, theOpponent1DvNr+2, 5, robot_positions);
 
-    // Initialize Strategy Module
-    strategy_module = Strategy(goalie, striker1, striker2,
-                               opponent1, opponent2, opponent3,
-                               datBall, is_left_side);
-
 
     // initialize state machine variables
     stay_in_state_machine = true;
@@ -59,6 +54,12 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
     robots[4] = opponent2;
     robots[5] = opponent3;
 
+
+    // Initialize Strategy Module
+    /* strategy_module = Strategy(goalie, striker1, striker2,
+                               opponent1, opponent2, opponent3,
+                               datBall, is_left_side); */
+    strategy_module = Strategy(robots, datBall, is_left_side);
 }
 
 

@@ -34,6 +34,7 @@ private:
     Opponent* opponent2;
     Opponent* opponent3;
 
+    Robot* robots[6];
     RawBall* datBall;
     bool is_left_side;
 
@@ -49,8 +50,9 @@ public:
              Opponent *opponent1_in, Opponent *opponent2_in, Opponent *opponent3_in,
              RawBall *datBall_in, bool is_left_side_in);
 
+    Strategy(Robot **robots_in, RawBall *datBall_in, bool is_left_side_in);
+
     int strat_move();
-    // Strategy operator=(Strategy strat);
 
     void set_is_left_side(bool is_left_side_in);
     bool get_is_left_side();
