@@ -55,6 +55,23 @@ int Strategy::defend()
     return 0;
 }
 
+int Strategy::bring_ball_in_opponents_field(int closest_striker_idx)
+{
+    cout << "Bringing the Ball in Opponents field" << endl;
+
+    int other_striker_idx = 2;
+    if (closest_striker_idx == 2)
+        other_striker_idx = 1;
+
+    // Closest Striker heading for the Ball
+    robots[closest_striker_idx]->set_robot_target_pos(datBall->GetPos(), true, true);
+
+    // Other Striker going to origin
+    robots[other_striker_idx]->set_robot_target_pos(Position(0.0, 0.0), true, true);
+
+    return 0;
+}
+
 
 // Determine if attack or defend respectively which kind of sick move to do
 int Strategy::strat_move()
@@ -97,7 +114,47 @@ int Strategy::strat_move()
     cout << "Closest robot with Index: " << closest_robot_idx << " at a Distance of: " << closest_dist << endl;
 
 
+    if (ball_in_our_half && ( closest_robot_idx == 1 || closest_robot_idx == 2 )) {
+        bring_ball_in_opponents_field(closest_robot_idx);
+    }
+    else if (ball_in_our_half && ( closest_robot_idx != 1 || closest_robot_idx != 2 )) {
+        defend();
+    }
+    else {
+        attack();
+    }
+
     return 0;
+}
+
+int Strategy::move_dat_robot(int timer_duration, int robot_index)
+{
+    // Move the strikers to where they belong
+    robots[robot_index]->set_wheelspeed(timer_duration);
+
+    cout << "dPos = " << robots[robot_index]->GetPos().DistanceTo(robots[robot_index]->get_robot_target_pos()) << endl;
+
+    return 0;
+}
+
+int Strategy::turn_dat_robot_if_necessary(int robot_index)
+{
+    // Threshold to do a spotturn
+    Angle angle_threshold(60);
+    Angle cur_heading = robots[robot_index]->GetPhi();
+    Angle ref_heading = robots[robot_index]->GetPos().AngleOfLineToPos(robots[robot_index]->get_robot_target_pos());
+    Angle diff_heading = ref_heading - cur_heading;
+
+    // cout << "Cur Angle = " << cur_heading << endl;
+    // cout << "Ref Angle = " << ref_heading << endl;
+    cout << "Diff Angles = " << diff_heading << endl;
+
+    int wait_time = -1;
+    if (diff_heading >= angle_threshold || diff_heading <= -angle_threshold) {
+        wait_time = robots[robot_index]->spot_turn(ref_heading);
+    }
+
+    return wait_time;
 }
 
 void Strategy::set_is_left_side(bool is_left_side_in)

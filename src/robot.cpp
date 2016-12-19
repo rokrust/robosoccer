@@ -131,13 +131,18 @@ int Robot::drive_parallel(float diff_to_drive)
 //Set u_speed according to distance_to_pos (should be called every controller tick
 //P controller might be good enough
 int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
-    double distance_to_pos = GetPos().DistanceTo(path_finder.get_target_pos());
+    // WITH PATHFINDER
+    // double distance_to_pos = GetPos().DistanceTo(path_finder.get_target_pos());
+
+    // WITHOUT PATHFINDER
+    double distance_to_pos = GetPos().DistanceTo(target_pos);
 
     controller_data.speed_integrator += distance_to_pos * controller_data.sampling_time;
 
-    int u_speed = K_pt*distance_to_pos + K_it*controller_data.speed_integrator;
+    int u_speed = K_pt*distance_to_pos; // + K_it*controller_data.speed_integrator;
 
     u_speed *= cos((ref_heading - cur_heading).Get());
+    // u_speed *= sin((ref_heading - cur_heading).Get());
 
     if (u_speed > MAX_WHEELSPEED || u_speed < -MAX_WHEELSPEED){
         controller_data.speed_integrator = 0;
@@ -167,7 +172,12 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
 void Robot::set_wheelspeed(int timer_duration, Position* robot_positions) {
 
-    Angle ref_heading = path_finder.calculate_reference_angle(robot_array_index, robot_positions);
+    // WITH VECTOR FIELDS
+    // Angle ref_heading = path_finder.calculate_reference_angle(robot_array_index, robot_positions);
+    // Angle cur_heading = GetPhi();
+
+    // WITHOUT VECTOR FIELDS
+    Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
     Angle cur_heading = GetPhi();
 
     reset_integrators_if_necessary(ref_heading, cur_heading);
@@ -176,13 +186,13 @@ void Robot::set_wheelspeed(int timer_duration, Position* robot_positions) {
     int u_speed = update_speed_controller(ref_heading, cur_heading);
 
     //hard coding should be removed
-    int saturation_speed = 220;
+    /* int saturation_speed = 160;
     if (u_speed > saturation_speed) {
         u_speed = saturation_speed;
     }
     if (u_speed < -saturation_speed) {
         u_speed = -saturation_speed;
-    }
+    } */
 
     int right_wheel_speed = u_speed + u_omega;
     int left_wheel_speed = u_speed - u_omega;
@@ -191,16 +201,13 @@ void Robot::set_wheelspeed(int timer_duration, Position* robot_positions) {
     MoveMs(left_wheel_speed, right_wheel_speed, timer_duration+10, 100);
 }
 
-
 void Robot::set_sampling_time(int sampling_time)
 {
     controller_data.sampling_time = sampling_time;
 }
 
-
 void Robot::set_target_pos(Position pos, bool extrapol)
 {
-
     if (extrapol) {
         Position current_pos = GetPos();
         double dist_to_targ = current_pos.DistanceTo(pos);
@@ -218,12 +225,53 @@ void Robot::set_target_pos(Position pos, bool extrapol)
     }
 }
 
+void Robot::set_robot_target_pos(Position pos, bool extrapol, bool shift_linear)
+{
+    if (!extrapol) {
+        target_pos = pos; // Not extrapolating (because it should not extrapolated as given by variable extrapol)
+    }
+    else if (extrapol) {
+        Position current_pos = GetPos();
+        double dist_to_targ = current_pos.DistanceTo(pos);
+        if (dist_to_targ > EXTRAPOL_LIMIT) {
+            Position direction_to_targ((pos.GetX() - current_pos.GetX()) / dist_to_targ,
+                                       (pos.GetY() - current_pos.GetY()) / dist_to_targ);
+            Position extrapol_target_pos((current_pos.GetX() + EXTRAPOL_LIMIT * direction_to_targ.GetX()),
+                                         (current_pos.GetY() + EXTRAPOL_LIMIT * direction_to_targ.GetY()));
+            target_pos = extrapol_target_pos; // Really extrapolating (Distance to targ > EXTRAPOL_LIMIT)
+        } else {
+            target_pos = pos; // Not extrapolating (Distance to targ < EXTRAPOL_LIMIT)
+        }
+    }
+
+    if (shift_linear) {
+        double shift_by_m = 0.08;
+
+        // Get Direction to target
+        Position current_pos = GetPos();
+        Position direction_to_pos(target_pos.GetX()-current_pos.GetX(), target_pos.GetY()-current_pos.GetY());
+
+        // Norm direction
+        double dist_to_targ = current_pos.DistanceTo(target_pos);
+        direction_to_pos.SetX(direction_to_pos.GetX()/dist_to_targ);
+        direction_to_pos.SetY(direction_to_pos.GetY()/dist_to_targ);
+
+        // Shift Target Position by shift_by_m
+        target_pos.SetX(target_pos.GetX() + shift_by_m*direction_to_pos.GetX());
+        target_pos.SetY(target_pos.GetY() + shift_by_m*direction_to_pos.GetY());
+    }
+
+}
 
 Position Robot::get_target_pos()
 {
     return path_finder.get_target_pos();
 }
 
+Position Robot::get_robot_target_pos()
+{
+    return target_pos;
+}
 
 int Robot::ddeg(Angle goal_phi) {
     Angle cur_phi = GetPhi();

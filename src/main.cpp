@@ -27,6 +27,7 @@ void collision_avoidance_ball_tracking(Game& game_handler_in);
 void collision_avoidance_corner_driving(Game& game_handler_in);
 void test_controller(Game& game_handler_in);
 void test_extrapol_shit(Game& game_handler_in);
+void test_play_on_mode(Game& game_handler_in);
 
 
 
@@ -120,8 +121,7 @@ int main(void) {
             break;
 
         case 11:
-            game_handler.set_is_left_side(true);
-            game_handler.strategy_module.strat_move();
+            test_play_on_mode(game_handler);
             break;
 
         }
@@ -244,6 +244,42 @@ void test_extrapol_shit(Game& game_handler_in)
         if (datTimer.timeout()) {
             game_handler_in.goalie->set_target_pos(go_here, true);
             game_handler_in.goalie->set_wheelspeed(timer_duration, game_handler_in.robot_positions);
+        }
+    }
+}
+
+void test_play_on_mode(Game& game_handler_in)
+{
+    int timer_duration = 150;
+    Timer striker1Timer(timer_duration);
+    Timer striker2Timer(timer_duration);
+    Timer goalieTimer(timer_duration);
+
+    game_handler_in.goalie->set_sampling_time((float) timer_duration/1000);
+    game_handler_in.striker1->set_sampling_time((float) timer_duration/1000);
+    game_handler_in.striker2->set_sampling_time((float) timer_duration/1000);
+
+    // Determine the shit out of what strategic move to do
+    game_handler_in.strategy_module.strat_move();
+    int wait_time = -1;
+    wait_time = game_handler_in.strategy_module.turn_dat_robot_if_necessary(1);
+    if (wait_time > 0)
+        striker1Timer.enable_manually(wait_time);
+    wait_time = game_handler_in.strategy_module.turn_dat_robot_if_necessary(2);
+    if (wait_time > 0)
+        striker2Timer.enable_manually(wait_time);
+
+    while(1) {
+        if (striker1Timer.timeout()) {
+            game_handler_in.strategy_module.move_dat_robot(timer_duration, 1);
+        }
+
+        if (striker2Timer.timeout()) {
+            game_handler_in.strategy_module.move_dat_robot(timer_duration, 2);
+        }
+
+        if (goalieTimer.timeout()) {
+            // Do Goalie Keepers Stuff
         }
     }
 }

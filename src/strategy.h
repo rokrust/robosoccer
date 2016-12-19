@@ -42,6 +42,8 @@ private:
 
     int defend();
 
+    int bring_ball_in_opponents_field(int closest_striker_idx);
+
 
 public:
     Strategy(){}
@@ -53,6 +55,11 @@ public:
     Strategy(Robot **robots_in, RawBall *datBall_in, bool is_left_side_in);
 
     int strat_move();
+
+    int move_dat_robot(int timer_duration, int robot_index);
+
+    int turn_dat_robot_if_necessary(int robot_index);
+
 
     void set_is_left_side(bool is_left_side_in);
     bool get_is_left_side();

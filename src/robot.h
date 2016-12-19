@@ -21,8 +21,7 @@
 
 enum Parameters
      {K_ph = 20, // working thursday: 20
-      // K_ih = 25, // working thursday: 25
-      K_dh = -5, // working thursday: 5
+      K_dh = 5, // working thursday: 5
       K_pt = 170, // working thursday: 170
       K_it = 100 }; // working thursday: 100
 
@@ -67,6 +66,8 @@ private:
     Controller_data controller_data;
     Path_finder path_finder;
 
+    Position target_pos;
+
     void reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading);
     double error_buffer_mean();
 
@@ -81,13 +82,15 @@ public:
     // controller functions
     int update_speed_controller(Angle ref_heading, Angle cur_heading);
     int update_heading_controller(Angle ref_heading, Angle cur_heading);
-    void set_wheelspeed(int timer_duration, Position* robot_positions);
+    void set_wheelspeed(int timer_duration, Position* robot_positions=NULL);
 
     void set_sampling_time(int sampling_time);
 
     // target pos
     void set_target_pos(Position pos, bool extrapol=false);
+    void set_robot_target_pos(Position pos, bool extrapol=false, bool shift_linear=false);
     Position get_target_pos();
+    Position get_robot_target_pos();
 
     // misc
     int ddeg(Angle goal_phi);
