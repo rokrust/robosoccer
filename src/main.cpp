@@ -263,8 +263,9 @@ void test_via_pos_shit(Game& game_handler_in)
     Timer datTimer(timer_duration);
     game_handler_in.goalie->set_sampling_time_s((float) timer_duration/1000);
 
-    Position go_here(+1.0, +0.4);
-    Position go_via_here(+1.1, -0.4);
+    int sign = +1;
+    Position go_here(sign*1.1, +0.4);
+    Position go_via_here(sign*1.0, -0.4);
     game_handler_in.goalie->set_robot_via_path(go_via_here, go_here);
 
     int waitabit = game_handler_in.goalie->spot_turn(game_handler_in.goalie->GetPos().AngleOfLineToPos(go_via_here));
@@ -272,7 +273,9 @@ void test_via_pos_shit(Game& game_handler_in)
 
     while(1) {
         if (datTimer.timeout()) {
-            game_handler_in.goalie->set_wheelspeed(timer_duration, game_handler_in.robot_positions);
+            waitabit = game_handler_in.goalie->set_wheelspeed(timer_duration, game_handler_in.robot_positions);
+            if (waitabit >= 0)
+                datTimer.enable_manually(waitabit);
 
             cout << "Dist to target = " << game_handler_in.goalie->get_robot_target_pos().DistanceTo(game_handler_in.goalie->GetPos()) << endl;
         }

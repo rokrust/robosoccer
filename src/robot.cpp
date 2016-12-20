@@ -106,6 +106,24 @@ int Robot::spot_turn(Angle phi_in, bool verbose)
     return wait_time;
 }
 
+int Robot::spot_turn_on_target_if_necessary()
+{
+    // Threshold to do a spotturn
+    Angle angle_threshold(60);
+    Angle cur_heading = GetPhi();
+    Angle ref_heading = GetPos().AngleOfLineToPos(temporary_target_pos);
+    Angle diff_heading = ref_heading - cur_heading;
+
+    // cout << "Diff Angles = " << diff_heading << endl;
+
+    int wait_time = -1;
+    if (diff_heading >= angle_threshold || diff_heading <= -angle_threshold) {
+        wait_time = spot_turn(ref_heading);
+    }
+
+    return wait_time;
+}
+
 int Robot::drive_parallel(float diff_to_drive)
 {
 
@@ -178,9 +196,7 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 }
 
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
-void Robot::set_wheelspeed(int timer_duration, Position* robot_positions) {
-
-    update_temporary_target_pos(true);
+int Robot::set_wheelspeed(int timer_duration, Position* robot_positions) {
 
     // WITH VECTOR FIELDS
     // Angle ref_heading = path_finder.calculate_reference_angle(robot_array_index, robot_positions);
@@ -209,6 +225,11 @@ void Robot::set_wheelspeed(int timer_duration, Position* robot_positions) {
 
     //hard coding should be removed
     MoveMs(left_wheel_speed, right_wheel_speed, timer_duration+10, 100);
+
+    update_temporary_target_pos(true);
+
+    int wait_time = spot_turn_on_target_if_necessary();
+    return wait_time;
 }
 
 void Robot::set_sampling_time_s(double sampling_time_s)
@@ -221,24 +242,33 @@ double Robot::get_sampling_time_s()
     return controller_data.sampling_time;
 }
 
-void Robot::set_robot_target_pos(Position pos)
+void Robot::set_robot_target_pos(Position target_pos_to_set)
 {
-    target_pos = pos;
+    target_pos = target_pos_to_set;
+    temporary_target_pos = target_pos;
+    go_via_pos = false;
 }
 
 void Robot::update_temporary_target_pos(bool extrapol)
 {
-    Position pos;
     if (abs(GetPos().DistanceTo(via_pos)) <= VIA_POS_THRESHOLD)
     {
         cout << "Distance to Via Pos is " << GetPos().DistanceTo(via_pos) << endl;
         go_via_pos = false;
     }
 
-    if (go_via_pos)
-        pos = via_pos;
-    else
+    Position pos;
+    if (go_via_pos) {
+        Position direction_to_via_pos(via_pos.GetX()-GetPos().GetX(), via_pos.GetY()-GetPos().GetY());
+        double distance_to_via_pos = abs(via_pos.DistanceTo(GetPos()));
+        // Scale
+        direction_to_via_pos.SetX(direction_to_via_pos.GetX()/distance_to_via_pos);
+        direction_to_via_pos.SetY(direction_to_via_pos.GetY()/distance_to_via_pos);
+        pos.SetX(via_pos.GetX() + (VIA_POS_THRESHOLD+VIA_POS_OFFSET)*direction_to_via_pos.GetX());
+        pos.SetY(via_pos.GetY() + (VIA_POS_THRESHOLD+VIA_POS_OFFSET)*direction_to_via_pos.GetY());
+    } else {
         pos = target_pos;
+    }
 
     if (!extrapol) {
         temporary_target_pos = pos; // Not extrapolating (because it should not extrapolated as given by variable extrapol)
@@ -262,7 +292,18 @@ void Robot::set_robot_via_path(Position via_pos_to_set, Position target_pos_to_s
 {
     target_pos = target_pos_to_set;
     via_pos = via_pos_to_set;
+    temporary_target_pos = via_pos;
     go_via_pos = true;
+}
+
+Position Robot::get_robot_target_pos()
+{
+    return target_pos;
+}
+
+Position Robot::get_temporary_target_pos()
+{
+    return temporary_target_pos;
 }
 
 Position Robot::get_robot_via_pos()
@@ -270,10 +311,6 @@ Position Robot::get_robot_via_pos()
     return via_pos;
 }
 
-Position Robot::get_robot_target_pos()
-{
-    return target_pos;
-}
 
 int Robot::ddeg(Angle goal_phi)
 {

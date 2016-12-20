@@ -60,7 +60,8 @@ private:
     // controller driving constants
     const double ACCEPTABLE_DISTANCE_THRESHOLD = 0.04; // 0.08
     const double ACCEPTABLE_HEADING_THRESHOLD = 0.05;
-    const double VIA_POS_THRESHOLD = 0.4;
+    const double VIA_POS_THRESHOLD = 0.1; // in m; if distance to via pos is lower than that, the real target pos is aimed for
+    const double VIA_POS_OFFSET = 0.2; // in m; small: approach via pos with small speed in the end, big: big speeds
 
     const double EXTRAPOL_LIMIT = 1.0;
 
@@ -81,21 +82,23 @@ public:
     ~Robot();
 
     int spot_turn(Angle phi_in, bool verbose=true);
+    int spot_turn_on_target_if_necessary();
     int drive_parallel(float diff_to_drive);
 
     // controller functions
     int update_speed_controller(Angle ref_heading, Angle cur_heading);
     int update_heading_controller(Angle ref_heading, Angle cur_heading);
-    void set_wheelspeed(int timer_duration, Position* robot_positions=NULL);
+    int set_wheelspeed(int timer_duration, Position* robot_positions=NULL);
 
     double get_sampling_time_s();
     void set_sampling_time_s(double sampling_time_s);
 
     // target pos
-    void set_robot_target_pos(Position pos);
-    void set_robot_via_path(Position via_pos_to_set, Position target_pos_to_set);
     void update_temporary_target_pos(bool extrapol);
+    void set_robot_target_pos(Position target_pos_to_set);
+    void set_robot_via_path(Position via_pos_to_set, Position target_pos_to_set);
     Position get_robot_target_pos();
+    Position get_temporary_target_pos();
     Position get_robot_via_pos();
 
     void set_pathfinder_target_pos(Position pos, bool extrapol=false); // Pathfinder
