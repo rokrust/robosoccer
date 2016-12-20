@@ -64,10 +64,10 @@ int Strategy::bring_ball_in_opponents_field(int closest_striker_idx)
         other_striker_idx = 1;
 
     // Closest Striker heading for the Ball
-    robots[closest_striker_idx]->set_robot_target_pos(datBall->GetPos(), true, true);
+    robots[closest_striker_idx]->set_robot_target_pos(datBall->GetPos());
 
     // Other Striker going to origin
-    robots[other_striker_idx]->set_robot_target_pos(Position(0.0, 0.0), true, true);
+    robots[other_striker_idx]->set_robot_target_pos(Position(0.0, 0.0));
 
     return 0;
 }
@@ -145,9 +145,7 @@ int Strategy::turn_dat_robot_if_necessary(int robot_index)
     Angle ref_heading = robots[robot_index]->GetPos().AngleOfLineToPos(robots[robot_index]->get_robot_target_pos());
     Angle diff_heading = ref_heading - cur_heading;
 
-    // cout << "Cur Angle = " << cur_heading << endl;
-    // cout << "Ref Angle = " << ref_heading << endl;
-    cout << "Diff Angles = " << diff_heading << endl;
+    // cout << "Diff Angles = " << diff_heading << endl;
 
     int wait_time = -1;
     if (diff_heading >= angle_threshold || diff_heading <= -angle_threshold) {

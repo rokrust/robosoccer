@@ -28,6 +28,8 @@ void collision_avoidance_corner_driving(Game& game_handler_in);
 void test_controller(Game& game_handler_in);
 void test_extrapol_shit(Game& game_handler_in);
 void test_play_on_mode(Game& game_handler_in);
+void test_via_pos_shit(Game& game_handler_in);
+
 
 
 
@@ -124,6 +126,10 @@ int main(void) {
             test_play_on_mode(game_handler);
             break;
 
+        case 12:
+            test_via_pos_shit(game_handler);
+            break;
+
         }
     } catch (DBError err) {
         cout << "Client died on Error: " << err.what() << endl;
@@ -142,7 +148,7 @@ void collision_avoidance_ball_tracking(Game &game_handler_in)
 {
     int timer_duration = 100;
     Timer datTimer(timer_duration);
-    game_handler_in.striker2->set_sampling_time((float) timer_duration/1000);
+    game_handler_in.striker2->set_sampling_time_s((float) timer_duration/1000);
 
     // cout << "ball_pos = [" << game_handler.datBall->GetPos().GetX() << ", " << game_handler.datBall->GetPos().GetY() << "]; " << endl;
     // cout << "poses = [";
@@ -153,7 +159,7 @@ void collision_avoidance_ball_tracking(Game &game_handler_in)
         Position pos = game_handler_in.datBall->GetPos();
 
         game_handler_in.update_robot_positions();
-        game_handler_in.striker1->set_target_pos(pos);
+        game_handler_in.striker1->set_pathfinder_target_pos(pos);
         // cout << "Target_pos: " << game_handler.striker1->get_path_finder().get_target_pos() << endl;
 
         if (datTimer.timeout()) {
@@ -172,12 +178,12 @@ void collision_avoidance_corner_driving(Game &game_handler_in)
     // Position right_window(x_val,-y_val);
     Position right_hall(x_val, y_val);
 
-    game_handler_in.striker1->set_target_pos(left_window);
-    game_handler_in.striker2->set_target_pos(right_hall);
-    game_handler_in.goalie->set_target_pos(left_hall);
+    game_handler_in.striker1->set_pathfinder_target_pos(left_window);
+    game_handler_in.striker2->set_pathfinder_target_pos(right_hall);
+    game_handler_in.goalie->set_pathfinder_target_pos(left_hall);
 
     Position rand_pos(0.0, 0.0);
-    game_handler_in.opponent1->set_target_pos(rand_pos);
+    game_handler_in.opponent1->set_pathfinder_target_pos(rand_pos);
     game_handler_in.opponent1->GotoPos(rand_pos);
     Timer robot_timer(robot_duration);
 
@@ -190,29 +196,29 @@ void collision_avoidance_corner_driving(Game &game_handler_in)
             rand_pos.SetY(rand2 - 0.5);
 
             // Set target positions
-            if (fabs(game_handler_in.goalie->get_target_pos().DistanceTo(game_handler_in.goalie->GetPos())) < 0.1) {
-                Position target = game_handler_in.goalie->get_target_pos();
+            if (fabs(game_handler_in.goalie->get_pathfinder_target_pos().DistanceTo(game_handler_in.goalie->GetPos())) < 0.1) {
+                Position target = game_handler_in.goalie->get_pathfinder_target_pos();
                 target.SetX(-target.GetX());
                 target.SetY(-target.GetY());
-                game_handler_in.goalie->set_target_pos(target);
+                game_handler_in.goalie->set_pathfinder_target_pos(target);
                 cout << "Goalie goal changed to x: " << target.GetX() << " y: " << target.GetY() << endl;
             }
-            if (fabs(game_handler_in.striker1->get_target_pos().DistanceTo(game_handler_in.striker1->GetPos())) < 0.1) {
-                Position target = game_handler_in.striker1->get_target_pos();
+            if (fabs(game_handler_in.striker1->get_pathfinder_target_pos().DistanceTo(game_handler_in.striker1->GetPos())) < 0.1) {
+                Position target = game_handler_in.striker1->get_pathfinder_target_pos();
                 target.SetX(-target.GetX());
                 target.SetY(-target.GetY());
-                game_handler_in.striker1->set_target_pos(target);
+                game_handler_in.striker1->set_pathfinder_target_pos(target);
                 cout << "Striker1 goal changed to x: " << target.GetX() << " y: " << target.GetY() << endl;
             }
-            if (fabs(game_handler_in.striker2->get_target_pos().DistanceTo(game_handler_in.striker2->GetPos())) < 0.1) {
-                Position target = game_handler_in.striker2->get_target_pos();
+            if (fabs(game_handler_in.striker2->get_pathfinder_target_pos().DistanceTo(game_handler_in.striker2->GetPos())) < 0.1) {
+                Position target = game_handler_in.striker2->get_pathfinder_target_pos();
                 target.SetX(-target.GetX());
                 target.SetY(-target.GetY());
-                game_handler_in.striker2->set_target_pos(target);
+                game_handler_in.striker2->set_pathfinder_target_pos(target);
                 cout << "Striker2 goal changed to x: " << target.GetX() << " y: " << target.GetY() << endl;
             }
-            if (fabs(game_handler_in.opponent1->get_target_pos().DistanceTo(game_handler_in.opponent1->GetPos())) < 0.1) {
-                game_handler_in.opponent1->set_target_pos(rand_pos);
+            if (fabs(game_handler_in.opponent1->get_pathfinder_target_pos().DistanceTo(game_handler_in.opponent1->GetPos())) < 0.1) {
+                game_handler_in.opponent1->set_pathfinder_target_pos(rand_pos);
                 game_handler_in.opponent1->GotoPos(rand_pos);
             }
 
@@ -233,17 +239,42 @@ void test_extrapol_shit(Game& game_handler_in)
 {
     int timer_duration = 150;
     Timer datTimer(timer_duration);
-    game_handler_in.goalie->set_sampling_time((float) timer_duration/1000);
-    int sign = -1;
+    game_handler_in.goalie->set_sampling_time_s((float) timer_duration/1000);
+    int sign = 1;
     Position go_here(sign * 1.0, sign * 0.3);
 
     int waitabit = game_handler_in.goalie->spot_turn(game_handler_in.goalie->GetPos().AngleOfLineToPos(go_here));
-    usleep(waitabit + 350 * 1000);
+    datTimer.enable_manually(waitabit);
+
+    game_handler_in.goalie->set_robot_target_pos(go_here);
 
     while(1) {
         if (datTimer.timeout()) {
-            game_handler_in.goalie->set_target_pos(go_here, true);
             game_handler_in.goalie->set_wheelspeed(timer_duration, game_handler_in.robot_positions);
+
+            cout << "Dist to target = " << game_handler_in.goalie->get_robot_target_pos().DistanceTo(game_handler_in.goalie->GetPos()) << endl;
+        }
+    }
+}
+
+void test_via_pos_shit(Game& game_handler_in)
+{
+    int timer_duration = 150;
+    Timer datTimer(timer_duration);
+    game_handler_in.goalie->set_sampling_time_s((float) timer_duration/1000);
+
+    Position go_here(+1.0, +0.4);
+    Position go_via_here(+1.1, -0.4);
+    game_handler_in.goalie->set_robot_via_path(go_via_here, go_here);
+
+    int waitabit = game_handler_in.goalie->spot_turn(game_handler_in.goalie->GetPos().AngleOfLineToPos(go_via_here));
+    datTimer.enable_manually(waitabit);
+
+    while(1) {
+        if (datTimer.timeout()) {
+            game_handler_in.goalie->set_wheelspeed(timer_duration, game_handler_in.robot_positions);
+
+            cout << "Dist to target = " << game_handler_in.goalie->get_robot_target_pos().DistanceTo(game_handler_in.goalie->GetPos()) << endl;
         }
     }
 }
@@ -255,9 +286,9 @@ void test_play_on_mode(Game& game_handler_in)
     Timer striker2Timer(timer_duration);
     Timer goalieTimer(timer_duration);
 
-    game_handler_in.goalie->set_sampling_time((float) timer_duration/1000);
-    game_handler_in.striker1->set_sampling_time((float) timer_duration/1000);
-    game_handler_in.striker2->set_sampling_time((float) timer_duration/1000);
+    game_handler_in.goalie->set_sampling_time_s((float) timer_duration/1000);
+    game_handler_in.striker1->set_sampling_time_s((float) timer_duration/1000);
+    game_handler_in.striker2->set_sampling_time_s((float) timer_duration/1000);
 
     // Determine the shit out of what strategic move to do
     game_handler_in.strategy_module.strat_move();
