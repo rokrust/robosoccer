@@ -93,7 +93,7 @@ int Robot::spot_turn(Angle phi_in, bool verbose)
     }
 
     // set the wheel speed for the turn time
-    this->MoveMs(v_left, v_right, turn_time, TURN_RAMP_UP);
+    MoveMs(v_left, v_right, turn_time, TURN_RAMP_UP);
 
     // calculate the time that the turn will take in micro seconds
     // there is 30ms delay due to the bluetooth system
@@ -118,6 +118,7 @@ int Robot::spot_turn_on_target_if_necessary()
 
     int wait_time = -1;
     if (diff_heading >= angle_threshold || diff_heading <= -angle_threshold) {
+        cout << "SPOT TURNING THE SHIT OUT OF DAT ROBOT - " << endl;
         wait_time = spot_turn(ref_heading);
     }
 
@@ -226,10 +227,11 @@ int Robot::set_wheelspeed(int timer_duration, Position* robot_positions) {
     //hard coding should be removed
     MoveMs(left_wheel_speed, right_wheel_speed, timer_duration+10, 100);
 
-    update_temporary_target_pos(true);
 
-    int wait_time = spot_turn_on_target_if_necessary();
-    return wait_time;
+    return 0;
+
+    /* int wait_time = spot_turn_on_target_if_necessary();
+    return wait_time; */
 }
 
 void Robot::set_sampling_time_s(double sampling_time_s)
@@ -249,14 +251,18 @@ void Robot::set_robot_target_pos(Position target_pos_to_set)
     go_via_pos = false;
 }
 
-void Robot::update_temporary_target_pos(bool extrapol)
+bool Robot::update_temporary_target_pos(bool extrapol)
 {
-    if (abs(GetPos().DistanceTo(via_pos)) <= VIA_POS_THRESHOLD)
+    bool changed_to_final_target_position = false;
+
+    if (abs(GetPos().DistanceTo(via_pos)) <= VIA_POS_THRESHOLD && go_via_pos)
     {
         cout << "Distance to Via Pos is " << GetPos().DistanceTo(via_pos) << endl;
         go_via_pos = false;
+        changed_to_final_target_position = true; // changes temporary target position from via_pos to target_pos, so this is true
     }
 
+    // Linearly shift the via pos a bit further so the robot drives faster over it
     Position pos;
     if (go_via_pos) {
         Position direction_to_via_pos(via_pos.GetX()-GetPos().GetX(), via_pos.GetY()-GetPos().GetY());
@@ -270,6 +276,7 @@ void Robot::update_temporary_target_pos(bool extrapol)
         pos = target_pos;
     }
 
+    // Extrapolation Shit
     if (!extrapol) {
         temporary_target_pos = pos; // Not extrapolating (because it should not extrapolated as given by variable extrapol)
     }
@@ -286,6 +293,8 @@ void Robot::update_temporary_target_pos(bool extrapol)
             temporary_target_pos = pos; // Not extrapolating (Distance to targ < EXTRAPOL_LIMIT)
         }
     }
+
+    return changed_to_final_target_position;
 }
 
 void Robot::set_robot_via_path(Position via_pos_to_set, Position target_pos_to_set)

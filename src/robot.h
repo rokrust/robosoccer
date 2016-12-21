@@ -94,7 +94,7 @@ public:
     void set_sampling_time_s(double sampling_time_s);
 
     // target pos
-    void update_temporary_target_pos(bool extrapol);
+    bool update_temporary_target_pos(bool extrapol);
     void set_robot_target_pos(Position target_pos_to_set);
     void set_robot_via_path(Position via_pos_to_set, Position target_pos_to_set);
     Position get_robot_target_pos();

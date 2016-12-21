@@ -268,16 +268,22 @@ void test_via_pos_shit(Game& game_handler_in)
     Position go_via_here(sign*1.0, -0.4);
     game_handler_in.goalie->set_robot_via_path(go_via_here, go_here);
 
-    int waitabit = game_handler_in.goalie->spot_turn(game_handler_in.goalie->GetPos().AngleOfLineToPos(go_via_here));
+    game_handler_in.goalie->update_temporary_target_pos(true);
+
+    int waitabit = game_handler_in.goalie->spot_turn_on_target_if_necessary();
     datTimer.enable_manually(waitabit);
 
     while(1) {
         if (datTimer.timeout()) {
-            waitabit = game_handler_in.goalie->set_wheelspeed(timer_duration, game_handler_in.robot_positions);
-            if (waitabit >= 0)
-                datTimer.enable_manually(waitabit);
+            game_handler_in.goalie->set_wheelspeed(timer_duration, game_handler_in.robot_positions);
 
-            cout << "Dist to target = " << game_handler_in.goalie->get_robot_target_pos().DistanceTo(game_handler_in.goalie->GetPos()) << endl;
+            bool changed_target_pos = game_handler_in.goalie->update_temporary_target_pos(true);
+            if (changed_target_pos) { // Do a Spot Turn if necessary
+                int waitabit = game_handler_in.goalie->spot_turn_on_target_if_necessary();
+                datTimer.enable_manually(waitabit);
+            }
+
+            cout << "Dist to target = " << game_handler_in.goalie->get_temporary_target_pos().DistanceTo(game_handler_in.goalie->GetPos()) << endl;
         }
     }
 }
@@ -287,7 +293,6 @@ void test_play_on_mode(Game& game_handler_in)
     int timer_duration = 150;
     Timer striker1Timer(timer_duration);
     Timer striker2Timer(timer_duration);
-    Timer goalieTimer(timer_duration);
 
     game_handler_in.goalie->set_sampling_time_s((float) timer_duration/1000);
     game_handler_in.striker1->set_sampling_time_s((float) timer_duration/1000);
@@ -295,25 +300,80 @@ void test_play_on_mode(Game& game_handler_in)
 
     // Determine the shit out of what strategic move to do
     game_handler_in.strategy_module.strat_move();
-    int wait_time = -1;
-    wait_time = game_handler_in.strategy_module.turn_dat_robot_if_necessary(1);
-    if (wait_time > 0)
-        striker1Timer.enable_manually(wait_time);
-    wait_time = game_handler_in.strategy_module.turn_dat_robot_if_necessary(2);
-    if (wait_time > 0)
-        striker2Timer.enable_manually(wait_time);
+
+    // Take care of striker 1
+    int wait_time1 = game_handler_in.striker1->spot_turn_on_target_if_necessary();
+    if (wait_time1 > 0)
+        striker1Timer.enable_manually(wait_time1);
+    bool striker1_at_ball = false;
+    bool striker1_shot = false;
+
+    // Take care of striker 2
+    int wait_time2 = game_handler_in.striker2->spot_turn_on_target_if_necessary();
+    if (wait_time2 > 0)
+        striker2Timer.enable_manually(wait_time2);
+    bool striker2_at_ball = false;
+    bool striker2_shot = false;
 
     while(1) {
-        if (striker1Timer.timeout()) {
-            game_handler_in.strategy_module.move_dat_robot(timer_duration, 1);
+        // Striker 1 Stuff
+        if (striker1Timer.timeout() && !striker1_shot) {
+            game_handler_in.striker1->set_wheelspeed(timer_duration, game_handler_in.robot_positions);
+
+            bool changed_target_pos1 = game_handler_in.striker1->update_temporary_target_pos(true);
+            if (changed_target_pos1) { // Do a Spot Turn if necessary
+                wait_time1 = game_handler_in.striker1->spot_turn_on_target_if_necessary();
+                striker1Timer.enable_manually(wait_time1);
+            }
+
+            if (game_handler_in.striker1->GetPos().DistanceTo(game_handler_in.striker1->get_robot_target_pos()) <= 0.08) {
+                cout << "Striker 1 is close to its target pos" << endl;
+
+                if (striker1_at_ball) {
+                    game_handler_in.striker1->MoveMs(160, 160, 500, 0);
+                    striker1Timer.enable_manually(500 + 30);
+                    striker1_shot = true;
+                    cout << "Striker 1 done" << endl;
+                } else {
+                    wait_time1 = game_handler_in.striker1->spot_turn(game_handler_in.striker1->GetPos().AngleOfLineToPos(game_handler_in.datBall->GetPos()));
+                    striker1Timer.enable_manually(wait_time1);
+                    striker1_at_ball = true;
+                    cout << "Striker 1 at ball" << endl;
+                }
+            }
         }
 
-        if (striker2Timer.timeout()) {
-            game_handler_in.strategy_module.move_dat_robot(timer_duration, 2);
+        // Striker 2 Stuff
+        if (striker2Timer.timeout() && !striker2_shot) {
+            game_handler_in.striker2->set_wheelspeed(timer_duration, game_handler_in.robot_positions);
+
+            bool changed_target_pos2 = game_handler_in.striker2->update_temporary_target_pos(true);
+            if (changed_target_pos2) { // Do a Spot Turn if necessary
+                wait_time2 = game_handler_in.striker2->spot_turn_on_target_if_necessary();
+                striker2Timer.enable_manually(wait_time2);
+            }
+
+            if (game_handler_in.striker2->GetPos().DistanceTo(game_handler_in.striker2->get_robot_target_pos()) <= 0.08) {
+                cout << "Striker 2 is close to its target pos" << endl;
+
+                if (striker2_at_ball) {
+                    game_handler_in.striker2->MoveMs(160, 160, 500, 0);
+                    striker2_shot = true;
+                    cout << "Striker 2 done" << endl;
+                } else {
+                    wait_time2 = game_handler_in.striker2->spot_turn(game_handler_in.striker2->GetPos().AngleOfLineToPos(game_handler_in.datBall->GetPos()));
+                    striker2Timer.enable_manually(wait_time2);
+                    striker2_at_ball = true;
+                    cout << "Striker 2 at ball" << endl;
+                }
+            }
         }
 
-        if (goalieTimer.timeout()) {
-            // Do Goalie Keepers Stuff
+        if (striker1_shot && striker2_shot) {
+            cout << "Both Strikers are done, ending loop" << endl;
+            break;
         }
     }
+
+    cout << "ENDED LOOP" << endl;
 }

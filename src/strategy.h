@@ -56,13 +56,11 @@ public:
 
     int strat_move();
 
-    int move_dat_robot(int timer_duration, int robot_index);
-
-    int turn_dat_robot_if_necessary(int robot_index);
-
-
     void set_is_left_side(bool is_left_side_in);
     bool get_is_left_side();
+
+    std::string matlsynt(Position pos);
+
 };
 
 

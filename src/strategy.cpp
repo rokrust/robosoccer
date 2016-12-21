@@ -63,11 +63,66 @@ int Strategy::bring_ball_in_opponents_field(int closest_striker_idx)
     if (closest_striker_idx == 2)
         other_striker_idx = 1;
 
-    // Closest Striker heading for the Ball
-    robots[closest_striker_idx]->set_robot_target_pos(datBall->GetPos());
+    // Calculate a target position behind the ball
+    Position ball_pos = datBall->GetPos();
+    Position closest_striker_pos = robots[closest_striker_idx]->GetPos();
+    Position target_pos_to_set = ball_pos;
+    if (is_left_side) {
+        target_pos_to_set.SetX(target_pos_to_set.GetX()-0.08); // Slightly behind the ball
+    } else {
+        target_pos_to_set.SetX(target_pos_to_set.GetX()+0.08); // Slightly behind the ball
+    }
+    if (ball_pos.GetY() >= 0.0) {
+        target_pos_to_set.SetY(target_pos_to_set.GetY()+0.03); // Slightly diagonal to the ball so that the striker plays it into the middle of the field
+    } else {
+        target_pos_to_set.SetY(target_pos_to_set.GetY()-0.03); // Slightly diagonal to the ball so that the striker plays it into the middle of the field
+    }
+
+    // Get Distance of ball to line between robot and target pos (mx + (-1)*y + y0 = ax + by + c = 0)
+    Position direction_robot_target_pos(target_pos_to_set.GetX()-closest_striker_pos.GetX(), target_pos_to_set.GetY()-closest_striker_pos.GetY());
+    double a = direction_robot_target_pos.GetY() / direction_robot_target_pos.GetX();
+    double b = -1.0;
+    double c = target_pos_to_set.GetY() - a * target_pos_to_set.GetX();
+
+    double dist = abs(a*ball_pos.GetX() + b*ball_pos.GetY() + c) / sqrt(pow(a,2) + pow(b,2)); // d = abs(a*x + by + c)/sqrt(a*a+b*b) - see wikipedia: Distance from a point to a line
+    cout << "dist = " << dist << endl;
+
+    if (dist <= 0.08) { // Ball is too close to the line between robot and its target Position, setting a via point then
+        // l is closest point for ball on line between robot and its target pos
+        // this math was done on paper, to obtain dat formula
+        double b_x = ball_pos.GetX(); // Balls x coord
+        double b_y = ball_pos.GetY(); // Balls y coord
+        double l_x = (b_x + a*b_y - a*c) / (pow(a,2) + 1);
+        double l_y = c + (a*b_x + pow(a,2)*b_y - pow(a,2)*c) / (pow(a,2) + 1);
+        Position direction_ball_to_line((l_x-b_x) / dist, (l_y-b_y) / dist); // normed direction from ball to closest point on line between robot and target pos
+
+        double min_dist_of_robot_to_pass_the_ball = 0.25; // in m
+
+        Position via_pos_to_set(b_x + min_dist_of_robot_to_pass_the_ball * direction_ball_to_line.GetX(),
+                                b_y + min_dist_of_robot_to_pass_the_ball * direction_ball_to_line.GetY());
+
+        // SETTING THE PATH
+        robots[closest_striker_idx]->set_robot_via_path(via_pos_to_set, target_pos_to_set);
+
+        cout << "r_robot = " << matlsynt(closest_striker_pos) << endl;
+        cout << "r_ball = " << matlsynt(ball_pos) << endl;
+        cout << "r_targ = " << matlsynt(target_pos_to_set) << endl;
+        cout << "r_via = " << matlsynt(via_pos_to_set) << endl;
+    } else { // Ball is far enough from the line between robot and its target Position, setting no via point then
+
+        // SETTING THE TARGET POSITION
+        robots[closest_striker_idx]->set_robot_target_pos(target_pos_to_set);
+
+        cout << "r_robot = " << matlsynt(closest_striker_pos) << endl;
+        cout << "r_ball = " << matlsynt(ball_pos) << endl;
+        cout << "r_targ = " << matlsynt(target_pos_to_set) << endl;
+        cout << "r_via = r_targ; % via_pos = none" << endl;
+    }
 
     // Other Striker going to origin
     robots[other_striker_idx]->set_robot_target_pos(Position(0.0, 0.0));
+
+    cout << endl << endl;
 
     return 0;
 }
@@ -94,9 +149,7 @@ int Strategy::strat_move()
             ball_in_our_half = true;
             // cout << "Case 4" << endl;
         }
-
     }
-
     cout << setprecision(3) << fixed << showpos << "We play on the left side: " << is_left_side << " and the Ball is on our Half: " << ball_in_our_half << endl;
 
     // Get Robot closest to Ball
@@ -110,7 +163,6 @@ int Strategy::strat_move()
             closest_robot_idx = i;
         }
     }
-
     cout << "Closest robot with Index: " << closest_robot_idx << " at a Distance of: " << closest_dist << endl;
 
 
@@ -118,41 +170,15 @@ int Strategy::strat_move()
         bring_ball_in_opponents_field(closest_robot_idx);
     }
     else if (ball_in_our_half && ( closest_robot_idx != 1 || closest_robot_idx != 2 )) {
-        defend();
+        // defend();
+        bring_ball_in_opponents_field(closest_robot_idx);
     }
     else {
-        attack();
+        // attack();
+        bring_ball_in_opponents_field(closest_robot_idx);
     }
 
     return 0;
-}
-
-int Strategy::move_dat_robot(int timer_duration, int robot_index)
-{
-    // Move the strikers to where they belong
-    robots[robot_index]->set_wheelspeed(timer_duration);
-
-    cout << "dPos = " << robots[robot_index]->GetPos().DistanceTo(robots[robot_index]->get_robot_target_pos()) << endl;
-
-    return 0;
-}
-
-int Strategy::turn_dat_robot_if_necessary(int robot_index)
-{
-    // Threshold to do a spotturn
-    Angle angle_threshold(60);
-    Angle cur_heading = robots[robot_index]->GetPhi();
-    Angle ref_heading = robots[robot_index]->GetPos().AngleOfLineToPos(robots[robot_index]->get_robot_target_pos());
-    Angle diff_heading = ref_heading - cur_heading;
-
-    // cout << "Diff Angles = " << diff_heading << endl;
-
-    int wait_time = -1;
-    if (diff_heading >= angle_threshold || diff_heading <= -angle_threshold) {
-        wait_time = robots[robot_index]->spot_turn(ref_heading);
-    }
-
-    return wait_time;
 }
 
 void Strategy::set_is_left_side(bool is_left_side_in)
@@ -163,6 +189,19 @@ void Strategy::set_is_left_side(bool is_left_side_in)
 bool Strategy::get_is_left_side()
 {
     return is_left_side;
+}
+
+std::string Strategy::matlsynt(Position pos)
+{
+    int precision = 3; // after decimal point
+
+    std::ostringstream stream_for_matlab_syntax;
+    stream_for_matlab_syntax << "[" << setprecision(precision) << fixed << pos.GetX() << ", " << (double) pos.GetY() << "]; ";
+    return stream_for_matlab_syntax.str();
+
+    // Usage
+    // Position pos2print(1, 0);
+    // cout << "pos2print = " << game_handler.matlsynt(pos2print) << endl;
 }
 
 
