@@ -38,7 +38,7 @@ private:
     RawBall* datBall;
     bool is_left_side;
 
-    int attack();
+    int attack(int closest_striker_idx);
 
     int defend();
 
@@ -60,6 +60,10 @@ public:
     bool get_is_left_side();
 
     std::string matlsynt(Position pos);
+
+    // Some Math Functions
+    Position drop_perpendicular_of_point_on_line(Position point_to_drop_perpendiular_from, Position line_foot_point, Position linear_direction_vector);
+    Position norm_dat_vector(Position vector_to_norm);
 
 };
 

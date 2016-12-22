@@ -43,9 +43,49 @@ Strategy::Strategy(Robot **robots_in, RawBall *datBall_in, bool is_left_side_in)
 }
 
 
-int Strategy::attack()
+int Strategy::attack(int closest_striker_idx)
 {
     cout << "Team is Attacking" << endl;
+
+    int other_striker_idx = 2;
+    if (closest_striker_idx == 2)
+        other_striker_idx = 1;
+
+    cout << "In attack: closest_striker_idx = " << closest_striker_idx << " and the other_striker_idx = " << other_striker_idx << endl;
+
+    // WHERE TO SHOOT
+    Position pos_in_goal_to_aim_for(0.0, 0.1);
+    if (is_left_side) {
+        pos_in_goal_to_aim_for.SetX(1.3);
+    } else {
+        pos_in_goal_to_aim_for.SetY(-1.3);
+    }
+
+    // WHERE TO SHOOT FROM
+    Position ball_pos = datBall->GetPos();
+    Position closest_striker_pos = robots[closest_striker_idx]->GetPos();
+
+    Position direction_from_ball_to_goal(pos_in_goal_to_aim_for.GetX() - ball_pos.GetX() ,
+                                         pos_in_goal_to_aim_for.GetY() - ball_pos.GetY());
+    direction_from_ball_to_goal = norm_dat_vector(direction_from_ball_to_goal);
+
+    Position pos_to_shoot_from(ball_pos.GetX() - 0.04 * direction_from_ball_to_goal.GetX() ,
+                               ball_pos.GetY() - 0.04 * direction_from_ball_to_goal.GetY());
+
+
+    cout << "closest_striker_pos = " << matlsynt(closest_striker_pos) << endl;
+    cout << "ball pos = " << matlsynt(ball_pos) << endl;
+    cout << "pos_in_goal = " << matlsynt(pos_in_goal_to_aim_for) << endl;
+    cout << "pos_to_shoot_from = " << matlsynt(pos_to_shoot_from) << endl;
+
+
+    robots[closest_striker_idx]->set_robot_target_pos(pos_to_shoot_from);
+
+    // Other Striker going to origin
+    robots[other_striker_idx]->set_robot_target_pos(Position(0.0, 0.0));
+
+    cout << endl << endl;
+
     return 0;
 }
 
@@ -66,40 +106,35 @@ int Strategy::bring_ball_in_opponents_field(int closest_striker_idx)
     // Calculate a target position behind the ball
     Position ball_pos = datBall->GetPos();
     Position closest_striker_pos = robots[closest_striker_idx]->GetPos();
-    Position target_pos_to_set = ball_pos;
+    Position normed_ball_pos = norm_dat_vector(ball_pos);
+    Position target_pos_to_set(ball_pos.GetX() + 0.03 * normed_ball_pos.GetX() ,
+                               ball_pos.GetY() + 0.03 * normed_ball_pos.GetY());
+    /* Position target_pos_to_set = ball_pos;
     if (is_left_side) {
-        target_pos_to_set.SetX(target_pos_to_set.GetX()-0.08); // Slightly behind the ball
+        target_pos_to_set.SetX(target_pos_to_set.GetX()-0.03); // Slightly behind the ball
     } else {
-        target_pos_to_set.SetX(target_pos_to_set.GetX()+0.08); // Slightly behind the ball
+        target_pos_to_set.SetX(target_pos_to_set.GetX()+0.03); // Slightly behind the ball
     }
     if (ball_pos.GetY() >= 0.0) {
         target_pos_to_set.SetY(target_pos_to_set.GetY()+0.03); // Slightly diagonal to the ball so that the striker plays it into the middle of the field
     } else {
         target_pos_to_set.SetY(target_pos_to_set.GetY()-0.03); // Slightly diagonal to the ball so that the striker plays it into the middle of the field
-    }
+    } */
 
-    // Get Distance of ball to line between robot and target pos (mx + (-1)*y + y0 = ax + by + c = 0)
-    Position direction_robot_target_pos(target_pos_to_set.GetX()-closest_striker_pos.GetX(), target_pos_to_set.GetY()-closest_striker_pos.GetY());
-    double a = direction_robot_target_pos.GetY() / direction_robot_target_pos.GetX();
-    double b = -1.0;
-    double c = target_pos_to_set.GetY() - a * target_pos_to_set.GetX();
 
-    double dist = abs(a*ball_pos.GetX() + b*ball_pos.GetY() + c) / sqrt(pow(a,2) + pow(b,2)); // d = abs(a*x + by + c)/sqrt(a*a+b*b) - see wikipedia: Distance from a point to a line
-    cout << "dist = " << dist << endl;
+    // Get Distance of ball to line between robot and target pos = length of perpendicualr
+    Position line_robot_target_pos(target_pos_to_set.GetX()-closest_striker_pos.GetX(), target_pos_to_set.GetY()-closest_striker_pos.GetY());
+    Position perpendicular_ball_on_line = drop_perpendicular_of_point_on_line(ball_pos, closest_striker_pos, line_robot_target_pos);
+    double length_of_calced_perp = sqrt( pow(perpendicular_ball_on_line.GetX(),2) + pow(perpendicular_ball_on_line.GetY(),2) );
 
-    if (dist <= 0.08) { // Ball is too close to the line between robot and its target Position, setting a via point then
-        // l is closest point for ball on line between robot and its target pos
-        // this math was done on paper, to obtain dat formula
-        double b_x = ball_pos.GetX(); // Balls x coord
-        double b_y = ball_pos.GetY(); // Balls y coord
-        double l_x = (b_x + a*b_y - a*c) / (pow(a,2) + 1);
-        double l_y = c + (a*b_x + pow(a,2)*b_y - pow(a,2)*c) / (pow(a,2) + 1);
-        Position direction_ball_to_line((l_x-b_x) / dist, (l_y-b_y) / dist); // normed direction from ball to closest point on line between robot and target pos
-
+    cout << "Length_of_Perpendicular = " << length_of_calced_perp << endl;
+    if (length_of_calced_perp <= 0.08) { // Ball is too close to the line between robot and its target Position, setting a via point then
+        // Get the Via Pos that is far enough from the Ball
         double min_dist_of_robot_to_pass_the_ball = 0.25; // in m
+        Position normed_perpendicular = norm_dat_vector(perpendicular_ball_on_line);
 
-        Position via_pos_to_set(b_x + min_dist_of_robot_to_pass_the_ball * direction_ball_to_line.GetX(),
-                                b_y + min_dist_of_robot_to_pass_the_ball * direction_ball_to_line.GetY());
+        Position via_pos_to_set(ball_pos.GetX() + min_dist_of_robot_to_pass_the_ball * normed_perpendicular.GetX(),
+                                ball_pos.GetY() + min_dist_of_robot_to_pass_the_ball * normed_perpendicular.GetY());
 
         // SETTING THE PATH
         robots[closest_striker_idx]->set_robot_via_path(via_pos_to_set, target_pos_to_set);
@@ -132,7 +167,7 @@ int Strategy::bring_ball_in_opponents_field(int closest_striker_idx)
 int Strategy::strat_move()
 {
     // Determine which side of the Field the Ball is in
-    bool ball_in_our_half= false;
+    bool ball_in_our_half = false;
     if (is_left_side) {
         if (datBall->GetX() >= 0.0) {
             ball_in_our_half = false;
@@ -153,29 +188,38 @@ int Strategy::strat_move()
     cout << setprecision(3) << fixed << showpos << "We play on the left side: " << is_left_side << " and the Ball is on our Half: " << ball_in_our_half << endl;
 
     // Get Robot closest to Ball
-    int closest_robot_idx = -1;
-    double closest_dist = 10;
+    int closest_robot_idx_of_all_robots = -1;
+    int closest_own_robot_idx = -1;
+    double closest_dist_of_all_robots = 10;
+    double closest_dist_of_own_robots = 10;
     for (int i=0; i<6; i++) {
         double dist_robot_ball = datBall->GetPos().DistanceTo(robots[i]->GetPos());
-        // cout << "Curr Dist at Index " << i << " is " << dist_robot_ball << endl;
-        if (dist_robot_ball < closest_dist) {
-            closest_dist = dist_robot_ball;
-            closest_robot_idx = i;
+        cout << "Curr Dist at Index " << i << " is " << dist_robot_ball << endl;
+        if (dist_robot_ball < closest_dist_of_all_robots) {
+            closest_dist_of_all_robots = dist_robot_ball;
+            closest_robot_idx_of_all_robots = i;
+        }
+        if (closest_robot_idx_of_all_robots == 1 || closest_robot_idx_of_all_robots == 2) {
+            closest_own_robot_idx = closest_robot_idx_of_all_robots;
+            closest_dist_of_own_robots = closest_dist_of_all_robots;
         }
     }
-    cout << "Closest robot with Index: " << closest_robot_idx << " at a Distance of: " << closest_dist << endl;
+    cout << "Closest robot with Index: " << closest_robot_idx_of_all_robots << " at a Distance of: " << closest_dist_of_all_robots << endl;
+    cout << "Closest own robot with Index: " << closest_own_robot_idx << " at a Distance of: " << closest_dist_of_own_robots << endl;
 
-
-    if (ball_in_our_half && ( closest_robot_idx == 1 || closest_robot_idx == 2 )) {
-        bring_ball_in_opponents_field(closest_robot_idx);
+    // WHAT TO DO?
+    if (ball_in_our_half && ( closest_robot_idx_of_all_robots == 1 || closest_robot_idx_of_all_robots == 2 )) {
+        bring_ball_in_opponents_field(closest_robot_idx_of_all_robots);
     }
-    else if (ball_in_our_half && ( closest_robot_idx != 1 || closest_robot_idx != 2 )) {
+
+    else if (ball_in_our_half && ( closest_robot_idx_of_all_robots != 1 || closest_robot_idx_of_all_robots != 2 )) {
         // defend();
-        bring_ball_in_opponents_field(closest_robot_idx);
+        bring_ball_in_opponents_field(closest_own_robot_idx);
     }
+
     else {
-        // attack();
-        bring_ball_in_opponents_field(closest_robot_idx);
+        // Angriff ist die beste Verteidigung
+        attack(closest_own_robot_idx);
     }
 
     return 0;
@@ -204,6 +248,38 @@ std::string Strategy::matlsynt(Position pos)
     // cout << "pos2print = " << game_handler.matlsynt(pos2print) << endl;
 }
 
+Position Strategy::drop_perpendicular_of_point_on_line(Position point_to_drop_perpendiular_from, Position line_foot_point, Position linear_direction_vector)
+{
+    // this function returns the perpendicular of a point on a line
+    // length of this perpendicular is the distance of the point to the line
+    // to get the point on the line, do: point + perpendicular
+
+    // GET THE LINE FORMULA
+    // Mathematics: line: y = mx + y0 -> mx + (-1)*y + y0 = ax + by + c = 0
+    double a = linear_direction_vector.GetY() / linear_direction_vector.GetX();
+    // double b = -1.0;
+    double c = (line_foot_point.GetY()+linear_direction_vector.GetY()) -
+            a * (line_foot_point.GetX()+linear_direction_vector.GetX());
+
+    // DROP THE PERPENDICULAR
+    // l is closest point for ball on line between robot and its target pos (the perpendicular)
+    // this math was done on paper, to obtain dat formula
+    double b_x = point_to_drop_perpendiular_from.GetX(); // pos x coord
+    double b_y = point_to_drop_perpendiular_from.GetY(); // pos y coord
+    double l_x = (b_x + a*b_y - a*c) / (pow(a,2) + 1);
+    double l_y = c + (a*b_x + pow(a,2)*b_y - pow(a,2)*c) / (pow(a,2) + 1);
+
+    Position the_perpendicular_to_return((l_x-b_x), (l_y-b_y));
+
+    return the_perpendicular_to_return;
+}
+
+Position Strategy::norm_dat_vector(Position vector_to_norm)
+{
+    double length_of_vector = sqrt( pow(vector_to_norm.GetX(),2) + pow(vector_to_norm.GetY(),2) );
+    Position normed_vector(vector_to_norm.GetX()/length_of_vector , vector_to_norm.GetY()/length_of_vector);
+    return normed_vector;
+}
 
 /*
 Strategy::Strategy()

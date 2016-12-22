@@ -27,7 +27,7 @@ void collision_avoidance_ball_tracking(Game& game_handler_in);
 void collision_avoidance_corner_driving(Game& game_handler_in);
 void test_controller(Game& game_handler_in);
 void test_extrapol_shit(Game& game_handler_in);
-void test_play_on_mode(Game& game_handler_in);
+void tactic_bring_ball_back_in_opp_field(Game& game_handler_in);
 void test_via_pos_shit(Game& game_handler_in);
 
 
@@ -123,7 +123,7 @@ int main(void) {
             break;
 
         case 11:
-            test_play_on_mode(game_handler);
+            tactic_bring_ball_back_in_opp_field(game_handler);
             break;
 
         case 12:
@@ -288,7 +288,7 @@ void test_via_pos_shit(Game& game_handler_in)
     }
 }
 
-void test_play_on_mode(Game& game_handler_in)
+void tactic_bring_ball_back_in_opp_field(Game& game_handler_in)
 {
     int timer_duration = 150;
     Timer striker1Timer(timer_duration);
@@ -326,11 +326,12 @@ void test_play_on_mode(Game& game_handler_in)
                 striker1Timer.enable_manually(wait_time1);
             }
 
-            if (game_handler_in.striker1->GetPos().DistanceTo(game_handler_in.striker1->get_robot_target_pos()) <= 0.08) {
-                cout << "Striker 1 is close to its target pos" << endl;
+            if (game_handler_in.striker1->GetPos().DistanceTo(game_handler_in.striker1->get_robot_target_pos()) <= 0.03 &&
+                    game_handler_in.striker1->GetPos().DistanceTo(game_handler_in.datBall->GetPos()) <= 0.1) {
+                cout << "Striker 1 is close to its target pos and ball" << endl;
 
                 if (striker1_at_ball) {
-                    game_handler_in.striker1->MoveMs(160, 160, 500, 0);
+                    game_handler_in.striker1->MoveMs(120, 120, 500, 0);
                     striker1Timer.enable_manually(500 + 30);
                     striker1_shot = true;
                     cout << "Striker 1 done" << endl;
@@ -353,8 +354,9 @@ void test_play_on_mode(Game& game_handler_in)
                 striker2Timer.enable_manually(wait_time2);
             }
 
-            if (game_handler_in.striker2->GetPos().DistanceTo(game_handler_in.striker2->get_robot_target_pos()) <= 0.08) {
-                cout << "Striker 2 is close to its target pos" << endl;
+            if (game_handler_in.striker2->GetPos().DistanceTo(game_handler_in.striker2->get_robot_target_pos()) <= 0.03 &&
+                    game_handler_in.striker2->GetPos().DistanceTo(game_handler_in.datBall->GetPos()) <= 0.1) {
+                cout << "Striker 2 is close to its target pos and ball" << endl;
 
                 if (striker2_at_ball) {
                     game_handler_in.striker2->MoveMs(160, 160, 500, 0);
