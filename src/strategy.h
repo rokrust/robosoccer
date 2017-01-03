@@ -59,6 +59,8 @@ public:
     void set_is_left_side(bool is_left_side_in);
     bool get_is_left_side();
 
+    bool striker_in_a_promising_position(Position striker_position, Position ball_position);
+
     std::string matlsynt(Position pos);
 
     // Some Math Functions

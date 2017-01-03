@@ -225,6 +225,58 @@ int Strategy::strat_move()
     return 0;
 }
 
+bool Strategy::striker_in_a_promising_position(Position striker_position, Position ball_position)
+{
+    // Maxs to be promising
+    double diff_angle_max_to_be_promising = 20.0; // in deg
+    double dist_ball_striker_max_to_be_promising = 0.20; // in m
+    double dist_goal_ball_max_to_be_promising = 0.40; // in m
+
+    // The Position where the opponent's goal is
+    double goal_abs_xCoord = 1.40; // in m
+    Position opp_goal_position(0.0, 0.0);
+    if (is_left_side) {
+        opp_goal_position.SetX(+goal_abs_xCoord);
+    }
+    else {
+        opp_goal_position.SetX(-goal_abs_xCoord);
+    }
+
+
+    // dem Angles, using double because the Angle class doesnt work below or above +/- 180 degs
+    double angle_goal_ball = opp_goal_position.AngleOfLineToPos(ball_position).getFloatDeg();
+    if (angle_goal_ball < 0.0)
+        angle_goal_ball = angle_goal_ball + 360.0;
+
+    double angle_ball_striker = ball_position.AngleOfLineToPos(striker_position).getFloatDeg();
+    if (angle_ball_striker < 0.0)
+        angle_ball_striker = angle_ball_striker + 360.0;
+
+    double diff_angle = angle_goal_ball - angle_ball_striker;
+
+    // dat distance to the ball
+    double dist_ball_striker = ball_position.DistanceTo(striker_position);
+
+    // dat distance to the goal
+    double dist_goal_ball = opp_goal_position.GetX() - ball_position.GetX();
+
+    cout << "diff_angle = " << diff_angle << endl;
+    cout << "dist_ball_striker = " << dist_ball_striker << endl;
+    cout << "dist_goal_ball = " << dist_goal_ball << endl;
+
+    // Determine if dat Position is promising
+    bool position_is_promising = false;
+    if (abs(diff_angle) <= diff_angle_max_to_be_promising &&
+            (abs(dist_ball_striker) <= dist_ball_striker_max_to_be_promising &&
+             abs(dist_goal_ball) <= dist_goal_ball_max_to_be_promising) )
+    {
+        position_is_promising = true;
+    }
+
+    cout << "position_is_promising = " << position_is_promising << endl << endl;
+    return position_is_promising;
+}
+
 void Strategy::set_is_left_side(bool is_left_side_in)
 {
     is_left_side = is_left_side_in;

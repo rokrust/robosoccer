@@ -29,6 +29,7 @@ void test_controller(Game& game_handler_in);
 void test_extrapol_shit(Game& game_handler_in);
 void tactic_bring_ball_back_in_opp_field(Game& game_handler_in);
 void test_via_pos_shit(Game& game_handler_in);
+void test_striker_in_a_promising_position(Game& game_handler_in);
 
 
 
@@ -128,6 +129,10 @@ int main(void) {
 
         case 12:
             test_via_pos_shit(game_handler);
+            break;
+
+        case 13:
+            test_striker_in_a_promising_position(game_handler);
             break;
 
         }
@@ -378,4 +383,17 @@ void tactic_bring_ball_back_in_opp_field(Game& game_handler_in)
     }
 
     cout << "ENDED LOOP" << endl;
+}
+
+void test_striker_in_a_promising_position(Game& game_handler_in)
+{
+    Position ball_pos = game_handler_in.datBall->GetPos();
+    Position striker1_pos = game_handler_in.striker1->GetPos();
+    Position striker2_pos = game_handler_in.striker2->GetPos();
+
+    cout << "Striker 1: " << endl;
+    game_handler_in.strategy_module.striker_in_a_promising_position(striker1_pos, ball_pos);
+
+    cout << "Striker 2: " << endl;
+    game_handler_in.strategy_module.striker_in_a_promising_position(striker2_pos, ball_pos);
 }
