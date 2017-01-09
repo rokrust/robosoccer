@@ -10,11 +10,6 @@
 #include <cstdlib>
 #include <iostream>
 
-//Probably redundant
-#define X_MIN_COOR -1.15
-#define Y_MIN_COOR -0.9
-#define X_MAX_COOR 1.15
-#define Y_MAX_COOR 0.9
 
 namespace ateam{
 
@@ -25,6 +20,7 @@ private:
 public:
     Vector():x(0), y(0){;}
     Vector(double x_in, double y_in): x(x_in), y(y_in){}
+	Vector(Position pos) : x(pos.GetX()), y(pos.GetY()) {}
 
     double get_x() const {return x;}
     double get_y() const {return y;}
@@ -36,7 +32,7 @@ public:
     //of the controller
     //
     Angle vector_angle();
-
+	void rotate(Angle angle);
 
     //Operators
     friend Vector operator+(const Vector& vec1, const Vector& vec2);
@@ -57,7 +53,11 @@ public:
 
     Vector operator-=(const Vector& vec);
 
+	operator Position();
+
 };
+
+
 
 //Might be called as an array/std::vector of Vector_fields taking in 
 //the current robots position
@@ -68,6 +68,7 @@ private:
 
 
 public:
+    
     Vector_field(double x, double y): center_point(x, y){}
     Vector_field(Position pos = Position(0,0)): center_point(pos){}
 
@@ -89,8 +90,7 @@ private:
 
 
 public:
-    Robot_vector_field(){}
-    Robot_vector_field(Position pos){center_point = pos;}
+    Robot_vector_field(Position pos = Position(0, 0)){center_point = pos;}
 
     Vector vector_at_pos(Position pos);
 };
@@ -100,7 +100,7 @@ private:
 
 
 public:	
-    Wall_vector_field(Position pos = Position(0,0)) {center_point = pos;}
+	Wall_vector_field();
 
     Vector vector_at_pos(Position pos);
 };
@@ -112,8 +112,7 @@ private:
     double scale;
 
 public:
-    Target_vector_field(){}
-    Target_vector_field(Position pos){center_point = pos;}
+    Target_vector_field(Position pos = Position(0, 0)){center_point = pos;}
 
     Vector vector_at_pos(Position pos);
 };

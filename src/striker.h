@@ -13,9 +13,9 @@ private:
 
 
 public:
-    Striker(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos);
+    Striker(RTDBConn DBC_in, int device_nr_in, int robot_array_index);
 
-    void do_a_shot_at_goal(bool is_left_side);
+    void do_a_shot_at_goal(RawBall *datBall, bool is_left_side);
 };
 
 #endif // STRIKER_H

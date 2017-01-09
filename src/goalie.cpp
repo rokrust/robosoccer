@@ -1,17 +1,13 @@
 #include "goalie.h"
 #include "game.h"
 
-#define GOALIE_SLEEP_TIME 0.15
-#define CALCULUS_RATE 1
-#define MAX_LOOP_COUNTDOWN -500
-#define V_X_THRESHOLD 0.01
 
-Goalie::Goalie(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos) : Robot(DBC_in, device_nr_in, robot_array_index, pos)
+Goalie::Goalie(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position* robot_positions) : Robot(DBC_in, device_nr_in, robot_array_index)
 {
-    cout << "In Goalie constructor" << endl;
+
 }
 
-void Goalie::do_a_penalty_save()
+void Goalie::do_a_penalty_save(RawBall* datBall, Robot* opponent1, Robot* opponent2, Robot* opponent3)
 {
     // Initialize Goalie in Position and orientation
     Position init_pos(-1.35, 0.0);
@@ -36,7 +32,7 @@ void Goalie::do_a_penalty_save()
     Position ball_t0;
     Position ball_t1;
     Position ball_t2;
-    Position ball_init = Game::datBall->GetPos();
+    Position ball_init = datBall->GetPos();
     double threshold_for_ball_from_init = 0.02;
 
     // initialize a ball velocity vector storing the differential position data and the components
@@ -54,12 +50,12 @@ void Goalie::do_a_penalty_save()
     int calculus_countup = 0;
 
     bool loop = true;
-    bool print_stuff = false; // set on true to print position used for estimations and calculations
+    bool print_stuff = true; // set on true to print position used for estimations and calculations
     while (loop) {
         // pass the new ball estimate through the line
         ball_t0 = ball_t1;
         ball_t1 = ball_t2;
-        ball_t2 = Game::datBall->GetPos();
+        ball_t2 = datBall->GetPos();
 
         // reduce the loop countdown to know when all ball position values are initialized
         loop_countdown--;
@@ -147,7 +143,7 @@ void Goalie::do_a_penalty_save()
     if (print_stuff) {
         cout << "ball_after = [";
         for (int i=0; i<50; i++) {
-            ball_t0 = Game::datBall->GetPos();
+            ball_t0 = datBall->GetPos();
             cout << ball_t0.GetX() << ", " << ball_t0.GetY() << "; ";
             usleep(100 * 1000);
         }
@@ -155,7 +151,7 @@ void Goalie::do_a_penalty_save()
     }
 }
 
-void Goalie::do_the_goalkeepers_kick()
+void Goalie::do_the_goalkeepers_kick(RawBall* datBall, Robot* opponent1, Robot* opponent2, Robot* opponent3)
 {
     cout << "Called the Function: do_the_goalkeepers_kick! " << endl;
 
@@ -164,9 +160,9 @@ void Goalie::do_the_goalkeepers_kick()
     Position line_y_zero(-0.2, 0.0);
     Position line_y_minus(-0.2, -0.6);
 
-    Game::opponent1->GotoPos(line_y_plus);
-    Game::opponent2->GotoPos(line_y_zero);
-    Game::opponent3->GotoPos(line_y_minus);
+    opponent1->GotoPos(line_y_plus);
+    opponent2->GotoPos(line_y_zero);
+    opponent3->GotoPos(line_y_minus);
 
     cout << "Press Enter, if ready! ... ";
     cin.get();
@@ -179,11 +175,11 @@ void Goalie::do_the_goalkeepers_kick()
     cin.get();
 
     // Get Position for all dat Calculations needed
-    Position ball_pos = Game::datBall->GetPos();
+    Position ball_pos = datBall->GetPos();
     goalie_pos = GetPos();
-    Position opp1_pos = Game::opponent1->GetPos();
-    Position opp2_pos = Game::opponent2->GetPos();
-    Position opp3_pos = Game::opponent3->GetPos();
+    Position opp1_pos = opponent1->GetPos();
+    Position opp2_pos = opponent2->GetPos();
+    Position opp3_pos = opponent3->GetPos();
 
     // Decide if shooting through the y_plus or y_minus gap between the opponents
     Position shoot_target_pos; // Position where to shoot the ball through the gap
@@ -257,7 +253,7 @@ void Goalie::do_the_goalkeepers_kick()
     usleep(1000 * 1000);
 
     // 5. Turn to the ball
-    Angle angle_to_ball = GetPos().AngleOfLineToPos(Game::datBall->GetPos());
+    Angle angle_to_ball = GetPos().AngleOfLineToPos(datBall->GetPos());
     usleep(spot_turn(angle_to_ball) + 500*1000);
     usleep(spot_turn(angle_to_ball) + 500*1000);
 
@@ -317,7 +313,7 @@ int Goalie::go_to_penalty_save_position()
         ball_t0 = ball_t1;
         ball_t1 = ball_t2;
         ball_t2 = ball_t3;
-        ball_t3 = Game::datBall->GetPos();
+        ball_t3 = datBall->GetPos();
 
         // reduce the loop countdown to know when all ball position values are initialized
         loop_countdown--;

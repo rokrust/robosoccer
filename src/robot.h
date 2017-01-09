@@ -16,16 +16,39 @@
 #include "pathfinder.h"
 
 #include <math.h>
-#include <boost/circular_buffer.hpp>
 
+
+// turn constants
+#define BASE_TURN_SPEED 80
+#define TURN_RAMP_UP 0
+#define DDEG_MULTIPLYER 2.29
 #define MAX_WHEELSPEED 200
+
+// goalie constants
+#define GOALIE_SPEED 120
+#define GOALIE_CONST_SPEED_120_FORWARD 2200
+#define GOALIE_CONST_SPEED_120_BACKWARD 2150
+
+// controller driving constants
+#define ACCEPTABLE_DISTANCE_THRESHOLD 0.04 // 0.08
+#define ACCEPTABLE_HEADING_THRESHOLD 0.05
+#define VIA_POS_THRESHOLD 0.1 // in m; if distance to via pos is lower than that, the real target pos is aimed for
+#define VIA_POS_OFFSET 0.2 // in m; small: approach via pos with small speed in the end, big: big speeds
+
+#define EXTRAPOL_LIMIT 1.0
+
+//Field position constants
+#define GOAL_MAX_YPOS 0.13
+#define GOAL_MIN_YPOS -0.13
+#define GOAL_LEFT_XPOS -1.48
+#define GOAL_RIGHT_XPOS 1.48
+
 
 enum Parameters
      {K_ph = 20, // working thursday: 20
-      // K_ih = 25, // working thursday: 25
-      K_dh = -5, // working thursday: 5
+      K_dh = 5, // working thursday: 5
       K_pt = 170, // working thursday: 170
-      K_it = 100 }; // working thursday: 100
+      K_it = 15 }; // working well: 15
 
 struct Controller_data{
     //General
@@ -46,49 +69,34 @@ class Robot : public RoboControl
 {
 private:
     int device_nr;
+    int robot_array_index;
 
-    // turn constants
-    const int BASE_TURN_SPEED = 80;
-    const int TURN_RAMP_UP = 0;
-    const double DDEG_MULTIPLYER = 2.29;
-
-    // goalie constants
-    const int GOALIE_SPEED = 120;
-    const int GOALIE_CONST_SPEED_120_FORWARD = 2200;
-    const int GOALIE_CONST_SPEED_120_BACKWARD = 2150;
-
-    // controller driving constants
-    const double ACCEPTABLE_DISTANCE_THRESHOLD = 0.08;
-    const double ACCEPTABLE_HEADING_THRESHOLD = 0.05;
-
-    int left_wheel_speed;
-    int right_wheel_speed;
 
     Controller_data controller_data;
     Path_finder path_finder;
 
+    Position target_pos; //Might put this in another class
+    
     void reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading);
     double error_buffer_mean();
 
 public:
 
-    Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position pos);
+    Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index);
     ~Robot();
 
     int spot_turn(Angle phi_in, bool verbose=true);
+    int spot_turn_on_target_if_necessary(); //wtf?
     int drive_parallel(float diff_to_drive);
 
     // controller functions
     int update_speed_controller(Angle ref_heading, Angle cur_heading);
     int update_heading_controller(Angle ref_heading, Angle cur_heading);
-    void set_wheelspeed(int timer_duration);
-
-    Path_finder get_path_finder(){return path_finder;}
-    void set_sampling_time(int sampling_time);
+    int set_wheelspeed(int timer_duration, Position* robot_positions=NULL);
 
     // target pos
-    void set_target_pos(Position pos){path_finder.set_target_pos(pos);}
-    Position get_target_pos() {return path_finder.get_target_pos();}
+    void set_target_pos(Position target_pos_to_set);
+    Position get_target_pos();
 
     // misc
     int ddeg(Angle goal_phi);
