@@ -1,10 +1,10 @@
 #include "vectorfield.h"
 
-#define exponent 4 // quite working at 4
-#define X_MIN_COOR -1.15;
-#define Y_MIN_COOR -0.9;
-#define X_MAX_COOR 1.15;
-#define Y_MAX_COOR 0.9;
+#define exponent 4
+#define X_MIN_COOR -1.15
+#define Y_MIN_COOR -0.9
+#define X_MAX_COOR 1.15
+#define Y_MAX_COOR 0.9
 
 
 //This will be directly piped in to the reference_angle of the controller
@@ -103,7 +103,7 @@ ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos = Position(0
 }
 
 
-ateam::Vector ateam::Wall_vector_field::vector_at_pos(){
+ateam::Vector ateam::Wall_vector_field::vector_at_pos(Position pos){
     //Effect of the field shrinks with the higher the power.
     double x = (pos.GetX() - X_MIN_COOR)/
             pow(fabs(pos.GetX() - X_MIN_COOR), exponent) +

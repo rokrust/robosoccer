@@ -26,26 +26,18 @@ void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading)
         controller_data.speed_integrator = 0;
     } */
 
-    // WITHOUT PATHFINDER
-    // Acceptably close to target_pos
-    if (GetPos().DistanceTo(temporary_target_pos) < ACCEPTABLE_DISTANCE_THRESHOLD) {
-        controller_data.speed_integrator = 0;
-    }
-
     //Acceptably close to target_pos
     if((ref_heading - cur_heading).Abs() < ACCEPTABLE_HEADING_THRESHOLD){
         controller_data.heading_integrator = 0;
     }
 }
 
-Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index) :
+Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position target_pos) :
 			 RoboControl(DBC_in, device_nr_in)
 {
     cout << "Robot Object initialized" << endl;
     device_nr = device_nr_in;
-    robot_array_index = robot_array_index;
-
-    go_via_pos = false;
+    this->robot_array_index = robot_array_index;
 
     // initialize controller data
     // can also consider putting this into a private function
@@ -56,7 +48,7 @@ Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index) :
     controller_data.current_sample = 0;
     controller_data.error_buffer = new double[6];
 
-    // path_finder = Path_finder(robot_array_index, robot_positions);
+    path_finder = Path_finder(robot_array_index, target_pos);
 }
 
 Robot::~Robot()
@@ -111,7 +103,7 @@ int Robot::spot_turn_on_target_if_necessary()
     // Threshold to do a spotturn
     Angle angle_threshold(60);
     Angle cur_heading = GetPhi();
-    Angle ref_heading = GetPos().AngleOfLineToPos(temporary_target_pos);
+    Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
     Angle diff_heading = ref_heading - cur_heading;
 
     // cout << "Diff Angles = " << diff_heading << endl;
@@ -162,7 +154,7 @@ int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
 
     // WITHOUT PATHFINDER
     // double distance_to_pos = GetPos().DistanceTo(target_pos);
-    double distance_to_pos = GetPos().DistanceTo(temporary_target_pos);
+    double distance_to_pos = GetPos().DistanceTo(target_pos);
 
     controller_data.speed_integrator += distance_to_pos * controller_data.sampling_time;
 
@@ -204,7 +196,7 @@ int Robot::set_wheelspeed(int timer_duration, Position* robot_positions) {
     // Angle cur_heading = GetPhi();
 
     // WITHOUT VECTOR FIELDS
-    Angle ref_heading = GetPos().AngleOfLineToPos(temporary_target_pos);
+    Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
     Angle cur_heading = GetPhi();
 
     reset_integrators_if_necessary(ref_heading, cur_heading);
@@ -214,11 +206,11 @@ int Robot::set_wheelspeed(int timer_duration, Position* robot_positions) {
 
     //hard coding should be removed
     
-    if (u_speed > saturation_speed) {
-        u_speed = saturation_speed;
+    if (u_speed > MAX_WHEELSPEED) {
+        u_speed = MAX_WHEELSPEED;
     }
-    if (u_speed < -saturation_speed) {
-        u_speed = -saturation_speed;
+    if (u_speed < -MAX_WHEELSPEED) {
+        u_speed = -MAX_WHEELSPEED;
     }
 
     int right_wheel_speed = u_speed + u_omega;
@@ -234,90 +226,25 @@ int Robot::set_wheelspeed(int timer_duration, Position* robot_positions) {
     return wait_time; */
 }
 
-void Robot::set_sampling_time_s(double sampling_time_s)
+void Robot::set_sampling_time(double sampling_time)
 {
-    controller_data.sampling_time = sampling_time_s;
+    controller_data.sampling_time = sampling_time;
 }
 
-double Robot::get_sampling_time_s()
+double Robot::get_sampling_time()
 {
     return controller_data.sampling_time;
 }
 
-void Robot::set_robot_target_pos(Position target_pos_to_set)
+void Robot::set_target_pos(Position target_pos)
 {
-    target_pos = target_pos_to_set;
-    temporary_target_pos = target_pos;
-    go_via_pos = false;
+    this->target_pos = target_pos;
+    path_finder.set_target_pos(target_pos);
 }
 
-bool Robot::update_temporary_target_pos(bool extrapol)
-{
-    bool changed_to_final_target_position = false;
-
-    if (abs(GetPos().DistanceTo(via_pos)) <= VIA_POS_THRESHOLD && go_via_pos)
-    {
-        cout << "Distance to Via Pos is " << GetPos().DistanceTo(via_pos) << endl;
-        go_via_pos = false;
-        changed_to_final_target_position = true; // changes temporary target position from via_pos to target_pos, so this is true
-    }
-
-    // Linearly shift the via pos a bit further so the robot drives faster over it
-    Position pos;
-    if (go_via_pos) {
-        Position direction_to_via_pos(via_pos.GetX()-GetPos().GetX(), via_pos.GetY()-GetPos().GetY());
-        double distance_to_via_pos = abs(via_pos.DistanceTo(GetPos()));
-        // Scale
-        direction_to_via_pos.SetX(direction_to_via_pos.GetX()/distance_to_via_pos);
-        direction_to_via_pos.SetY(direction_to_via_pos.GetY()/distance_to_via_pos);
-        pos.SetX(via_pos.GetX() + (VIA_POS_THRESHOLD+VIA_POS_OFFSET)*direction_to_via_pos.GetX());
-        pos.SetY(via_pos.GetY() + (VIA_POS_THRESHOLD+VIA_POS_OFFSET)*direction_to_via_pos.GetY());
-    } else {
-        pos = target_pos;
-    }
-
-    // Extrapolation Shit
-    if (!extrapol) {
-        temporary_target_pos = pos; // Not extrapolating (because it should not extrapolated as given by variable extrapol)
-    }
-    else if (extrapol) {
-        Position current_pos = GetPos();
-        double dist_to_targ = current_pos.DistanceTo(pos);
-        if (dist_to_targ > EXTRAPOL_LIMIT) {
-            Position direction_to_targ((pos.GetX() - current_pos.GetX()) / dist_to_targ,
-                                       (pos.GetY() - current_pos.GetY()) / dist_to_targ);
-            Position extrapol_target_pos((current_pos.GetX() + EXTRAPOL_LIMIT * direction_to_targ.GetX()),
-                                         (current_pos.GetY() + EXTRAPOL_LIMIT * direction_to_targ.GetY()));
-            temporary_target_pos = extrapol_target_pos; // Really extrapolating (Distance to targ > EXTRAPOL_LIMIT)
-        } else {
-            temporary_target_pos = pos; // Not extrapolating (Distance to targ < EXTRAPOL_LIMIT)
-        }
-    }
-
-    return changed_to_final_target_position;
-}
-
-void Robot::set_robot_via_path(Position via_pos_to_set, Position target_pos_to_set)
-{
-    target_pos = target_pos_to_set;
-    via_pos = via_pos_to_set;
-    temporary_target_pos = via_pos;
-    go_via_pos = true;
-}
-
-Position Robot::get_robot_target_pos()
+Position Robot::get_target_pos()
 {
     return target_pos;
-}
-
-Position Robot::get_temporary_target_pos()
-{
-    return temporary_target_pos;
-}
-
-Position Robot::get_robot_via_pos()
-{
-    return via_pos;
 }
 
 
@@ -334,28 +261,3 @@ int Robot::ddeg(Angle goal_phi)
     return ddeg;
 }
 
-
-// PATHFINDER SETTERS AND GETTERS
-void Robot::set_pathfinder_target_pos(Position pos, bool extrapol)
-{
-    if (extrapol) {
-        Position current_pos = GetPos();
-        double dist_to_targ = current_pos.DistanceTo(pos);
-        if (dist_to_targ > EXTRAPOL_LIMIT) {
-            Position direction_to_targ((pos.GetX() - current_pos.GetX()) / dist_to_targ,
-                                       (pos.GetY() - current_pos.GetY()) / dist_to_targ);
-            Position extrapol_target_pos((current_pos.GetX() + EXTRAPOL_LIMIT * direction_to_targ.GetX()),
-                                         (current_pos.GetY() + EXTRAPOL_LIMIT * direction_to_targ.GetY()));
-            path_finder.set_target_pos(extrapol_target_pos); // Really extrapolating (Distance to targ > EXTRAPOL_LIMIT)
-        } else {
-            path_finder.set_target_pos(pos); // Not extrapolating (Distance to targ < EXTRAPOL_LIMIT)
-        }
-    } else {
-        path_finder.set_target_pos(pos); // Not extrapolating (because it should not extrapolated as given by variable extrapol)
-    }
-}
-
-Position Robot::get_pathfinder_target_pos()
-{
-    return path_finder.get_target_pos();
-}

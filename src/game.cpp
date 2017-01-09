@@ -47,12 +47,12 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
 
 
     // Initialize Robot Objects
-    robots[GOALIE] = new Goalie(DBC, myGoalieDvNr, 0, robot_positions);
-    robots[STRIKER1] = new Striker(DBC, myStriker1DvNr, 1, robot_positions);
-    robots[STRIKER2] = new Striker(DBC, myStriker1DvNr+1, 2, robot_positions);
-    robots[OPPONENT1] = new Opponent(DBC, theOpponent1DvNr, 3, robot_positions);
-	robots[OPPONENT2] = new Opponent(DBC, theOpponent1DvNr+1, 4, robot_positions);
-	robots[OPPONENT3] = new Opponent(DBC, theOpponent1DvNr+2, 5, robot_positions);
+    robots[GOALIE] = new Goalie(DBC, myGoalieDvNr, 0);
+    robots[STRIKER1] = new Striker(DBC, myStriker1DvNr, 1);
+    robots[STRIKER2] = new Striker(DBC, myStriker1DvNr+1, 2);
+    robots[OPPONENT1] = new Opponent(DBC, theOpponent1DvNr, 3);
+    robots[OPPONENT2] = new Opponent(DBC, theOpponent1DvNr+1, 4);
+    robots[OPPONENT3] = new Opponent(DBC, theOpponent1DvNr+2, 5);
 
 
     // initialize state machine variables
@@ -446,7 +446,7 @@ void Game::take_kick_off_position() {
 	}
 }
 
-
+/*
 //Fix this
 void Game::take_penalty_position()
 {
@@ -527,7 +527,7 @@ void Game::take_penalty_position()
     striker1->spot_turn(angle4allRobots);
     striker2->spot_turn(angle4allRobots);
 }
-
+*/
 
 bool Game::get_is_team_blue()
 {
@@ -542,13 +542,6 @@ bool Game::get_is_left_side()
 bool Game::get_has_kick_off()
 {
     return has_kick_off;
-}
-
-
-void Game::update_robot_positions(){
-    for(int i = 0; i < NR_ROBOTS; i++){
-        robot_positions[i] = robots[i]->GetPos();
-    }
 }
 
 
@@ -696,3 +689,4 @@ striker2->spot_turn(*orientation_striker2);
 
 usleep(WAIT_TIME_TURNING);
 }
+*/

@@ -75,15 +75,14 @@ public:
 	
 
 	//Set new target position for both robots based on position of opponents
-	void pass_ball(int recieving_robot_index);
+    void pass_ball(int passing_robot_index, int recieving_robot_index);
 	void move_to_kick_position(int robot_index, Position target);
 
     bool striker_in_a_promising_position(Position striker_position, Position ball_position);
 
-    // Some Math Functions
-    Position drop_perpendicular_of_point_on_line(Position point_to_drop_perpendiular_from, Position line_foot_point, Position linear_direction_vector);
-    Position norm_dat_vector(Position vector_to_norm);
-
+    void set_is_left_side(bool is_left_side);
+    bool get_is_left_side();
 };
 
 
+#endif

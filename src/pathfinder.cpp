@@ -3,8 +3,8 @@
 
 //Constructors
 //Initializes vector field weights and vector field positions
-Path_finder::Path_finder(){
-    target_pos = robot_positions[robots_array_index];
+Path_finder::Path_finder(int robot_array_index, Position target_pos){
+    this->target_pos = target_pos;
 
     for(int i = 0; i < N_ROBOTS; i++){
         ateam::Vector_field* robot_field = new ateam::Robot_vector_field();
@@ -15,7 +15,7 @@ Path_finder::Path_finder(){
     }
 
     //Current robot's own position
-    vector_field_weights[robots_array_index] = 0;
+    vector_field_weights[robot_array_index] = 0;
 
     //Initialize wall vector field weights
     vector_fields.push_back(new ateam::Wall_vector_field());

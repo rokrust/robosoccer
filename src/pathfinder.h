@@ -23,7 +23,8 @@ private:
 
 public:
     Path_finder(){}
-    Path_finder(int robots_array_index, Position* robot_positions, Position target_pos = Position(0, 0));
+    Path_finder(int robots_array_index);
+    Path_finder(int robots_array_index, Position target_pos);
 
     Angle calculate_reference_angle(int current_pos_index, Position* robot_positions);
 
