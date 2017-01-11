@@ -100,7 +100,7 @@ private:
 
 
 public:	
-	Wall_vector_field();
+    Wall_vector_field(){}
 
     Vector vector_at_pos(Position pos);
 };

@@ -14,7 +14,15 @@
 #define STRIKER2_KICKOFF_POS_R Position(0.15, 0.15)
 
 
-//Position Game::robot_positions[6] = {Position(-1.3, 0.0),  Position(-0.3, 0.4), Position(-0.15, -0.15), Position(0,0), Position(0,0), Position(0,0)};
+void Game::test(){
+    bool *robots_in_zone = strategy_module.robots_in_zone(Position(0.0, 0.6), Position(1.42, -0.6));
+
+    for(int i = 0; i < N_ROBOTS; i++){
+        cout << robots_in_zone[i] << ", ";
+    }
+
+    cout << endl;
+}
 
 
 Game::Game(RTDBConn DBC, bool is_team_blue_in)
@@ -61,9 +69,6 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
     current_state = REFEREE_INIT;
 
     // Initialize Strategy Module
-    /* strategy_module = Strategy(goalie, striker1, striker2,
-                               opponent1, opponent2, opponent3,
-                               datBall, is_left_side); */
     strategy_module = Strategy(robots, datBall, is_left_side);
 }
 
@@ -203,7 +208,7 @@ void Game::state_machine(bool verbose)
             }
 
             // side and kick_off are updated within the function
-            take_penalty_position();
+            take_penalty_positions();
 
             while (stay_in_state) {
                 // perform regular state tasks like timers
@@ -236,7 +241,7 @@ void Game::state_machine(bool verbose)
             }
 
             // side and kick_off are updated within the function
-            take_penalty_position();
+            take_penalty_positions();
 
             while (stay_in_state) {
                 // perform regular state tasks like timers
@@ -446,6 +451,11 @@ void Game::take_kick_off_position() {
 	}
 }
 
+void Game::take_penalty_positions(){
+
+
+}
+
 /*
 //Fix this
 void Game::take_penalty_position()
@@ -544,7 +554,7 @@ bool Game::get_has_kick_off()
     return has_kick_off;
 }
 
-
+/*
 std::string Game::matlsynt(Position pos)
 {
     int precision = 3; // after decimal point
@@ -557,7 +567,7 @@ std::string Game::matlsynt(Position pos)
     // Position pos2print(1, 0);
     // cout << "pos2print = " << game_handler.matlsynt(pos2print) << endl;
 }
-
+*/
 void Game::set_is_left_side(bool is_left_side_in)
 {
     is_left_side = is_left_side_in;

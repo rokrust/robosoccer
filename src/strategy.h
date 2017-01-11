@@ -62,13 +62,11 @@ private:
 	void add_via_position_if_necessary(int robot_index, Position kick_pos);
 	void clear_scheduled_movement(int robot_index);
 	void clear_all_scheduled_movement();
-	
-	bool* robots_in_zone(Position top_left, Position bottom_right);
-
-	bool opening_detected();
 
 
 public:
+    bool* robots_in_zone(Position top_left, Position bottom_right);
+
     Strategy(){}
     Strategy(Robot **robots_in, RawBall *datBall_in, bool is_left_side_in);
 

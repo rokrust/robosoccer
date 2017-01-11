@@ -32,7 +32,7 @@ void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading)
     }
 }
 
-Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position target_pos) :
+Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index) :
 			 RoboControl(DBC_in, device_nr_in)
 {
     cout << "Robot Object initialized" << endl;
@@ -48,7 +48,7 @@ Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index, Position 
     controller_data.current_sample = 0;
     controller_data.error_buffer = new double[6];
 
-    path_finder = Path_finder(robot_array_index, target_pos);
+    path_finder = Path_finder(robot_array_index);
 }
 
 Robot::~Robot()

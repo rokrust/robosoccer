@@ -52,9 +52,8 @@ void Strategy::clear_all_scheduled_movement(){
 	}
 }
 
-/*
-bool* Strategy::robots_in_zone(Position top_left, Position bottom_right) {
-	bool robot_is_in_zone[N_ROBOTS];
+
+bool* Strategy::robots_in_zone(bool* robots, Position top_left, Position bottom_right) {
 
 	for (int i = 0; i < N_ROBOTS; i++) {
 		Position current_robot_position = robot_positions[i];
@@ -64,17 +63,17 @@ bool* Strategy::robots_in_zone(Position top_left, Position bottom_right) {
 			current_robot_position.GetY() < top_left.GetY() &&
 			current_robot_position.GetY() > bottom_right.GetY()) {
 
-			robot_is_in_zone[i] = true;
+            robots[i] = true;
 		}
 
 		else {
-			robot_is_in_zone[i] = false;
+            robots[i] = false;
 		}
 	}
 
-	return robot_is_in_zone;
+    return robots;
 }
-*/
+
 //Should determine if the robot needs a via pos to get behind the ball
 //Find position to kick from, possibly add a via pos, push to target_pos vector
 void Strategy::move_to_kick_position(int robot_index, Position target) {

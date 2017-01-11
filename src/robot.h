@@ -93,11 +93,9 @@ public:
     int update_speed_controller(Angle ref_heading, Angle cur_heading);
     int update_heading_controller(Angle ref_heading, Angle cur_heading);
     int set_wheelspeed(int timer_duration, Position* robot_positions=NULL);
+
     void set_sampling_time(double sampling_time);
     double get_sampling_time();
-
-
-    // target pos
     void set_target_pos(Position target_pos_to_set);
     Position get_target_pos();
 

@@ -59,7 +59,7 @@ public:
 
     // Take position functions
     void take_kick_off_position();
-    void take_penalty_position();
+    void take_penalty_positions();
 	
     // Boolean get functions
     bool get_is_team_blue();
@@ -67,8 +67,9 @@ public:
     bool get_has_kick_off();
 
     // build string of Position in matlab syntax
-    std::string matlsynt(Position pos);
     void set_is_left_side(bool is_left_side_in);
+
+    void test();
 };
 
 
