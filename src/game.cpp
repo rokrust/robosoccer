@@ -15,13 +15,7 @@
 
 
 void Game::test(){
-    bool *robots_in_zone = strategy_module.robots_in_zone(Position(0.0, 0.6), Position(1.42, -0.6));
 
-    for(int i = 0; i < N_ROBOTS; i++){
-        cout << robots_in_zone[i] << ", ";
-    }
-
-    cout << endl;
 }
 
 

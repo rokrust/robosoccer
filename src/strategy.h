@@ -40,7 +40,7 @@ class Strategy {
 
 private:
     
-    Robot* robots[N_ROBOTS];
+    Robot** robots;
 	Position robot_positions[N_ROBOTS];
 	double robot_estimated_speeds[N_ROBOTS]; //Might not be used
 	RawBall* datBall;
@@ -65,13 +65,11 @@ private:
 
 
 public:
-    bool* robots_in_zone(Position top_left, Position bottom_right);
 
     Strategy(){}
-    Strategy(Robot **robots_in, RawBall *datBall_in, bool is_left_side_in);
+    Strategy(Robot **robots, RawBall *datBall, bool is_left_side);
 
 	
-
 	//Set new target position for both robots based on position of opponents
     void pass_ball(int passing_robot_index, int recieving_robot_index);
 	void move_to_kick_position(int robot_index, Position target);

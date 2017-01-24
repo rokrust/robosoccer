@@ -90,14 +90,32 @@ ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
 }
 */
 
-ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos = Position(0, 0)){
+//x: (x*tan(0.4)-y)/(15(sin(0.4)*x-cos(0.4)y)^2 + (cos(0.4)*x-sin(0.4)y)^2 + 0.01),
+//y: (y/tan(0.4)-x)/(15(sin(0.4)*x-cos(0.4)y)^2 + (cos(0.4)*x-sin(0.4)y)^2 + 0.01)
+ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
+    Angle vector_field_angle = center_point.AngleOfLineToPos(target_pos);
 
+    double tangent = tan(vector_field_angle.Get());
+    double sine = sin(vector_field_angle.Get());
+    double cosine = cos(vector_field_angle.Get());
+
+    double x_diff = pos.GetX()-center_point.GetX();
+    double y_diff = pos.GetY()-center_point.GetY();
+
+    double ell1 = a*pow((sine*x_diff-cosine*y_diff), 2);
+    double ell2 = b*pow((cosine*y_diff-sine*y_diff), 2);
+
+    double x = x_diff*tangent - y_diff / (ell1 + ell2);
+    double y = y_diff/tangent - x_diff / (ell1 + ell2);
+
+    /*
     double x_diff = pos.GetX()-center_point.GetX();
     double y_diff = pos.GetY()-center_point.GetY();
     double denominator = pow(fabs(x_diff), exponent)+pow(fabs(y_diff), exponent);
 
     double x = (x_diff) / denominator;
     double y = (y_diff) / denominator;
+    */
 
     return ateam::Vector(x, y);
 }

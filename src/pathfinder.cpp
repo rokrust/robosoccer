@@ -62,6 +62,11 @@ void Path_finder::update_vector_field_positions(Position* robot_positions){
 void Path_finder::set_target_pos(Position pos){
     target_pos = pos;
     vector_fields[TARGET_FIELD]->set_center_point(pos);
+
+    //Needed to allign the fields towards the robot's target position
+    for(int i = 0; i < N_ROBOTS; i++){
+        set_target_pos(target_pos);
+    }
 }
 
 Position Path_finder::get_target_pos(){

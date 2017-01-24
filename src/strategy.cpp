@@ -4,11 +4,11 @@
 #include <math.h>
 
 
-Strategy::Strategy(Robot **robots_in, RawBall *datBall_in, bool is_left_side_in)
+Strategy::Strategy(Robot **robots, RawBall *datBall, bool is_left_side)
 {
-    
-    datBall = datBall_in;
-    is_left_side = is_left_side_in;
+    this->robots = robots;
+    this->datBall = datBall;
+    this->is_left_side = is_left_side;
 }
 
 //Should find out which side of the ball the robot should be on
@@ -50,28 +50,6 @@ void Strategy::clear_all_scheduled_movement(){
 	for (int i = 0; i < N_ROBOTS; i++) {
 		robot_target_positions[i].clear();
 	}
-}
-
-
-bool* Strategy::robots_in_zone(bool* robots, Position top_left, Position bottom_right) {
-
-	for (int i = 0; i < N_ROBOTS; i++) {
-		Position current_robot_position = robot_positions[i];
-		
-		if (current_robot_position.GetX() < top_left.GetX() &&
-			current_robot_position.GetX() > bottom_right.GetX() &&
-			current_robot_position.GetY() < top_left.GetY() &&
-			current_robot_position.GetY() > bottom_right.GetY()) {
-
-            robots[i] = true;
-		}
-
-		else {
-            robots[i] = false;
-		}
-	}
-
-    return robots;
 }
 
 //Should determine if the robot needs a via pos to get behind the ball
