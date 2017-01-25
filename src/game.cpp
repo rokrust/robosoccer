@@ -401,6 +401,7 @@ void Game::print_state(ePlayMode state)
     }
 }
 
+//A bit ugly and unwieldy but should get the job done
 void Game::take_kick_off_position() {
 	update_side();
 	update_kick_off();
@@ -448,6 +449,28 @@ void Game::take_kick_off_position() {
 void Game::take_penalty_positions(){
 
 
+}
+
+
+bool Game::get_is_team_blue()
+{
+    return is_team_blue;
+}
+
+bool Game::get_is_left_side()
+{
+    return is_left_side;
+}
+
+bool Game::get_has_kick_off()
+{
+    return has_kick_off;
+}
+
+void Game::set_is_left_side(bool is_left_side_in)
+{
+    is_left_side = is_left_side_in;
+    strategy_module.set_is_left_side(is_left_side_in);
 }
 
 /*
@@ -533,40 +556,8 @@ void Game::take_penalty_position()
 }
 */
 
-bool Game::get_is_team_blue()
-{
-    return is_team_blue;
-}
 
-bool Game::get_is_left_side()
-{
-    return is_left_side;
-}
-
-bool Game::get_has_kick_off()
-{
-    return has_kick_off;
-}
-
-/*
-std::string Game::matlsynt(Position pos)
-{
-    int precision = 3; // after decimal point
-
-    std::ostringstream stream_for_matlab_syntax;
-    stream_for_matlab_syntax << "[" << setprecision(precision) << fixed << pos.GetX() << ", " << (double) pos.GetY() << "]; ";
-    return stream_for_matlab_syntax.str();
-
-    // Usage
-    // Position pos2print(1, 0);
-    // cout << "pos2print = " << game_handler.matlsynt(pos2print) << endl;
-}
-*/
-void Game::set_is_left_side(bool is_left_side_in)
-{
-    is_left_side = is_left_side_in;
-    strategy_module.set_is_left_side(is_left_side_in);
-}
+//Old horrible shit not written by me
 /*
 void Game::take_kick_off_position()
 {

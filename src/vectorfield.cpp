@@ -1,4 +1,6 @@
 #include "vectorfield.h"
+#include <math.h>
+
 
 #define exponent 4
 #define X_MIN_COOR -1.15
@@ -75,49 +77,31 @@ ateam::Vector ateam::Vector::operator-=(const ateam::Vector& vec){
 
 ateam::Vector::operator Position() { return Position(x, y); }
 
-
-/*
-ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
-
-    double x_diff = pos.GetX()-center_point.GetX();
-    double y_diff = pos.GetY()-center_point.GetY();
-    double denominator = pow(fabs(x_diff), exponent)+pow(fabs(y_diff), exponent);
-
-    double x = (x_diff) / denominator;
-    double y = (y_diff) / denominator;
-
-    return ateam::Vector(x, y);
-}
-*/
-
-//x: (x*tan(0.4)-y)/(15(sin(0.4)*x-cos(0.4)y)^2 + (cos(0.4)*x-sin(0.4)y)^2 + 0.01),
-//y: (y/tan(0.4)-x)/(15(sin(0.4)*x-cos(0.4)y)^2 + (cos(0.4)*x-sin(0.4)y)^2 + 0.01)
+//x:        (x*tan(1)-y)/(sqrt((x*tan(1)-y)^2+(y/tan(1)-x)^2)),
+//y:        (y/tan(1)-x)/(sqrt((x*tan(1)-y)^2+(y/tan(1)-x)^2)
+//scale:    1/(15(sin(0.75)*x-cos(0.75)y)^2 + (cos(0.75)*x+sin(0.75)y)^2 + 0.01)
 ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
     Angle vector_field_angle = center_point.AngleOfLineToPos(target_pos);
 
+    //Ease of calculations
     double tangent = tan(vector_field_angle.Get());
     double sine = sin(vector_field_angle.Get());
     double cosine = cos(vector_field_angle.Get());
 
+    //Substitution to move the center of the vector field
     double x_diff = pos.GetX()-center_point.GetX();
     double y_diff = pos.GetY()-center_point.GetY();
 
-    double ell1 = a*pow((sine*x_diff-cosine*y_diff), 2);
-    double ell2 = b*pow((cosine*y_diff-sine*y_diff), 2);
+    double vector_field_denominator = sqrt(pow(x_diff * tangent - y_diff, 2) +
+                                           pow(y_diff / tangent - x_diff, 2));
 
-    double x = x_diff*tangent - y_diff / (ell1 + ell2);
-    double y = y_diff/tangent - x_diff / (ell1 + ell2);
+    double x = (x_diff * tangent - y_diff) / vector_field_denominator;
+    double y = (y_diff / tangent - x_diff) / vector_field_denominator;
 
-    /*
-    double x_diff = pos.GetX()-center_point.GetX();
-    double y_diff = pos.GetY()-center_point.GetY();
-    double denominator = pow(fabs(x_diff), exponent)+pow(fabs(y_diff), exponent);
+    double scalar_field = 1 / (eccentricity * pow(sine * x_diff - cosine * y_diff, 2) +
+                                              pow(cosine * x_diff + sine * y_diff, 2));
 
-    double x = (x_diff) / denominator;
-    double y = (y_diff) / denominator;
-    */
-
-    return ateam::Vector(x, y);
+    return scalar_field * ateam::Vector(x, y); //82 % sure this works
 }
 
 
@@ -147,4 +131,19 @@ ateam::Vector ateam::Target_vector_field::vector_at_pos(Position pos = Position(
 
     return ateam::Vector(x, y);
 }
+
+//Just in case I need a barely working vector field.
+/*
+ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
+
+    double x_diff = pos.GetX()-center_point.GetX();
+    double y_diff = pos.GetY()-center_point.GetY();
+    double denominator = pow(fabs(x_diff), exponent)+pow(fabs(y_diff), exponent);
+
+    double x = (x_diff) / denominator;
+    double y = (y_diff) / denominator;
+
+    return ateam::Vector(x, y);
+}
+*/
 

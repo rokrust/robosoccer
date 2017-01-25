@@ -56,7 +56,7 @@ int main(void) {
 
         //-------------------------------------- End Init ---------------------------------
 
-        game_handler.test();
+        game_handler.take_kick_off_position();
 
 
     } catch (DBError err) {
