@@ -113,8 +113,14 @@ bool Strategy::get_is_left_side()
     return is_left_side;
 }
 
+void Strategy::set_avoidance_degree(int robot, int robot_to_avoid, double avoidance_degree){
+    robots[robot]->set_avoidance_degree(robot_to_avoid, avoidance_degree);
+}
+
+
 void Strategy::move_robots(){
     update_robot_positions();
+    //robots[GOALIE]->set_target_pos(robot_positions[STRIKER1]);
 
     if(movement_tick_timer.timeout()){
         movement_tick_timer.enable();

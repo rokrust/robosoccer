@@ -53,6 +53,7 @@ public:
     void update_side();
     void update_kick_off();
     void print_state(ePlayMode state=PAUSE);
+    void set_some_positions();
 
     // Take position functions
     void take_kick_off_positions();
@@ -66,7 +67,8 @@ public:
     // build string of Position in matlab syntax
     void set_is_left_side(bool is_left_side_in);
 
-    void test();
+    void test_init();
+    void test_loop();
 };
 
 

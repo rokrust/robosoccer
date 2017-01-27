@@ -13,7 +13,14 @@
 #define STRIKER1_KICKOFF_POS_R Position(0.15, -0.15)
 #define STRIKER2_KICKOFF_POS_R Position(0.15, 0.15)
 
-void Game::test(){
+void Game::test_init(){
+    take_kick_off_positions();
+    //strategy_module.set_avoidance_degree(GOALIE, STRIKER1, 0.0);
+    //set_some_positions();
+}
+
+
+void Game::test_loop(){
     strategy_module.move_robots();
 }
 
@@ -484,6 +491,13 @@ void Game::set_is_left_side(bool is_left_side_in)
 {
     is_left_side = is_left_side_in;
     strategy_module.set_is_left_side(is_left_side_in);
+}
+
+
+void Game::set_some_positions(){
+    robots[GOALIE]->set_target_pos(STRIKER1_NON_KICKOFF_POS_R);
+    robots[STRIKER1]->set_target_pos(GOALIE_KICKOFF_POS_R);
+    robots[STRIKER2]->set_target_pos(STRIKER2_NON_KICKOFF_POS_R);
 }
 
 /*

@@ -30,7 +30,7 @@
 #define GOALIE_CONST_SPEED_120_BACKWARD 2150
 
 // controller driving constants
-#define ACCEPTABLE_DISTANCE_THRESHOLD 0.04 // 0.08
+#define ACCEPTABLE_DISTANCE_THRESHOLD 0.02 // 0.08
 #define ACCEPTABLE_HEADING_THRESHOLD 0.05
 #define VIA_POS_THRESHOLD 0.1 // in m; if distance to via pos is lower than that, the real target pos is aimed for
 #define VIA_POS_OFFSET 0.2 // in m; small: approach via pos with small speed in the end, big: big speeds
@@ -93,11 +93,13 @@ public:
     int update_speed_controller(Angle ref_heading, Angle cur_heading);
     int update_heading_controller(Angle ref_heading, Angle cur_heading);
     int set_wheelspeed(Position* robot_positions);
-
     void set_sampling_time(double sampling_time);
     double get_sampling_time();
+
     void set_target_pos(Position target_pos_to_set);
     Position get_target_pos();
+
+    void set_avoidance_degree(int field_index, double avoidance_degree);
 
     // misc
     int ddeg(Angle goal_phi);

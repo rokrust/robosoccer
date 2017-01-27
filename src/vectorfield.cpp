@@ -11,7 +11,7 @@
 
 //This will be directly piped in to the reference_angle of the controller
 Angle ateam::Vector::vector_angle(){
-    return Position(0, 0).AngleOfLineToPos(Position(x, y));
+    return Position(0, 0).AngleOfLineToPos(Position(x, y));;
 }
 
 void ateam::Vector::rotate(Angle angle) {
@@ -89,17 +89,17 @@ ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
     double cosine = cos(vector_field_angle.Get());
 
     //Substitution to move the center of the vector field
-    double x_diff = pos.GetX()-center_point.GetX();
-    double y_diff = pos.GetY()-center_point.GetY();
+    double x_diff = pos.GetX()-center_point.GetX()/50;
+    double y_diff = pos.GetY()-center_point.GetY()/50;
 
     double vector_field_denominator = sqrt(pow(x_diff * tangent - y_diff, 2) +
-                                           pow(y_diff / tangent - x_diff, 2));
+                                           pow(y_diff / tangent - x_diff, 2)) + 0.01;
 
     double x = (x_diff * tangent - y_diff) / vector_field_denominator;
     double y = (y_diff / tangent - x_diff) / vector_field_denominator;
 
     double scalar_field = 1 / (eccentricity * pow(sine * x_diff - cosine * y_diff, 2) +
-                                              pow(cosine * x_diff + sine * y_diff, 2));
+                                              pow(cosine * x_diff + sine * y_diff, 2) + 0.01);
 
     return scalar_field * ateam::Vector(x, y); //82 % sure this works
 }

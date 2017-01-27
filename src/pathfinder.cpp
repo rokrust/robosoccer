@@ -10,7 +10,7 @@ Path_finder::Path_finder(int robot_array_index){
         vector_fields.push_back(robot_field);
 		
         //Initialize all the robot vector field weights
-        vector_field_weights.push_back(0.4); //fix hardcoding  0.005
+        vector_field_weights.push_back(1.0); //fix hardcoding  0.005
     }
 
     //The robot's own vectorfield is ignored to avoid infinite values
@@ -22,8 +22,17 @@ Path_finder::Path_finder(int robot_array_index){
 
     //Initialize target vector field weight
     vector_fields.push_back(new ateam::Target_vector_field());
-    vector_field_weights.push_back(2.0); //fix hardcoding  1.0
+    vector_field_weights.push_back(1.0); //fix hardcoding  1.0
 }
+
+void Path_finder::print_vector_length(int index, Position pos){
+    ateam::Vector current_vec = vector_fields[index]->vector_at_pos(pos);
+
+
+    cout << "Length: " << current_vec*current_vec << endl;
+
+}
+
 
 //mathematics
 //Adds all the vector fields to find and returns the vector that
@@ -41,12 +50,21 @@ ateam::Vector Path_finder::sum_vector_field(Position current_pos){
         summed_weighted_vector += vector_field_weights[i] * vector_fields[i]->vector_at_pos(current_pos);
     }
 
+    if(summed_weighted_vector.length() > 2.0){
+        cout << "Length: " << summed_weighted_vector.length() << endl;
+
+        summed_weighted_vector = 1/summed_weighted_vector.length() * summed_weighted_vector;
+        summed_weighted_vector = 2*summed_weighted_vector;
+    }
+    cout << "Length: " << summed_weighted_vector.length() << endl << endl;
+
     return summed_weighted_vector;
 }
 
 //Finds the angle of the vector from the summed vector field
 Angle Path_finder::calculate_reference_angle(int current_pos_index, Position* robot_positions){
     update_vector_field_positions(robot_positions);
+
     return sum_vector_field(robot_positions[current_pos_index]).vector_angle();
 
 }

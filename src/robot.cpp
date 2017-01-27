@@ -73,7 +73,8 @@ int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
 //Set u_omega according to ref_heading and cur_heading (should be called every controller tick)
 int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
     double current_error = (ref_heading - cur_heading).Get();
-    current_error = sin(current_error); //WTF?? From shit period
+
+    //current_error = sin(current_error); //WTF?? From shit period
 
     controller_data.error_buffer[controller_data.current_sample] = current_error;
     //controller_data.heading_integrator += current_error*controller_data.sampling_time;
@@ -94,10 +95,15 @@ int Robot::set_wheelspeed(Position* robot_positions) {
     Angle ref_heading = path_finder.calculate_reference_angle(robot_array_index, robot_positions);
     Angle cur_heading = GetPhi();
 
-    reset_integrators_if_necessary(ref_heading, cur_heading);
-
     int u_omega = update_heading_controller(ref_heading, cur_heading);
     int u_speed = update_speed_controller(ref_heading, cur_heading);
+
+    if(u_speed == 0){
+        controller_data.heading_integrator = 0;
+        controller_data.speed_integrator = 0;
+        MoveMs(0, 0, 1000, 100);
+        return 1;
+    }
 
     //Speed limit
     if (u_speed > MAX_WHEELSPEED) {
@@ -139,7 +145,10 @@ Position Robot::get_target_pos()
     return target_pos;
 }
 
+void Robot::set_avoidance_degree(int field_index, double avoidance_degree){
+    path_finder.set_robot_vector_field_weight(field_index, avoidance_degree);
 
+}
 
 
 /*******************************Shit*******************************/

@@ -26,6 +26,7 @@ public:
     Path_finder(int robots_array_index);
 
     Angle calculate_reference_angle(int current_pos_index, Position* robot_positions);
+    void print_vector_length(int index, Position pos);
 
     void set_target_pos(Position pos);
     Position get_target_pos();

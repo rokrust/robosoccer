@@ -32,6 +32,7 @@ public:
     //
     Angle vector_angle();
 	void rotate(Angle angle);
+    double length(){ return sqrt((*this) * (*this)); }
 
     //Operators
     friend Vector operator+(const Vector& vec1, const Vector& vec2);
@@ -92,7 +93,7 @@ private:
     Position target_pos;
 
 public:
-    Robot_vector_field(Position pos = Position(0, 0)): eccentricity(15) {center_point = pos;}
+    Robot_vector_field(Position pos = Position(0, 0)): eccentricity(10) {center_point = pos;}
     void set_target_pos(Position pos) {target_pos = pos;}
 
     Vector vector_at_pos(Position pos);
@@ -113,7 +114,6 @@ public:
 class Target_vector_field: public Vector_field{
 
 private:
-    double scale; //Not needed
 
 public:
     Target_vector_field(Position pos = Position(0, 0)){center_point = pos;}

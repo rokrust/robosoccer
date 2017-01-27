@@ -62,10 +62,13 @@ private:
     void update_robot_positions();
 
 
+
 public:
 
     Strategy(){}
     Strategy(Robot **robots, RawBall *datBall, bool is_left_side); //ugh
+
+    void set_avoidance_degree(int robot, int robot_to_avoid, double avoidance_degree);
 
     void move_robots();
 
