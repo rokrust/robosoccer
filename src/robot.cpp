@@ -55,6 +55,10 @@ Robot::~Robot()
 int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
     double distance_to_pos = GetPos().DistanceTo(target_pos);
 
+    if(distance_to_pos < ACCEPTABLE_DISTANCE_THRESHOLD){
+        return 0;
+    }
+
     controller_data.speed_integrator += distance_to_pos * controller_data.sampling_time;
 
     int u_speed = K_pt*distance_to_pos + K_it*controller_data.speed_integrator;
@@ -86,7 +90,7 @@ int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
 }
 
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
-int Robot::set_wheelspeed(int timer_duration, Position* robot_positions) {
+int Robot::set_wheelspeed(Position* robot_positions) {
     Angle ref_heading = path_finder.calculate_reference_angle(robot_array_index, robot_positions);
     Angle cur_heading = GetPhi();
 
@@ -107,7 +111,7 @@ int Robot::set_wheelspeed(int timer_duration, Position* robot_positions) {
     int left_wheel_speed = u_speed - u_omega;
 
     //hard coding should be removed
-    MoveMs(left_wheel_speed, right_wheel_speed, timer_duration+10, 100);
+    MoveMs(left_wheel_speed, right_wheel_speed, 1000, 100);
 
 
     return 0;
@@ -193,25 +197,6 @@ int Robot::spot_turn(Angle phi_in, bool verbose)
     }
 
     // return the time that the turn will take for higher level functions to wait
-    return wait_time;
-}
-
-int Robot::spot_turn_on_target_if_necessary()
-{
-    // Threshold to do a spotturn
-    Angle angle_threshold(60);
-    Angle cur_heading = GetPhi();
-    Angle ref_heading = GetPos().AngleOfLineToPos(target_pos);
-    Angle diff_heading = ref_heading - cur_heading;
-
-    // cout << "Diff Angles = " << diff_heading << endl;
-
-    int wait_time = -1;
-    if (diff_heading >= angle_threshold || diff_heading <= -angle_threshold) {
-        cout << "SPOT TURNING THE SHIT OUT OF DAT ROBOT - " << endl;
-        wait_time = spot_turn(ref_heading);
-    }
-
     return wait_time;
 }
 

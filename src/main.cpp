@@ -35,28 +35,13 @@ void test_striker_in_a_promising_position(Game& game_handler_in);
 
 
 int main(void) {
-
-    //--------------------------------- Init --------------------------------------------------
-    const int client_nr = 222;
-
     try {
-        // Establish connection to the RTDB
-        cout << endl << "Connecting to RTDB..." << endl;
-        // Create the client name with the unique client number
-        string client_name = "pololu_client_";
-        client_name.push_back((char) (client_nr + '0'));
-        RTDBConn DBC(client_name.data(), 0.1, "");
+        Game game_handler;
+        game_handler.take_kick_off_positions();
 
-        // Get Robot Colour
-        bool is_team_blue = true;
-        cout << "Which Team? (0: red - 1: blue) ";
-        cin >> is_team_blue;
-
-        Game game_handler(DBC, is_team_blue);
-
-        //-------------------------------------- End Init ---------------------------------
-
-        game_handler.take_kick_off_position();
+        while(1){
+            game_handler.test();
+        }
 
 
     } catch (DBError err) {

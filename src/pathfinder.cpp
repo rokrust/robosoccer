@@ -10,7 +10,7 @@ Path_finder::Path_finder(int robot_array_index){
         vector_fields.push_back(robot_field);
 		
         //Initialize all the robot vector field weights
-        vector_field_weights.push_back(0.0); //fix hardcoding  0.005
+        vector_field_weights.push_back(0.4); //fix hardcoding  0.005
     }
 
     //The robot's own vectorfield is ignored to avoid infinite values
@@ -22,7 +22,7 @@ Path_finder::Path_finder(int robot_array_index){
 
     //Initialize target vector field weight
     vector_fields.push_back(new ateam::Target_vector_field());
-    vector_field_weights.push_back(1.0); //fix hardcoding  1.0
+    vector_field_weights.push_back(2.0); //fix hardcoding  1.0
 }
 
 //mathematics
@@ -60,12 +60,13 @@ void Path_finder::update_vector_field_positions(Position* robot_positions){
 
 //Changes the center point of the target vector field
 void Path_finder::set_target_pos(Position pos){
+
     target_pos = pos;
     vector_fields[TARGET_FIELD]->set_center_point(pos);
 
     //Needed to allign the fields towards the robot's target position
     for(int i = 0; i < N_ROBOTS; i++){
-        set_target_pos(target_pos);
+        vector_fields[i]->set_center_point(pos);
     }
 }
 

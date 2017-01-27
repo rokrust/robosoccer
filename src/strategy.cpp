@@ -9,6 +9,8 @@ Strategy::Strategy(Robot **robots, RawBall *datBall, bool is_left_side)
     this->robots = robots;
     this->datBall = datBall;
     this->is_left_side = is_left_side;
+
+    this->movement_tick_timer = Timer(100); //Fix hard coding
 }
 
 //Should find out which side of the ball the robot should be on
@@ -42,6 +44,12 @@ double Strategy::distance_of_point_to_line(Position point, Position line_start, 
 	return distance;
 }
 
+void Strategy::update_robot_positions(){
+    for(int i = 0; i < N_ROBOTS; i++){
+        robot_positions[i] = robots[i]->GetPos();
+    }
+}
+
 void Strategy::clear_scheduled_movement(int robot_index) {
 	robot_target_positions[robot_index].clear();
 }
@@ -63,20 +71,6 @@ void Strategy::move_to_kick_position(int robot_index, Position target) {
     add_via_position_if_necessary(robot_index, kick_pos); //Might remove this function
 }
 
-/*
-//check y-coordinate distance between robots in opponents field half
-bool Strategy::opening_detected() {
-	bool *robots_blocking;
-
-	if (is_left_side) {
-		
-	}
-
-	else {
-
-	}
-}
-*/
 
 //Pass the ball from one robot to another
 void Strategy::pass_ball(int passing_robot_index, int recieving_robot_index) {
@@ -117,4 +111,17 @@ void Strategy::set_is_left_side(bool is_left_side_in)
 bool Strategy::get_is_left_side()
 {
     return is_left_side;
+}
+
+void Strategy::move_robots(){
+    update_robot_positions();
+
+    if(movement_tick_timer.timeout()){
+        movement_tick_timer.enable();
+
+        for(int i = 0; i < 3; i++){
+            robots[i]->set_wheelspeed(robot_positions);
+        }
+
+    }
 }

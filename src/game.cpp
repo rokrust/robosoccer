@@ -13,24 +13,29 @@
 #define STRIKER1_KICKOFF_POS_R Position(0.15, -0.15)
 #define STRIKER2_KICKOFF_POS_R Position(0.15, 0.15)
 
-
 void Game::test(){
-
+    strategy_module.move_robots();
 }
 
-
-Game::Game(RTDBConn DBC, bool is_team_blue_in)
+Game::Game()
 {
+    // Establish connection to the RTDB
+    cout << endl << "Connecting to RTDB..." << endl;
+    // Create the client name with the unique client number
+    string client_name = "pololu_client_";
+    client_name.push_back((char) (CLIENT_NBR + '0'));
+    static RTDBConn DBC(client_name.data(), 0.1, "");
+
+    // Get Robot Colour
+    cout << "Which Team? (0: red - 1: blue) ";
+    cin >> is_team_blue;
+
     // Initialize Referee
     referee_handler = new Referee(DBC);
     referee_handler->Init();
 
     // Initialize datBall
     datBall = new RawBall(DBC);
-
-
-    // Set Team Colour
-    is_team_blue = is_team_blue_in;
 
     // Get device Numbers for drobots depending on which colour
     int myGoalieDvNr;
@@ -56,7 +61,6 @@ Game::Game(RTDBConn DBC, bool is_team_blue_in)
     robots[OPPONENT2] = new Opponent(DBC, theOpponent1DvNr+1, 4);
     robots[OPPONENT3] = new Opponent(DBC, theOpponent1DvNr+2, 5);
 
-
     // initialize state machine variables
     stay_in_state_machine = true;
     previous_state = REFEREE_INIT;
@@ -71,6 +75,7 @@ void Game::state_machine(bool verbose)
 {
     // include possibility to leave the state machine by changing the flag stay_in_state_machine
     // so-far no use-case (Simon, 16.11.2016)
+    std::cout << "Stay: " << stay_in_state_machine << std::endl;
     while (stay_in_state_machine) {
 
         // reset the flag to stay in a state
@@ -110,11 +115,13 @@ void Game::state_machine(bool verbose)
             }
 
             // side and kick_off are updated within the take_kick_off_positions
-            take_kick_off_position();
+            take_kick_off_positions();
             referee_handler->SetReady(!is_team_blue);
 
             while (stay_in_state) {
                 // perform regular state tasks like timers
+                cout << "Moving robots" << endl;
+                strategy_module.move_robots();
 
                 // detect state changes
                 update_state();
@@ -144,14 +151,14 @@ void Game::state_machine(bool verbose)
             }
 
             // perform Game state initializations like creating timers
-            Timer goalie_timer(TIME_STEP_SIZE_GOALIE);
-            goalie_timer.enable_periodically();
+            Timer goalie_timer(100);
+            goalie_timer.enable();
 
             while (stay_in_state) {
                 // perform regular state tasks like timers
                 if (goalie_timer.timeout()) {
                     cout << "Goalie timer has timed out" << endl;
-                    goalie_timer.enable_periodically();
+                    goalie_timer.enable();
                 }
 
                 // detect state changes
@@ -168,7 +175,7 @@ void Game::state_machine(bool verbose)
             }
 
             // side and kick_off are updated within the take_kick_off_positions
-            take_kick_off_position();
+            take_kick_off_positions();
             referee_handler->SetReady(!is_team_blue);
 
             while (stay_in_state) {
@@ -324,6 +331,7 @@ void Game::update_side()
 {
     // ANDI DID MODIFY THIS WITH THE SET FUNCTION IT SHOULD STILL DO THE SAME BUT ALSO SET THE SIDE IN STRATEGY
     bool blue_has_right = referee_handler->GetBlueSide();
+
     if ((is_team_blue) && (!blue_has_right)) {
         // is_left_side = true;
         this->set_is_left_side(true);
@@ -345,7 +353,10 @@ void Game::update_side()
 void Game::update_kick_off()
 {
     update_side();
+
+    cout << "Side updated" << endl;
     int kicking_side_right = referee_handler->GetSide();
+
     if ((kicking_side_right) && (is_left_side)) {
         has_kick_off = false;
     }
@@ -358,6 +369,7 @@ void Game::update_kick_off()
     if ((!kicking_side_right) && (!is_left_side)) {
         has_kick_off = false;
     }
+
 }
 
 void Game::print_state(ePlayMode state)
@@ -402,9 +414,10 @@ void Game::print_state(ePlayMode state)
 }
 
 //A bit ugly and unwieldy but should get the job done
-void Game::take_kick_off_position() {
+void Game::take_kick_off_positions() {
 	update_side();
 	update_kick_off();
+    cout << "Kick off updated" << endl;
 
 	if (is_left_side) {
 		robots[GOALIE]->set_target_pos(GOALIE_KICKOFF_POS_L);
@@ -553,135 +566,5 @@ void Game::take_penalty_position()
     goalie->spot_turn(angle4allRobots);
     striker1->spot_turn(angle4allRobots);
     striker2->spot_turn(angle4allRobots);
-}
-*/
-
-
-//Old horrible shit not written by me
-/*
-void Game::take_kick_off_position()
-{
-
-bool kicking_team = has_kick_off;
-bool left_side = is_left_side;
-
-// define position pointers
-// they are needed to check the positions without determining the side and role again
-Position* goalie_pos;
-Position* striker1_pos;
-Position* striker2_pos;
-
-// define kick-off positions
-Position pos_goalie_left(-1.3, 0.0);
-Position pos_goalie_right(1.3, 0.0);
-
-// define striker positions if not kicking off
-Position pos_defender1_left(-0.3, 0.4);
-Position pos_defender2_left(-0.3, -0.4);
-Position pos_defender1_right(0.3, 0.4);
-Position pos_defender2_right(0.3, -0.4);
-
-// define striker positions if kicking off
-Position pos_striker1_left(-0.15, -0.15);
-Position pos_striker2_left(-0.15, 0.15);
-Position pos_striker1_right(0.15, 0.15);
-Position pos_striker2_right(0.15, -0.15);
-
-// define orientations
-Angle* orientation_striker1;
-Angle* orientation_striker2;
-Angle* orientation_goalie;
-Angle left_forward(0);
-Angle right_forward(180);
-Angle goalie_left(90);
-Angle goalie_right(90);
-Angle left_side_striker1(45);
-Angle left_side_striker2(-45);
-Angle right_side_striker1(-135);
-Angle right_side_striker2(135);
-
-if (left_side) {
-orientation_goalie = &goalie_left;
-goalie_pos = &pos_goalie_left;
-if (kicking_team) {
-orientation_striker1 = &left_side_striker1;
-orientation_striker2 = &left_side_striker2;
-striker1_pos = &pos_striker1_left;
-striker2_pos = &pos_striker2_left;
-} else {
-orientation_striker1 = &left_forward;
-orientation_striker2 = &left_forward;
-striker1_pos = &pos_defender1_left;
-striker2_pos = &pos_defender2_left;
-}
-} else {
-orientation_goalie = &goalie_right;
-goalie_pos = &pos_goalie_right;
-if (kicking_team) {
-orientation_striker1 = &right_side_striker1;
-orientation_striker2 = &right_side_striker2;
-striker1_pos = &pos_striker1_right;
-striker2_pos = &pos_striker2_right;
-} else {
-orientation_striker1 = &right_forward;
-orientation_striker2 = &right_forward;
-striker1_pos = &pos_defender1_right;
-striker2_pos = &pos_defender2_right;
-}
-}
-
-goalie->GotoPos(*goalie_pos);
-striker1->GotoPos(*striker1_pos);
-striker2->GotoPos(*striker2_pos);
-
-usleep(WAIT_TIME_POSITION_TAKING);
-
-// check if robots arrived savely
-bool goalie_unfinished = true;
-bool striker1_unfinished = true;
-bool striker2_unfinished = true;
-while (goalie_unfinished || striker1_unfinished || striker2_unfinished) {
-if (goalie->GetPos().DistanceTo(*goalie_pos) > ROBOT_ARRIVED_THRESHOLD) {
-cout << "Goalie did not arrive so far" << endl;
-goalie->Turn(90);
-goalie->MoveDist(0.2, 30, false);
-} else {
-goalie_unfinished = false;
-}
-if (striker1->GetPos().DistanceTo(*striker1_pos) > ROBOT_ARRIVED_THRESHOLD) {
-cout << "Striker1 did not arrive so far" << endl;
-striker1->Turn(90);
-striker1->MoveDist(0.2, 30, false);
-} else {
-striker1_unfinished = false;
-}
-if (striker2->GetPos().DistanceTo(*striker2_pos) > ROBOT_ARRIVED_THRESHOLD) {
-cout << "Striker2 did not arrive so far" << endl;
-striker2->Turn(90);
-striker2->MoveDist(0.2, 30, false);
-} else {
-striker2_unfinished = false;
-}
-
-usleep(WAIT_TIME_POSITION_CORRECTING);
-
-if (goalie_unfinished) {
-goalie->GotoPos(*goalie_pos);
-}
-if (striker1_unfinished) {
-striker1->GotoPos(*striker1_pos);
-}
-if (striker2_unfinished) {
-striker2->GotoPos(*striker2_pos);
-}
-usleep(WAIT_TIME_POSITION_TAKING);
-}
-
-// turn robots into their needed orientation
-goalie->spot_turn(*orientation_goalie);
-striker1->spot_turn(*orientation_striker1);
-striker2->spot_turn(*orientation_striker2);
-
-usleep(WAIT_TIME_TURNING);
 }
 */

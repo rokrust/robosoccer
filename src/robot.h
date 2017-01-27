@@ -86,13 +86,13 @@ public:
     ~Robot();
 
     int spot_turn(Angle phi_in, bool verbose=true);
-    int spot_turn_on_target_if_necessary(); //wtf?
+
     int drive_parallel(float diff_to_drive);
 
     // controller functions
     int update_speed_controller(Angle ref_heading, Angle cur_heading);
     int update_heading_controller(Angle ref_heading, Angle cur_heading);
-    int set_wheelspeed(int timer_duration, Position* robot_positions=NULL);
+    int set_wheelspeed(Position* robot_positions);
 
     void set_sampling_time(double sampling_time);
     double get_sampling_time();

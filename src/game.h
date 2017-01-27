@@ -10,11 +10,8 @@
 #include "referee.h"
 #include "strategy.h"
 
-#define WAIT_TIME_POSITION_TAKING 10000000
-#define WAIT_TIME_TURNING 3000000
-#define WAIT_FOR_PENALTY_POS 12000000
-#define WAIT_TIME_POSITION_CORRECTING 2000000
-#define TIME_STEP_SIZE_GOALIE 5000
+#define CLIENT_NBR 222
+
 #define ROBOT_ARRIVED_THRESHOLD 0.2
 
 //array indexes
@@ -46,9 +43,9 @@ public:
     Strategy strategy_module;
 
     RawBall* datBall;
-    Robot* robots[N_ROBOTS]; //Should fix this hard coding
+    Robot* robots[N_ROBOTS];
 
-    Game(RTDBConn DBC, bool is_team_blue_in);
+    Game();
 
     // state machine
     void state_machine(bool verbose=false);
@@ -58,7 +55,7 @@ public:
     void print_state(ePlayMode state=PAUSE);
 
     // Take position functions
-    void take_kick_off_position();
+    void take_kick_off_positions();
     void take_penalty_positions();
 	
     // Boolean get functions
