@@ -22,7 +22,7 @@
 #define BASE_TURN_SPEED 80
 #define TURN_RAMP_UP 0
 #define DDEG_MULTIPLYER 2.29
-#define MAX_WHEELSPEED 200
+#define MAX_WHEELSPEED 100
 
 // goalie constants
 #define GOALIE_SPEED 120

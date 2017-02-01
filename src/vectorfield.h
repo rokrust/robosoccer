@@ -76,11 +76,13 @@ public:
     //and target position
     virtual Vector vector_at_pos(Position pos) = 0;
 
+    void set_target_pos(Position pos){target_pos = pos;}
     void set_center_point(Position pos){center_point = pos;}
     void set_center_point(double x, double y){center_point.SetX(x); center_point.SetY(y);}
     Position get_center_point(){return center_point;}
 
 protected:
+    Position target_pos;
     Position center_point;
 
 };
@@ -90,12 +92,9 @@ class Robot_vector_field: public Vector_field{
 private:
 
     double eccentricity; //Set as function of vector field weight?
-    Position target_pos;
 
 public:
-    Robot_vector_field(Position pos = Position(0, 0)): eccentricity(10) {center_point = pos;}
-    void set_target_pos(Position pos) {target_pos = pos;}
-
+    Robot_vector_field(Position pos = Position(0, 0)): eccentricity(1) {center_point = pos;}
     Vector vector_at_pos(Position pos);
 
 };
@@ -106,7 +105,6 @@ private:
 
 public:	
     Wall_vector_field(){}
-
     Vector vector_at_pos(Position pos);
 };
 
@@ -117,7 +115,6 @@ private:
 
 public:
     Target_vector_field(Position pos = Position(0, 0)){center_point = pos;}
-
     Vector vector_at_pos(Position pos);
 };
 

@@ -1,3 +1,4 @@
+
 //============================================================================
 // Name        : robot.cpp
 // Author      :
@@ -115,6 +116,9 @@ int Robot::set_wheelspeed(Position* robot_positions) {
 
     int right_wheel_speed = u_speed + u_omega;
     int left_wheel_speed = u_speed - u_omega;
+
+    //right_wheel_speed = 0;
+    //left_wheel_speed = 0;
 
     //hard coding should be removed
     MoveMs(left_wheel_speed, right_wheel_speed, 1000, 100);

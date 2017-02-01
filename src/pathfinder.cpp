@@ -13,6 +13,11 @@ Path_finder::Path_finder(int robot_array_index){
         vector_field_weights.push_back(1.0); //fix hardcoding  0.005
     }
 
+    //vector_field_weights[3] = 0;
+    //vector_field_weights[4] = 0;
+    //vector_field_weights[5] = 0;
+
+
     //The robot's own vectorfield is ignored to avoid infinite values
     vector_field_weights[robot_array_index] = 0;
 
@@ -46,17 +51,13 @@ ateam::Vector Path_finder::sum_vector_field(Position current_pos){
         if(vector_field_weights[i] == 0){
             continue;
         }
-
+        if(i != 7){
+            //cout << i;
+        }
         summed_weighted_vector += vector_field_weights[i] * vector_fields[i]->vector_at_pos(current_pos);
     }
 
-    if(summed_weighted_vector.length() > 2.0){
-        cout << "Length: " << summed_weighted_vector.length() << endl;
 
-        summed_weighted_vector = 1/summed_weighted_vector.length() * summed_weighted_vector;
-        summed_weighted_vector = 2*summed_weighted_vector;
-    }
-    cout << "Length: " << summed_weighted_vector.length() << endl << endl;
 
     return summed_weighted_vector;
 }
@@ -65,7 +66,14 @@ ateam::Vector Path_finder::sum_vector_field(Position current_pos){
 Angle Path_finder::calculate_reference_angle(int current_pos_index, Position* robot_positions){
     update_vector_field_positions(robot_positions);
 
-    return sum_vector_field(robot_positions[current_pos_index]).vector_angle();
+    ateam::Vector direction_vector = sum_vector_field(robot_positions[current_pos_index]);
+    Angle heading = direction_vector.vector_angle();
+
+    cout << current_pos_index << "Angle: " << heading.Deg() << endl;
+    cout << current_pos_index << "Length: " << direction_vector.length() << endl << endl;
+
+
+    return heading;
 
 }
 
@@ -80,11 +88,12 @@ void Path_finder::update_vector_field_positions(Position* robot_positions){
 void Path_finder::set_target_pos(Position pos){
 
     target_pos = pos;
+
     vector_fields[TARGET_FIELD]->set_center_point(pos);
 
     //Needed to allign the fields towards the robot's target position
     for(int i = 0; i < N_ROBOTS; i++){
-        vector_fields[i]->set_center_point(pos);
+        vector_fields[i]->set_target_pos(pos);
     }
 }
 

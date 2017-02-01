@@ -16,11 +16,15 @@
 void Game::test_init(){
     take_kick_off_positions();
     //strategy_module.set_avoidance_degree(GOALIE, STRIKER1, 0.0);
-    //set_some_positions();
+    set_some_positions();
+    //robots[0]->set_target_pos(Position(0,0));
+    //robots[1]->set_target_pos(Position(0,0));
+    //robots[2]->set_target_pos(Position(0,0));
 }
 
 
 void Game::test_loop(){
+    robots[GOALIE]->set_target_pos(datBall->GetPos());
     strategy_module.move_robots();
 }
 
@@ -427,7 +431,7 @@ void Game::take_kick_off_positions() {
     cout << "Kick off updated" << endl;
 
 	if (is_left_side) {
-		robots[GOALIE]->set_target_pos(GOALIE_KICKOFF_POS_L);
+        robots[GOALIE]->set_target_pos(GOALIE_KICKOFF_POS_L);
 		robots[OPPONENT1]->set_target_pos(GOALIE_KICKOFF_POS_R);
 
 		if (has_kick_off) {
