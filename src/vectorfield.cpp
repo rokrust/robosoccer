@@ -157,7 +157,7 @@ ateam::Vector::operator Position() { return Position(x, y); }
 /**
  * @brief Function of the robot vector fields. Returns the vector at a given position.
  *
- * @param pos
+ * @param pos Position
  * @return ateam::Vector
  */
 ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
@@ -192,7 +192,7 @@ ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
 /**
  * @brief Returns the vector from the wall vector field at a given position.
  *
- * @param pos
+ * @param pos Position
  * @return ateam::Vector
  */
 ateam::Vector ateam::Wall_vector_field::vector_at_pos(Position pos){
@@ -214,7 +214,7 @@ ateam::Vector ateam::Wall_vector_field::vector_at_pos(Position pos){
 /**
  * @brief Returns the vector from the target vector field at a given position.
  *
- * @param pos
+ * @param pos Position
  * @return ateam::Vector
  */
 ateam::Vector ateam::Target_vector_field::vector_at_pos(Position pos = Position(0, 0)){

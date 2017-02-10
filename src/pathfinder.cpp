@@ -51,7 +51,7 @@ void Path_finder::print_vector_length(int index, Position pos){
 /**
  * @brief Adds all the vector fields to find and returns the vector that the robot should follow.
  *
- * @param current_pos
+ * @param current_pos Position to calculate the vectors at
  * @return ateam::Vector
  */
 ateam::Vector Path_finder::sum_vector_field(Position current_pos){
@@ -75,8 +75,8 @@ ateam::Vector Path_finder::sum_vector_field(Position current_pos){
 /**
  * @brief Finds the angle of the vector from the summed vector field
  *
- * @param current_pos_index
- * @param robot_positions
+ * @param current_pos_index Index of robot's personal position
+ * @param robot_positions Array that keeps track of all the robot positions
  * @return Angle
  */
 Angle Path_finder::calculate_reference_angle(int current_pos_index, Position* robot_positions){
@@ -97,7 +97,7 @@ Angle Path_finder::calculate_reference_angle(int current_pos_index, Position* ro
 /**
  * @brief Changes the center point of the robot vector fields
  *
- * @param robot_positions
+ * @param robot_positions Array that keeps track of all the robot positions
  */
 void Path_finder::update_vector_field_positions(Position* robot_positions){
     for(int i = 0; i < N_ROBOTS; i++){
@@ -109,7 +109,7 @@ void Path_finder::update_vector_field_positions(Position* robot_positions){
 /**
  * @brief Changes the center point of the target vector field
  *
- * @param pos
+ * @param pos Position that is set
  */
 void Path_finder::set_target_pos(Position pos){
 
@@ -135,8 +135,8 @@ Position Path_finder::get_target_pos(){
 /**
  * @brief Changes the weight of the robot field given by robot_index.
  *
- * @param robot_index
- * @param weight
+ * @param robot_index Index of the field we want to change
+ * @param weight The value we want to change it to
  */
 void Path_finder::set_robot_vector_field_weight(int robot_index, double weight){
 	vector_field_weights[robot_index] = weight;

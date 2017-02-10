@@ -7,9 +7,9 @@
 /**
  * @brief Constructor of strategy.
  *
- * @param robots
- * @param datBall
- * @param is_left_side
+ * @param robots Pointers to the robots
+ * @param datBall Ball object
+ * @param is_left_side if left side this is set to true
  */
 Strategy::Strategy(Robot **robots, RawBall *datBall, bool is_left_side)
 {
@@ -24,7 +24,7 @@ Strategy::Strategy(Robot **robots, RawBall *datBall, bool is_left_side)
  * @brief Finds out which side of the ball the robot should be on and adds a via position if necessary.
 
  *
- * @param target
+ * @param target Where we want to kick the ball to
  * @return Position
  */
 Position Strategy::determine_kick_position(Position target) {
@@ -50,9 +50,9 @@ Position Strategy::determine_kick_position(Position target) {
 /**
  * @brief Mathematical helper function used to find a via position
  *
- * @param point
- * @param line_start
- * @param line_end
+ * @param point The point we want the distance from
+ * @param line_start First point of line
+ * @param line_end Last point of line
  * @return double
  */
 double Strategy::distance_of_point_to_line(Position point, Position line_start, Position line_end) {
@@ -78,7 +78,7 @@ void Strategy::update_robot_positions(){
 /**
  * @brief Clears all the coming target positions of the robot given by robot_index.
  *
- * @param robot_index
+ * @param robot_index Index of the robot in the robot pointer array
  */
 void Strategy::clear_scheduled_movement(int robot_index) {
 	robot_target_positions[robot_index].clear();
@@ -98,8 +98,8 @@ void Strategy::clear_all_scheduled_movement(){
 /**
  * @brief Adds a via position if the ball is in the way. Used by move_to_kick_position
  *
- * @param robot_index
- * @param kick_pos
+ * @param robot_index The robot we want to add the position to
+ * @param kick_pos The position we ultimately want to end up at
  */
 void Strategy::add_via_position_if_necessary(int robot_index, Position kick_pos) {
         Position current_pos = robot_positions[robot_index];
@@ -131,7 +131,7 @@ void Strategy::add_via_position_if_necessary(int robot_index, Position kick_pos)
 /**
  * @brief Calculates and moves the given robot to a position where the ball can be kicked towards a target.
  *
- * @param robot_index
+ * @param robot_index The robot we want to add the position to
  * @param target Where the ball should be kicked to.
  */
 void Strategy::move_to_kick_position(int robot_index, Position target) {
@@ -148,8 +148,8 @@ void Strategy::move_to_kick_position(int robot_index, Position target) {
 /**
  * @brief Passes a ball from a robot to another
  *
- * @param passing_robot_index
- * @param recieving_robot_index
+ * @param passing_robot_index Index of the robot we want to pass the ball
+ * @param recieving_robot_index Index of the robot we want to pass the ball to
  */
 void Strategy::pass_ball(int passing_robot_index, int recieving_robot_index) {
 }
@@ -158,7 +158,7 @@ void Strategy::pass_ball(int passing_robot_index, int recieving_robot_index) {
 /**
  * @brief
  *
- * @param is_left_side_in
+ * @param is_left_side_in Set to true if we are playing at the left side
  */
 void Strategy::set_is_left_side(bool is_left_side_in)
 {
@@ -178,9 +178,9 @@ bool Strategy::get_is_left_side()
 /**
  * @brief Sets the strength of a given robot vector field for a robot.
  *
- * @param robot
- * @param robot_to_avoid
- * @param avoidance_degree
+ * @param robot Robot we want to update the vector fields to
+ * @param robot_to_avoid Robot we want to change avoidance degree to
+ * @param avoidance_degree How hard we want to avoid it
  */
 void Strategy::set_avoidance_degree(int robot, int robot_to_avoid, double avoidance_degree){
     robots[robot]->set_avoidance_degree(robot_to_avoid, avoidance_degree);

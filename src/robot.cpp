@@ -42,9 +42,9 @@ void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading)
 /**
  * @brief Constructor of the robot. The same that is used in the Goalie, Opponent and Striker classes
  *
- * @param DBC_in
- * @param device_nr_in
- * @param robot_array_index
+ * @param DBC_in RTDBConn object
+ * @param device_nr_in Device number of the robot
+ * @param robot_array_index Index in the array pointing to the robot objects
  */
 Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index) :
 			 RoboControl(DBC_in, device_nr_in)
@@ -103,8 +103,8 @@ int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
 /**
  * @brief A PD-controller that calculates turning speed as a function of the heading error.
  *
- * @param ref_heading
- * @param cur_heading
+ * @param ref_heading The heading we want
+ * @param cur_heading The heading we actually have
  * @return int
  */
 int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
@@ -156,7 +156,7 @@ void Robot::set_wheelspeed(Position* robot_positions) {
 /**
  * @brief
  *
- * @param sampling_time
+ * @param sampling_time How often the driving function is called. This value is needed for numeric integration
  */
 void Robot::set_sampling_time(double sampling_time)
 {
@@ -176,7 +176,7 @@ double Robot::get_sampling_time()
 /**
  * @brief Sets the position of the target vector field.
  *
- * @param target_pos
+ * @param target_pos Position we want to send a robot to.
  */
 void Robot::set_target_pos(Position target_pos)
 {
@@ -197,8 +197,8 @@ Position Robot::get_target_pos()
 /**
  * @brief Changes the strength, given by avoidance degree, of the vector field given by field_index.
  *
- * @param field_index
- * @param avoidance_degree
+ * @param field_index Field we want to change
+ * @param avoidance_degree The value we want to set the scaling to.
  */
 void Robot::set_avoidance_degree(int field_index, double avoidance_degree){
     path_finder.set_robot_vector_field_weight(field_index, avoidance_degree);
@@ -209,9 +209,9 @@ void Robot::set_avoidance_degree(int field_index, double avoidance_degree){
 /*******************************Shit*******************************/
 
 /**
- * @brief
+ * @brief Improved subtraction of angles
  *
- * @param goal_phi
+ * @param goal_phi Angle to subtract
  * @return int
  */
 int Robot::ddeg(Angle goal_phi)
@@ -228,10 +228,10 @@ int Robot::ddeg(Angle goal_phi)
 }
 
 /**
- * @brief
+ * @brief Turns to a given angle while standing still
  *
- * @param phi_in
- * @param verbose
+ * @param phi_in Angle we want to turn to
+ * @param verbose Set to true to print status updates
  * @return int
  */
 int Robot::spot_turn(Angle phi_in, bool verbose)
@@ -280,7 +280,7 @@ int Robot::spot_turn(Angle phi_in, bool verbose)
 /**
  * @brief
  *
- * @param diff_to_drive
+ * @param diff_to_drive How fast we want to drive
  * @return int
  */
 int Robot::drive_parallel(float diff_to_drive)

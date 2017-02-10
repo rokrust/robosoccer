@@ -468,7 +468,7 @@ void Game::update_kick_off()
 /**
  * @brief
  *
- * @param state
+ * @param state Current state of the state machine
  */
 void Game::print_state(ePlayMode state)
 {
@@ -616,7 +616,7 @@ bool Game::get_has_kick_off()
 /**
  * @brief
  *
- * @param is_left_side_in
+ * @param is_left_side_in Keeps track of what side we are playing on
  */
 void Game::set_is_left_side(bool is_left_side_in)
 {

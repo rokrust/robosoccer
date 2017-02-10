@@ -17,10 +17,10 @@ Goalie::Goalie(RTDBConn DBC_in, int device_nr_in, int robot_array_index) : Robot
 /**
  * @brief Makes the robot try to catch the ball as it rolls towards the goal. (Old and outdated)
  *
- * @param datBall
- * @param opponent1
- * @param opponent2
- * @param opponent3
+ * @param datBall Ball object
+ * @param opponent1 Opponent robot
+ * @param opponent2 Opponent robot
+ * @param opponent3 Opponent robot
  */
 void Goalie::do_a_penalty_save(RawBall* datBall, Robot* opponent1, Robot* opponent2, Robot* opponent3)
 {
@@ -169,10 +169,10 @@ void Goalie::do_a_penalty_save(RawBall* datBall, Robot* opponent1, Robot* oppone
 /**
  * @brief Kicks the ball away from the goal after it has been caught
  *
- * @param datBall
- * @param opponent1
- * @param opponent2
- * @param opponent3
+ * @param datBall Ball object
+ * @param opponent1 Opponent robot
+ * @param opponent2 Opponent robot
+ * @param opponent3 Opponent robot
  */
 void Goalie::do_the_goalkeepers_kick(RawBall* datBall, Robot* opponent1, Robot* opponent2, Robot* opponent3)
 {
