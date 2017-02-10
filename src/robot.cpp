@@ -10,6 +10,11 @@
 #include "robot.h"
 #include "game.h"
 
+/**
+ * @brief Used in the heading controller get a mean of given amount of samples. This is to minimize the effect of spikes in values.
+ *
+ * @return double
+ */
 double Robot::error_buffer_mean(){
     double average_error = 0;
 
@@ -20,6 +25,12 @@ double Robot::error_buffer_mean(){
     return average_error/= controller_data.buffer_size;
 }
 
+/**
+ * @brief Used to prevent overflow in the integrator part of the distance/speed controller.
+ *
+ * @param ref_heading The heading we want
+ * @param cur_heading The heading we actually have
+ */
 void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading){
 
     //Acceptably close to target_pos
@@ -28,6 +39,13 @@ void Robot::reset_integrators_if_necessary(Angle ref_heading, Angle cur_heading)
     }
 }
 
+/**
+ * @brief Constructor of the robot. The same that is used in the Goalie, Opponent and Striker classes
+ *
+ * @param DBC_in
+ * @param device_nr_in
+ * @param robot_array_index
+ */
 Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index) :
 			 RoboControl(DBC_in, device_nr_in)
 {
@@ -39,7 +57,6 @@ Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index) :
     // can also consider putting this into a private function
     controller_data.sampling_time = 0.01;
     controller_data.speed_integrator = 0.0;
-    controller_data.heading_integrator = 0.0;
     controller_data.buffer_size = 6;
     controller_data.current_sample = 0;
     controller_data.error_buffer = new double[6];
@@ -47,12 +64,23 @@ Robot::Robot(RTDBConn DBC_in, int device_nr_in, int robot_array_index) :
     path_finder = Path_finder(robot_array_index);
 }
 
+/**
+ * @brief Robot destructor. Not really needed.
+ *
+ */
 Robot::~Robot()
 {
 }
 
 //Set u_speed according to distance_to_pos (should be called every controller tick
 //P controller might be good enough
+/**
+ * @brief A PI-controller that calculates a wanted speed as a function of distance from the target position. It also uses the error in heading to implement reversing.
+ *
+ * @param ref_heading The heading we want
+ * @param cur_heading The heading we actually have
+ * @return int
+ */
 int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
     double distance_to_pos = GetPos().DistanceTo(target_pos);
 
@@ -72,39 +100,42 @@ int Robot::update_speed_controller(Angle ref_heading, Angle cur_heading) {
 }
 
 //Set u_omega according to ref_heading and cur_heading (should be called every controller tick)
+/**
+ * @brief A PD-controller that calculates turning speed as a function of the heading error.
+ *
+ * @param ref_heading
+ * @param cur_heading
+ * @return int
+ */
 int Robot::update_heading_controller(Angle ref_heading, Angle cur_heading){
     double current_error = (ref_heading - cur_heading).Get();
 
-    //current_error = sin(current_error); //WTF?? From shit period
-
+    //P-part
     controller_data.error_buffer[controller_data.current_sample] = current_error;
-    //controller_data.heading_integrator += current_error*controller_data.sampling_time;
 
-    //double int_error = controller_data.heading_integrator;
+    //D-part
     double diff_error = (current_error - error_buffer_mean())/controller_data.buffer_size;
     controller_data.current_sample = (controller_data.current_sample + 1) % controller_data.buffer_size;
 
-    int u_omega = K_ph*current_error + K_dh*diff_error; // + K_ih*int_error;
-
+    int u_omega = K_ph*current_error + K_dh*diff_error;
 
 
     return u_omega;
 }
 
 //Set wheel speed according to u_speed and u_omega (should be called every controller tick)
-int Robot::set_wheelspeed(Position* robot_positions) {
+/**
+ * @brief Uses the two controllers to set a final wheelspeed on a given robot.
+ *
+ * @param robot_positions Sent into pathfinder to update vector fields.
+ */
+void Robot::set_wheelspeed(Position* robot_positions) {
     Angle ref_heading = path_finder.calculate_reference_angle(robot_array_index, robot_positions);
     Angle cur_heading = GetPhi();
 
     int u_omega = update_heading_controller(ref_heading, cur_heading);
     int u_speed = update_speed_controller(ref_heading, cur_heading);
 
-    if(u_speed == 0){
-        controller_data.heading_integrator = 0;
-        controller_data.speed_integrator = 0;
-        MoveMs(0, 0, 1000, 100);
-        return 1;
-    }
 
     //Speed limit
     if (u_speed > MAX_WHEELSPEED) {
@@ -117,38 +148,58 @@ int Robot::set_wheelspeed(Position* robot_positions) {
     int right_wheel_speed = u_speed + u_omega;
     int left_wheel_speed = u_speed - u_omega;
 
-    //right_wheel_speed = 0;
-    //left_wheel_speed = 0;
 
-    //hard coding should be removed
     MoveMs(left_wheel_speed, right_wheel_speed, 1000, 100);
-
-
-    return 0;
 
 }
 
+/**
+ * @brief
+ *
+ * @param sampling_time
+ */
 void Robot::set_sampling_time(double sampling_time)
 {
     controller_data.sampling_time = sampling_time;
 }
 
+/**
+ * @brief
+ *
+ * @return double
+ */
 double Robot::get_sampling_time()
 {
     return controller_data.sampling_time;
 }
 
+/**
+ * @brief Sets the position of the target vector field.
+ *
+ * @param target_pos
+ */
 void Robot::set_target_pos(Position target_pos)
 {
     this->target_pos = target_pos;
     path_finder.set_target_pos(target_pos);
 }
 
+/**
+ * @brief
+ *
+ * @return Position
+ */
 Position Robot::get_target_pos()
 {
     return target_pos;
 }
 
+/**
+ * @brief Changes the strength, given by avoidance degree, of the vector field given by field_index.
+ *
+ * @param field_index
+ * @param avoidance_degree
+ */
 void Robot::set_avoidance_degree(int field_index, double avoidance_degree){
     path_finder.set_robot_vector_field_weight(field_index, avoidance_degree);
 
@@ -157,6 +208,12 @@ void Robot::set_avoidance_degree(int field_index, double avoidance_degree){
 
 /*******************************Shit*******************************/
 
+/**
+ * @brief
+ *
+ * @param goal_phi
+ * @return int
+ */
 int Robot::ddeg(Angle goal_phi)
 {
     Angle cur_phi = GetPhi();
@@ -170,6 +227,13 @@ int Robot::ddeg(Angle goal_phi)
     return ddeg;
 }
 
+/**
+ * @brief
+ *
+ * @param phi_in
+ * @param verbose
+ * @return int
+ */
 int Robot::spot_turn(Angle phi_in, bool verbose)
 {
     // define left and right wheel speed variables
@@ -213,6 +277,12 @@ int Robot::spot_turn(Angle phi_in, bool verbose)
     return wait_time;
 }
 
+/**
+ * @brief
+ *
+ * @param diff_to_drive
+ * @return int
+ */
 int Robot::drive_parallel(float diff_to_drive)
 {
 

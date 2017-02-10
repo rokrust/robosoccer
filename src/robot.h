@@ -58,7 +58,6 @@ struct Controller_data{
     double speed_integrator;
 
     //Heading controller
-    double heading_integrator;
     int buffer_size;
     int current_sample;
     double* error_buffer;
@@ -92,7 +91,7 @@ public:
     // controller functions
     int update_speed_controller(Angle ref_heading, Angle cur_heading);
     int update_heading_controller(Angle ref_heading, Angle cur_heading);
-    int set_wheelspeed(Position* robot_positions);
+    void set_wheelspeed(Position* robot_positions);
     void set_sampling_time(double sampling_time);
     double get_sampling_time();
 

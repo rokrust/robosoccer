@@ -39,6 +39,10 @@ private:
     bool stay_in_state_machine;
     bool stay_in_state;
 
+    void update_state();
+    void update_side();
+    void update_kick_off();
+
 public:
     Strategy strategy_module;
 
@@ -49,9 +53,6 @@ public:
 
     // state machine
     void state_machine(bool verbose=false);
-    void update_state();
-    void update_side();
-    void update_kick_off();
     void print_state(ePlayMode state=PAUSE);
     void set_some_positions();
 

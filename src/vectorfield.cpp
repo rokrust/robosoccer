@@ -10,10 +10,20 @@
 
 
 //This will be directly piped in to the reference_angle of the controller
+/**
+ * @brief Returns the angle of vector *this
+ *
+ * @return Angle
+ */
 Angle ateam::Vector::vector_angle(){
     return Position(0, 0).AngleOfLineToPos(Position(x, y));;
 }
 
+/**
+ * @brief Rotates the vector *this.
+ *
+ * @param angle The angle of the rotation.
+ */
 void ateam::Vector::rotate(Angle angle) {
 	double old_x = x, old_y = y;
 	double cosine = cos(angle.Get());
@@ -24,27 +34,62 @@ void ateam::Vector::rotate(Angle angle) {
 }
 
 //non-member operators
+/**
+ * @brief
+ *
+ * @param os
+ * @param vec
+ * @return ostream & ateam::operator
+ */
 ostream& ateam::operator<<(ostream& os, const Vector& vec)
 {
     os << "[" << vec.get_x() << ", " << vec.get_y() << "]";
     return os;
 }
 
+/**
+ * @brief
+ *
+ * @param vec1
+ * @param vec2
+ * @return ateam::Vector ateam::operator
+ */
 ateam::Vector ateam::operator+(const ateam::Vector& vec1, const ateam::Vector& vec2){
     return ateam::Vector(vec1.get_x()+vec2.get_x(), vec1.get_y()+vec2.get_y());
 
 }
 
+/**
+ * @brief
+ *
+ * @param vec1
+ * @param vec2
+ * @return ateam::Vector ateam::operator
+ */
 ateam::Vector ateam::operator-(const ateam::Vector& vec1, const ateam::Vector& vec2){
     return ateam::Vector(vec1.get_x()-vec2.get_x(), vec1.get_y()-vec2.get_y());
 
 }
 
+/**
+ * @brief
+ *
+ * @param scale
+ * @param vec
+ * @return ateam::Vector ateam::operator
+ */
 ateam::Vector ateam::operator*(const double& scale, const ateam::Vector& vec){
     return ateam::Vector(scale*vec.get_x(), scale*vec.get_y());
 
 }
 
+/**
+ * @brief
+ *
+ * @param vec1
+ * @param vec2
+ * @return double ateam::operator
+ */
 double ateam::operator*(const ateam::Vector& vec1, const ateam::Vector& vec2){
     return vec1.get_x()*vec2.get_x()+vec1.get_y()*vec2.get_y();
 
@@ -52,12 +97,24 @@ double ateam::operator*(const ateam::Vector& vec1, const ateam::Vector& vec2){
 
 
 //member operators
+/**
+ * @brief
+ *
+ * @param scale
+ * @return ateam::Vector ateam::Vector::operator
+ */
 ateam::Vector ateam::Vector::operator*=(const double& scale){
 
     return *this = scale*(*this);
 }
 
 
+/**
+ * @brief
+ *
+ * @param vec
+ * @return ateam::Vector ateam::Vector::operator
+ */
 ateam::Vector ateam::Vector::operator=(const ateam::Vector& vec){
     x = vec.get_x();
     y = vec.get_y();
@@ -65,21 +122,44 @@ ateam::Vector ateam::Vector::operator=(const ateam::Vector& vec){
     return *this;
 }
 
+/**
+ * @brief
+ *
+ * @param vec
+ * @return ateam::Vector ateam::Vector::operator
+ */
 ateam::Vector ateam::Vector::operator+=(const ateam::Vector& vec){
 
     return *this = *this + vec;
 }
 
+/**
+ * @brief
+ *
+ * @param vec
+ * @return ateam::Vector ateam::Vector::operator
+ */
 ateam::Vector ateam::Vector::operator-=(const ateam::Vector& vec){
 
     return *this = *this + vec;
 }
 
+/**
+ * @brief
+ *
+ * @return ateam::Vector::operator
+ */
 ateam::Vector::operator Position() { return Position(x, y); }
 
 //x:        (x*tan(1)-y)/(sqrt((x*tan(1)-y)^2+(y/tan(1)-x)^2)),
 //y:        (y/tan(1)-x)/(sqrt((x*tan(1)-y)^2+(y/tan(1)-x)^2)
 //scale:    1/(15(sin(0.75)*x-cos(0.75)y)^2 + (cos(0.75)*x+sin(0.75)y)^2 + 0.01)
+/**
+ * @brief Function of the robot vector fields. Returns the vector at a given position.
+ *
+ * @param pos
+ * @return ateam::Vector
+ */
 ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
     Angle vector_field_angle = pos.AngleOfLineToPos(target_pos);
     //cout << " vector field angle: " << vector_field_angle << endl;
@@ -109,6 +189,12 @@ ateam::Vector ateam::Robot_vector_field::vector_at_pos(Position pos){
 }
 
 
+/**
+ * @brief Returns the vector from the wall vector field at a given position.
+ *
+ * @param pos
+ * @return ateam::Vector
+ */
 ateam::Vector ateam::Wall_vector_field::vector_at_pos(Position pos){
     //Effect of the field shrinks with the higher the power.
     double x = (pos.GetX() - X_MIN_COOR)/
@@ -125,6 +211,12 @@ ateam::Vector ateam::Wall_vector_field::vector_at_pos(Position pos){
 }
 
 
+/**
+ * @brief Returns the vector from the target vector field at a given position.
+ *
+ * @param pos
+ * @return ateam::Vector
+ */
 ateam::Vector ateam::Target_vector_field::vector_at_pos(Position pos = Position(0, 0)){
     double x_diff = pos.GetX()-center_point.GetX();
     double y_diff = pos.GetY()-center_point.GetY();
